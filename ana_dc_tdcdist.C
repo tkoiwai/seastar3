@@ -91,7 +91,7 @@ void ana_dc_tdcdist(){
   //===== Load CUT files =====
   
   //===== Create output file/tree =====
-  TFile *anafile_dc = new TFile("rootfiles/ana_dc_tdcdist.root","RECREATE");
+  TFile *anafile_dc_tdcdist = new TFile("rootfiles/ana_dc_tdcdist.root","RECREATE");
   //TTree *anatreeDC  = new TTree("anatreeDC","anatreeDC");
 
   //===== Create TDC Distributions =====
@@ -103,6 +103,7 @@ void ana_dc_tdcdist(){
   TH1I *hbdc1tdc5 = new TH1I("hbdc1tdc5","BDC1 TDC Layer 5",600,1400,2000);
   TH1I *hbdc1tdc6 = new TH1I("hbdc1tdc6","BDC1 TDC Layer 6",600,1400,2000);
   TH1I *hbdc1tdc7 = new TH1I("hbdc1tdc7","BDC1 TDC Layer 7",600,1400,2000);
+  
   TH1I *hbdc2tdc0 = new TH1I("hbdc2tdc0","BDC2 TDC Layer 0",600,1400,2000);
   TH1I *hbdc2tdc1 = new TH1I("hbdc2tdc1","BDC2 TDC Layer 1",600,1400,2000);
   TH1I *hbdc2tdc2 = new TH1I("hbdc2tdc2","BDC2 TDC Layer 2",600,1400,2000);
@@ -111,6 +112,21 @@ void ana_dc_tdcdist(){
   TH1I *hbdc2tdc5 = new TH1I("hbdc2tdc5","BDC2 TDC Layer 5",600,1400,2000);
   TH1I *hbdc2tdc6 = new TH1I("hbdc2tdc6","BDC2 TDC Layer 6",600,1400,2000);
   TH1I *hbdc2tdc7 = new TH1I("hbdc2tdc7","BDC2 TDC Layer 7",600,1400,2000);
+  
+  TH1I *hfdc1tdc0  = new TH1I("hfdc1tdc0", "FDC1 TDC Layer 0", 600,1400,2000);
+  TH1I *hfdc1tdc1  = new TH1I("hfdc1tdc1", "FDC1 TDC Layer 1", 600,1400,2000);
+  TH1I *hfdc1tdc2  = new TH1I("hfdc1tdc2", "FDC1 TDC Layer 2", 600,1400,2000);
+  TH1I *hfdc1tdc3  = new TH1I("hfdc1tdc3", "FDC1 TDC Layer 3", 600,1400,2000);
+  TH1I *hfdc1tdc4  = new TH1I("hfdc1tdc4", "FDC1 TDC Layer 4", 600,1400,2000);
+  TH1I *hfdc1tdc5  = new TH1I("hfdc1tdc5", "FDC1 TDC Layer 5", 600,1400,2000);
+  TH1I *hfdc1tdc6  = new TH1I("hfdc1tdc6", "FDC1 TDC Layer 6", 600,1400,2000);
+  TH1I *hfdc1tdc7  = new TH1I("hfdc1tdc7", "FDC1 TDC Layer 7", 600,1400,2000);
+  TH1I *hfdc1tdc8  = new TH1I("hfdc1tdc8", "FDC1 TDC Layer 8", 600,1400,2000);
+  TH1I *hfdc1tdc9  = new TH1I("hfdc1tdc9", "FDC1 TDC Layer 9", 600,1400,2000);
+  TH1I *hfdc1tdc10 = new TH1I("hfdc1tdc10","FDC1 TDC Layer 10",600,1400,2000);
+  TH1I *hfdc1tdc11 = new TH1I("hfdc1tdc11","FDC1 TDC Layer 11",600,1400,2000);
+  TH1I *hfdc1tdc12 = new TH1I("hfdc1tdc12","FDC1 TDC Layer 12",600,1400,2000);
+  TH1I *hfdc1tdc13 = new TH1I("hfdc1tdc13","FDC1 TDC Layer 13",600,1400,2000);
   
   //===== Declear const.s =====
   Int_t BDCNumLayer = 8;
@@ -142,6 +158,21 @@ void ana_dc_tdcdist(){
       if(BDC2_TDC[5][i]>0) hbdc2tdc5 -> Fill(BDC2_TDC[5][i]);
       if(BDC2_TDC[6][i]>0) hbdc2tdc6 -> Fill(BDC2_TDC[6][i]);
       if(BDC2_TDC[7][i]>0) hbdc2tdc7 -> Fill(BDC2_TDC[7][i]);
+
+      if(FDC1_TDC[0][i]>0)  hfdc1tdc0 ->  Fill(FDC1_TDC[0][i]);
+      if(FDC1_TDC[1][i]>0)  hfdc1tdc1 ->  Fill(FDC1_TDC[1][i]);
+      if(FDC1_TDC[2][i]>0)  hfdc1tdc2 ->  Fill(FDC1_TDC[2][i]);
+      if(FDC1_TDC[3][i]>0)  hfdc1tdc3 ->  Fill(FDC1_TDC[3][i]);
+      if(FDC1_TDC[4][i]>0)  hfdc1tdc4 ->  Fill(FDC1_TDC[4][i]);
+      if(FDC1_TDC[5][i]>0)  hfdc1tdc5 ->  Fill(FDC1_TDC[5][i]);
+      if(FDC1_TDC[6][i]>0)  hfdc1tdc6 ->  Fill(FDC1_TDC[6][i]);
+      if(FDC1_TDC[7][i]>0)  hfdc1tdc7 ->  Fill(FDC1_TDC[7][i]);
+      if(FDC1_TDC[8][i]>0)  hfdc1tdc8 ->  Fill(FDC1_TDC[8][i]);
+      if(FDC1_TDC[9][i]>0)  hfdc1tdc9 ->  Fill(FDC1_TDC[9][i]);
+      if(FDC1_TDC[10][i]>0) hfdc1tdc10 -> Fill(FDC1_TDC[10][i]);
+      if(FDC1_TDC[11][i]>0) hfdc1tdc11 -> Fill(FDC1_TDC[11][i]);
+      if(FDC1_TDC[12][i]>0) hfdc1tdc12 -> Fill(FDC1_TDC[12][i]);
+      if(FDC1_TDC[13][i]>0) hfdc1tdc13 -> Fill(FDC1_TDC[13][i]);
     }
 
   
@@ -150,7 +181,7 @@ void ana_dc_tdcdist(){
 
     //anatreeDC->Fill();
   }//for LOOP
-  anafile_dc->cd();
+  anafile_dc_tdcdist->cd();
   //anatreeDC->Write();
   hbdc1tdc0->Write();
   hbdc1tdc1->Write();
@@ -169,5 +200,21 @@ void ana_dc_tdcdist(){
   hbdc2tdc5->Write();
   hbdc2tdc6->Write();
   hbdc2tdc7->Write();
-  anafile_dc->Close();
+
+  hfdc1tdc0->Write();
+  hfdc1tdc1->Write();
+  hfdc1tdc2->Write();
+  hfdc1tdc3->Write();
+  hfdc1tdc4->Write();
+  hfdc1tdc5->Write();
+  hfdc1tdc6->Write();
+  hfdc1tdc7->Write();
+  hfdc1tdc8->Write();
+  hfdc1tdc9->Write();
+  hfdc1tdc10->Write();
+  hfdc1tdc11->Write();
+  hfdc1tdc12->Write();
+  hfdc1tdc13->Write();
+  
+  anafile_dc_tdcdist->Close();
 }//ana_dc()
