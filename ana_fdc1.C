@@ -104,6 +104,7 @@ void ana_fdc1(){
   Int_t tdcwindow[2] = {1000,2000};
   Double_t tdc2mm[DCNum][14][2000] = {};
   Int_t tdcint[DCNum][14] = {};
+  Double_t wire_gap[DCNum] = {2.5,2.5,5};
   
   TFile *RootFile = new TFile("/home/koiwai/analysis/rootfiles/ana_dc_tdcdist.root","READ");
   if(RootFile){
@@ -118,7 +119,7 @@ void ana_fdc1(){
 	    tdcint[n][l] = (Double_t)h->Integral(h->FindBin(tdcwindow[0]),h->FindBin(tdcwindow[1]));
 	    for(Int_t i=0;i<2000;++i){
 	      if(i>=0&&i<=1000) tdc2mm[n][l][i] = 0;
-	      else tdc2mm[n][l][i] = 2.5*(Double_t)h->Integral(h->FindBin(i),h->FindBin(tdcwindow[1]))/tdcint[n][l]; //2.5 only for BDCs & FDC1?	  
+	      else tdc2mm[n][l][i] = wire_gap[n]*(Double_t)h->Integral(h->FindBin(i),h->FindBin(tdcwindow[1]))/tdcint[n][l]; //2.5 only for BDCs & FDC1?	  
 	    }	  	
 	  }
 	}
@@ -130,7 +131,7 @@ void ana_fdc1(){
 	  tdcint[n][l] = (Double_t)h->Integral(h->FindBin(tdcwindow[0]),h->FindBin(tdcwindow[1]));
 	  for(Int_t i=0;i<2000;++i){
 	    if(i>=0&&i<=1000) tdc2mm[n][l][i] = 0;
-	    else tdc2mm[n][l][i] = 2.5*(Double_t)h->Integral(h->FindBin(i),h->FindBin(tdcwindow[1]))/tdcint[n][l]; //2.5 only for BDCs & FDC1?	  
+	    else tdc2mm[n][l][i] = wire_gap[n]*(Double_t)h->Integral(h->FindBin(i),h->FindBin(tdcwindow[1]))/tdcint[n][l]; // CHECK the WIRE_GAP!!!	  
 	  }	  	
 	}
       }
