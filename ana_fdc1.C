@@ -278,7 +278,12 @@ void ana_fdc1(){
   
   anatreeFDC1->Branch("FDC1_trackX_pos",FDC1_trackX_pos,"FDC1_trackX_pos[16][6]/D");
   anatreeFDC1->Branch("FDC1_trackX_mm",FDC1_trackX_mm,"FDC1_trackX_mm[16][6]/D");
+  anatreeFDC1->Branch("FDC1_trackU_pos",FDC1_trackU_pos,"FDC1_trackU_pos[16][4]/D");
+  anatreeFDC1->Branch("FDC1_trackU_mm",FDC1_trackU_mm,"FDC1_trackU_mm[16][4]/D");
+  anatreeFDC1->Branch("FDC1_trackV_pos",FDC1_trackV_pos,"FDC1_trackV_pos[16][4]/D");
+  anatreeFDC1->Branch("FDC1_trackV_mm",FDC1_trackV_mm,"FDC1_trackV_mm[16][4]/D");
 
+  
   anatreeFDC1->Branch("FDC1_X",&FDC1_X);
   anatreeFDC1->Branch("FDC1_U",&FDC1_U);
   anatreeFDC1->Branch("FDC1_V",&FDC1_V);
@@ -318,8 +323,8 @@ void ana_fdc1(){
   
   //===== Begin LOOP =====
   int nEntry = caltreeDC->GetEntries();
-  //for(int iEntry=0;iEntry<10;++iEntry){
-  for(int iEntry=0;iEntry<nEntry;++iEntry){
+  for(int iEntry=0;iEntry<100;++iEntry){
+    //for(int iEntry=0;iEntry<nEntry;++iEntry){
     
     if(iEntry%100 == 0){
       clog<< iEntry/1000 << "k events treated..." << "\r";
@@ -339,7 +344,8 @@ void ana_fdc1(){
 	FDC1_WireTDC[l][i] = -9999;
 	FDC1_WireTDC[l][i] = FDC1_TDC[l][i];
 
-	FDC1_hit_tdc[l][i] = TMath::Sqrt(-1);
+	//FDC1_hit_tdc[l][i] = TMath::Sqrt(-1);
+	FDC1_hit_tdc[l][i] = -9999;
 	FDC1_hit_pos[l][i] = TMath::Sqrt(-1);
       }
     }
@@ -352,6 +358,12 @@ void ana_fdc1(){
       for(Int_t j=0;j<6;++j){
 	FDC1_trackX_pos[i][j] = TMath::Sqrt(-1);
 	FDC1_trackX_mm[i][j] = TMath::Sqrt(-1);
+      }
+      for(Int_t j=0;j<4;++j){
+	FDC1_trackU_pos[i][j] = TMath::Sqrt(-1);
+	FDC1_trackU_mm[i][j] = TMath::Sqrt(-1);
+	FDC1_trackV_pos[i][j] = TMath::Sqrt(-1);
+	FDC1_trackV_mm[i][j] = TMath::Sqrt(-1);
       }
     }
 
@@ -421,31 +433,32 @@ void ana_fdc1(){
 	  for(Int_t hl7=0;hl7<FDC1_hit_num[7]&&tr<16;++hl7){
 	    for(Int_t hl12=0;hl12<FDC1_hit_num[12]&&tr<16;++hl12){
 	      for(Int_t hl13=0;hl13<FDC1_hit_num[13]&&tr<16;++hl13){
-	    FDC1_trackX_pos[tr][0] = FDC1_hit_pos[0][hl0];
-	    FDC1_trackX_pos[tr][1] = FDC1_hit_pos[1][hl1];
-	    FDC1_trackX_pos[tr][2] = FDC1_hit_pos[6][hl6];
-	    FDC1_trackX_pos[tr][3] = FDC1_hit_pos[7][hl7];
-	    FDC1_trackX_pos[tr][4] = FDC1_hit_pos[12][hl12];
-	    FDC1_trackX_pos[tr][5] = FDC1_hit_pos[13][hl13];
-	    FDC1_trackX_mm[tr][0] = tdc2mm[2][0][FDC1_hit_tdc[0][hl0]];
-	    FDC1_trackX_mm[tr][1] = tdc2mm[2][1][FDC1_hit_tdc[1][hl1]];
-	    FDC1_trackX_mm[tr][2] = tdc2mm[2][6][FDC1_hit_tdc[6][hl6]];
-	    FDC1_trackX_mm[tr][3] = tdc2mm[2][7][FDC1_hit_tdc[7][hl7]];
-	    FDC1_trackX_mm[tr][4] = tdc2mm[2][12][FDC1_hit_tdc[12][hl12]];
-	    FDC1_trackX_mm[tr][5] = tdc2mm[2][13][FDC1_hit_tdc[13][hl13]];
-	    tr++;
+		FDC1_trackX_pos[tr][0] = FDC1_hit_pos[0][hl0];
+		FDC1_trackX_pos[tr][1] = FDC1_hit_pos[1][hl1];
+		FDC1_trackX_pos[tr][2] = FDC1_hit_pos[6][hl6];
+		FDC1_trackX_pos[tr][3] = FDC1_hit_pos[7][hl7];
+		FDC1_trackX_pos[tr][4] = FDC1_hit_pos[12][hl12];
+		FDC1_trackX_pos[tr][5] = FDC1_hit_pos[13][hl13];
+		FDC1_trackX_mm[tr][0] = tdc2mm[2][0][FDC1_hit_tdc[0][hl0]];
+		FDC1_trackX_mm[tr][1] = tdc2mm[2][1][FDC1_hit_tdc[1][hl1]];
+		FDC1_trackX_mm[tr][2] = tdc2mm[2][6][FDC1_hit_tdc[6][hl6]];
+		FDC1_trackX_mm[tr][3] = tdc2mm[2][7][FDC1_hit_tdc[7][hl7]];
+		FDC1_trackX_mm[tr][4] = tdc2mm[2][12][FDC1_hit_tdc[12][hl12]];
+		FDC1_trackX_mm[tr][5] = tdc2mm[2][13][FDC1_hit_tdc[13][hl13]];
+		tr++;
 	      }
 	    }
 	  }
 	}
       }
     }
+    
     //U
     tr = 0;
     for(Int_t hl2=0;hl2<FDC1_hit_num[2]&&tr<16;++hl2){
       for(Int_t hl3=0;hl3<FDC1_hit_num[3]&&tr<16;++hl3){
 	for(Int_t hl8=0;hl8<FDC1_hit_num[8]&&tr<16;++hl8){
-	  for(Int_t hl9=0;hl9<FDC1_hit_num[9]&&tr<16;++hl9){
+	  for(Int_t hl9=0;hl9<FDC1_hit_num[9]+1&&tr<16;++hl9){
 	    FDC1_trackU_pos[tr][0] = FDC1_hit_pos[2][hl2];
 	    FDC1_trackU_pos[tr][1] = FDC1_hit_pos[3][hl3];
 	    FDC1_trackU_pos[tr][2] = FDC1_hit_pos[8][hl8];
@@ -454,6 +467,9 @@ void ana_fdc1(){
 	    FDC1_trackU_mm[tr][1] = tdc2mm[2][3][FDC1_hit_tdc[3][hl3]];
 	    FDC1_trackU_mm[tr][2] = tdc2mm[2][8][FDC1_hit_tdc[8][hl8]];
 	    FDC1_trackU_mm[tr][3] = tdc2mm[2][9][FDC1_hit_tdc[9][hl9]];
+
+	    //cout << "U " << tr << " " << FDC1_trackU_pos[tr][0] << endl;
+
 	    tr++;
 	  }
 	}
@@ -474,16 +490,17 @@ void ana_fdc1(){
 	    FDC1_trackV_mm[tr][1] = tdc2mm[2][5][FDC1_hit_tdc[5][hl5]];
 	    FDC1_trackV_mm[tr][2] = tdc2mm[2][10][FDC1_hit_tdc[10][hl10]];
 	    FDC1_trackV_mm[tr][3] = tdc2mm[2][11][FDC1_hit_tdc[11][hl11]];
+
+	    //cout << "V " << tr << " " << FDC1_trackV_pos[tr][0] << endl;
+	    
 	    tr++;
 	  }
 	}
       }
     }
     
-
-    
     for(tr=0;tr<16;++tr){
-      if(!(FDC1_trackX_pos[tr][0]>-200&&FDC1_trackX_pos[tr][0]<200)) continue;
+      //if(!(FDC1_trackX_pos[tr][0]>-200&&FDC1_trackX_pos[tr][0]<200)) continue;
       //X
       for(Int_t i=0;i<64;++i){
 	Double_t tempX = TMath::Sqrt(-1);
@@ -531,21 +548,33 @@ void ana_fdc1(){
 	    signUV[j] = 0;
 	  }
 	}
-	//cout << i << "bit_i = {" << bit_i[0] << bit_i[1] << bit_i[2] << bit_i[3] << "}, sign = {" << pow(-1,sign[0]) << sign[1] << sign[2] << sign[3] << "}" << endl;
-	
-	tempU = (FDC1_trackU_pos[tr][0] + pow(-1,signUV[0])*FDC1_trackU_mm[tr][0] +
-		 FDC1_trackU_pos[tr][1] + pow(-1,signUV[1])*FDC1_trackU_mm[tr][1] +
-		 FDC1_trackU_pos[tr][2] + pow(-1,signUV[2])*FDC1_trackU_mm[tr][2] +
-		 FDC1_trackU_pos[tr][3] + pow(-1,signUV[3])*FDC1_trackU_mm[tr][3])/4.;
+	//cout << i << " " << "bitUV = {" << bitUV[0] << bitUV[1] << bitUV[2] << bitUV[3] << "}, signUV = {" << signUV[0] << signUV[1] << signUV[2] << signUV[3] << "}" << endl;
+	Int_t de = 0;
+	Int_t abc;
+	for(abc=0;abc<4;++abc){
+	  if(FDC1_trackU_pos[tr][abc]>-200&&FDC1_trackU_pos[tr][abc]<200){
+	    /*tempU = (FDC1_trackU_pos[tr][0] + pow(-1,signUV[0])*FDC1_trackU_mm[tr][0] +
+		     FDC1_trackU_pos[tr][1] + pow(-1,signUV[1])*FDC1_trackU_mm[tr][1] +
+		     FDC1_trackU_pos[tr][2] + pow(-1,signUV[2])*FDC1_trackU_mm[tr][2] +
+		     FDC1_trackU_pos[tr][3] + pow(-1,signUV[3])*FDC1_trackU_mm[tr][3])/4.;*/	    
+	    tempU += FDC1_trackU_pos[tr][abc] + pow(-1,signUV[abc])*FDC1_trackU_mm[tr][abc];
+	    cout << pow(-1,signUV[abc])*FDC1_trackU_mm[tr][abc] << " ";
+	    ++de;
+	  }else continue;
+	}
+	tempU = tempU/de;
+
 	tempV = (FDC1_trackV_pos[tr][0] + pow(-1,signUV[0])*FDC1_trackV_mm[tr][0] +
 		 FDC1_trackV_pos[tr][1] + pow(-1,signUV[1])*FDC1_trackV_mm[tr][1] +
 		 FDC1_trackV_pos[tr][2] + pow(-1,signUV[2])*FDC1_trackV_mm[tr][2] +
 		 FDC1_trackV_pos[tr][3] + pow(-1,signUV[3])*FDC1_trackV_mm[tr][3])/4.;
 	for(Int_t j=0;j<4;++j){
-	  tempChi2U += pow(tempU - (FDC1_trackU_pos[tr][j] + pow(-1,signUV[j])*FDC1_trackU_mm[tr][j]),2);
-	  tempChi2V += pow(tempV - (FDC1_trackV_pos[tr][j] + pow(-1,signUV[j])*FDC1_trackV_mm[tr][j]),2);
+	  if(FDC1_trackU_pos[tr][abc]>-200&&FDC1_trackU_pos[tr][abc]<200){
+	    tempChi2U += pow(tempU - (FDC1_trackU_pos[tr][j] + pow(-1,signUV[j])*FDC1_trackU_mm[tr][j]),2);
+	  }
+	    tempChi2V += pow(tempV - (FDC1_trackV_pos[tr][j] + pow(-1,signUV[j])*FDC1_trackV_mm[tr][j]),2);	  
 	}
-	//cout << "tempX = " << tempX << ", tempChi2 = " << tempChi2 << endl;
+	//cout << "tempU = " << tempU << ", tempChi2U = " << tempChi2U << endl;
 	if(tempChi2U<FDC1_Chi2U){
 	  FDC1_Chi2U = tempChi2U;
 	  FDC1_U = tempU;
@@ -556,28 +585,8 @@ void ana_fdc1(){
 	}
       }
     }
-    //@@@ FDC1 end @@@
-    /*
-    //@@@ BDC @@@
-    //===== Initialization =====
-    BDC_X = TMath::Sqrt(-1);
-    BDC_Y = TMath::Sqrt(-1);
-    BDC_A = TMath::Sqrt(-1);
-    BDC_B = TMath::Sqrt(-1);
-    Target_X = TMath::Sqrt(-1);
-    Target_Y = TMath::Sqrt(-1);
-    
-    //===== Calc. =====
-    BDC_X = (BDC1_X + BDC2_X)/2.;
-    BDC_Y = (BDC1_Y + BDC2_Y)/2.;
-
-    BDC_A = 1000.*TMath::ATan((BDC2_X - BDC1_X)/Dist_BDC1BDC2); //[mrad]
-    BDC_B = 1000.*TMath::ATan((BDC2_Y - BDC1_Y)/Dist_BDC1BDC2); //[mrad]
-
-    Target_X = BDC1_X + Dist_BDC1Target*TMath::Tan(BDC_A/1000.);
-    Target_Y = BDC1_Y + Dist_BDC1Target*TMath::Tan(BDC_B/1000.);
-    //@@@ BDC end @@@
-    */
+    //cout << FDC1_U << " ";
+      //@@@ FDC1 end @@@
     anatreeFDC1->Fill();
   }//for LOOP
   anafile_fdc1->cd();
