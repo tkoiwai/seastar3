@@ -195,7 +195,9 @@ void ana_fdc1(){
   Double_t FDC1_trackX_pos[16][6], FDC1_trackU_pos[16][4], FDC1_trackV_pos[16][4];
   Double_t FDC1_trackX_mm[16][6], FDC1_trackU_mm[16][4], FDC1_trackV_mm[16][4];
 
-  Double_t FDC1_X, FDC1_U, FDC1_V, FDC1_Chi2X, FDC1_Chi2U, FDC1_Chi2V;
+  Double_t FDC1_Xpos, FDC1_Upos, FDC1_Vpos, FDC1_Chi2X, FDC1_Chi2U, FDC1_Chi2V;
+
+  Double_t FDC1_X, FDC1_Y;
 
   Int_t FDC1_allhitnumX;
   Int_t FDC1_allhitnumU;
@@ -284,12 +286,15 @@ void ana_fdc1(){
   anatreeFDC1->Branch("FDC1_trackV_mm",FDC1_trackV_mm,"FDC1_trackV_mm[16][4]/D");
 
   
-  anatreeFDC1->Branch("FDC1_X",&FDC1_X);
-  anatreeFDC1->Branch("FDC1_U",&FDC1_U);
-  anatreeFDC1->Branch("FDC1_V",&FDC1_V);
+  anatreeFDC1->Branch("FDC1_Xpos",&FDC1_Xpos);
+  anatreeFDC1->Branch("FDC1_Upos",&FDC1_Upos);
+  anatreeFDC1->Branch("FDC1_Vpos",&FDC1_Vpos);
   anatreeFDC1->Branch("FDC1_Chi2X",&FDC1_Chi2X);
   anatreeFDC1->Branch("FDC1_Chi2U",&FDC1_Chi2U);
   anatreeFDC1->Branch("FDC1_Chi2V",&FDC1_Chi2V);
+
+  anatreeFDC1->Branch("FDC1_X",&FDC1_X);
+  anatreeFDC1->Branch("FDC1_Y",&FDC1_Y);
 
   anatreeFDC1->Branch("FDC1_allhitnumX",&FDC1_allhitnumX);
   anatreeFDC1->Branch("FDC1_allhitnumU",&FDC1_allhitnumU);
@@ -374,9 +379,11 @@ void ana_fdc1(){
     nohit_layerX = 0;
     nohit_layerU = 0;
     nohit_layerV = 0;
+    FDC1_Xpos = TMath::Sqrt(-1);
+    FDC1_Upos = TMath::Sqrt(-1);
+    FDC1_Vpos = TMath::Sqrt(-1);
     FDC1_X = TMath::Sqrt(-1);
-    FDC1_U = TMath::Sqrt(-1);
-    FDC1_V = TMath::Sqrt(-1);
+    FDC1_Y = TMath::Sqrt(-1);
     FDC1_Chi2X = 9999.;
     FDC1_Chi2U = 9999.;
     FDC1_Chi2V = 9999.;
@@ -529,7 +536,7 @@ void ana_fdc1(){
 	//cout << "tempX = " << tempX << ", tempChi2X = " << tempChi2X << endl;
 	if(tempChi2X<FDC1_Chi2X){
 	  FDC1_Chi2X = tempChi2X;
-	  FDC1_X = tempX;
+	  FDC1_Xpos = tempX;
 	}
       }
 
@@ -579,16 +586,18 @@ void ana_fdc1(){
 	//cout << "tempU = " << tempU << ", tempChi2U = " << tempChi2U << endl;
 	if(tempChi2U<FDC1_Chi2U){
 	  FDC1_Chi2U = tempChi2U;
-	  FDC1_U = tempU;
+	  FDC1_Upos = tempU;
 	}
 	if(tempChi2V<FDC1_Chi2V){
 	  FDC1_Chi2V = tempChi2V;
-	  FDC1_V = tempV;
+	  FDC1_Vpos = tempV;
 	}
       }
     }
-    //cout << FDC1_U << " ";
-      //@@@ FDC1 end @@@
+    
+    FDC1_X = (FDC1_Xpos + (FDC1_Vpos + FDC1_Upos)/2.)/2.;
+    FDC1_Y = TMath::Sqrt(3)/2.*(FDC1_Vpos-FDC1_Upos);
+    //@@@ FDC1 end @@@
     anatreeFDC1->Fill();
   }//for LOOP
   anafile_fdc1->cd();
