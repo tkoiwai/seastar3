@@ -127,6 +127,21 @@ void ana_dc_tdcdist(){
   TH1I *hfdc1tdc11 = new TH1I("hfdc1tdc11","FDC1 TDC Layer 11",600,1400,2000);
   TH1I *hfdc1tdc12 = new TH1I("hfdc1tdc12","FDC1 TDC Layer 12",600,1400,2000);
   TH1I *hfdc1tdc13 = new TH1I("hfdc1tdc13","FDC1 TDC Layer 13",600,1400,2000);
+
+  TH1I *hfdc2tdc0  = new TH1I("hfdc2tdc0", "FDC2 TDC Layer 0", 1000,1000,2000);
+  TH1I *hfdc2tdc1  = new TH1I("hfdc2tdc1", "FDC2 TDC Layer 1", 1000,1000,2000);
+  TH1I *hfdc2tdc2  = new TH1I("hfdc2tdc2", "FDC2 TDC Layer 2", 1000,1000,2000);
+  TH1I *hfdc2tdc3  = new TH1I("hfdc2tdc3", "FDC2 TDC Layer 3", 1000,1000,2000);
+  TH1I *hfdc2tdc4  = new TH1I("hfdc2tdc4", "FDC2 TDC Layer 4", 1000,1000,2000);
+  TH1I *hfdc2tdc5  = new TH1I("hfdc2tdc5", "FDC2 TDC Layer 5", 1000,1000,2000);
+  TH1I *hfdc2tdc6  = new TH1I("hfdc2tdc6", "FDC2 TDC Layer 6", 1000,1000,2000);
+  TH1I *hfdc2tdc7  = new TH1I("hfdc2tdc7", "FDC2 TDC Layer 7", 1000,1000,2000);
+  TH1I *hfdc2tdc8  = new TH1I("hfdc2tdc8", "FDC2 TDC Layer 8", 1000,1000,2000);
+  TH1I *hfdc2tdc9  = new TH1I("hfdc2tdc9", "FDC2 TDC Layer 9", 1000,1000,2000);
+  TH1I *hfdc2tdc10 = new TH1I("hfdc2tdc10","FDC2 TDC Layer 10",1000,1000,2000);
+  TH1I *hfdc2tdc11 = new TH1I("hfdc2tdc11","FDC2 TDC Layer 11",1000,1000,2000);
+  TH1I *hfdc2tdc12 = new TH1I("hfdc2tdc12","FDC2 TDC Layer 12",1000,1000,2000);
+  TH1I *hfdc2tdc13 = new TH1I("hfdc2tdc13","FDC2 TDC Layer 13",1000,1000,2000);
   
   //===== Declear const.s =====
   Int_t BDCNumLayer = 8;
@@ -175,8 +190,23 @@ void ana_dc_tdcdist(){
       if(FDC1_TDC[12][i]>0) hfdc1tdc12 -> Fill(FDC1_TDC[12][i]);
       if(FDC1_TDC[13][i]>0) hfdc1tdc13 -> Fill(FDC1_TDC[13][i]);
     }
-
-  
+    for(int i=0;i<112;++i){
+      if(FDC2_TDC[0][i]>0)  hfdc2tdc0 ->  Fill(FDC2_TDC[0][i]);
+      if(FDC2_TDC[1][i]>0)  hfdc2tdc1 ->  Fill(FDC2_TDC[1][i]);
+      if(FDC2_TDC[2][i]>0)  hfdc2tdc2 ->  Fill(FDC2_TDC[2][i]);
+      if(FDC2_TDC[3][i]>0)  hfdc2tdc3 ->  Fill(FDC2_TDC[3][i]);
+      if(FDC2_TDC[4][i]>0)  hfdc2tdc4 ->  Fill(FDC2_TDC[4][i]);
+      if(FDC2_TDC[5][i]>0)  hfdc2tdc5 ->  Fill(FDC2_TDC[5][i]);
+      if(FDC2_TDC[6][i]>0)  hfdc2tdc6 ->  Fill(FDC2_TDC[6][i]);
+      if(FDC2_TDC[7][i]>0)  hfdc2tdc7 ->  Fill(FDC2_TDC[7][i]);
+      if(FDC2_TDC[8][i]>0)  hfdc2tdc8 ->  Fill(FDC2_TDC[8][i]);
+      if(FDC2_TDC[9][i]>0)  hfdc2tdc9 ->  Fill(FDC2_TDC[9][i]);
+      if(FDC2_TDC[10][i]>0) hfdc2tdc10 -> Fill(FDC2_TDC[10][i]);
+      if(FDC2_TDC[11][i]>0) hfdc2tdc11 -> Fill(FDC2_TDC[11][i]);
+      if(FDC2_TDC[12][i]>0) hfdc2tdc12 -> Fill(FDC2_TDC[12][i]);
+      if(FDC2_TDC[13][i]>0) hfdc2tdc13 -> Fill(FDC2_TDC[13][i]);
+    }
+    
 
 
 
@@ -216,6 +246,21 @@ void ana_dc_tdcdist(){
   hfdc1tdc11->Write();
   hfdc1tdc12->Write();
   hfdc1tdc13->Write();
-  
+
+  hfdc2tdc0->Write();
+  hfdc2tdc1->Write();
+  hfdc2tdc2->Write();
+  hfdc2tdc3->Write();
+  hfdc2tdc4->Write();
+  hfdc2tdc5->Write();
+  hfdc2tdc6->Write();
+  hfdc2tdc7->Write();
+  hfdc2tdc8->Write();
+  hfdc2tdc9->Write();
+  hfdc2tdc10->Write();
+  hfdc2tdc11->Write();
+  hfdc2tdc12->Write();
+  hfdc2tdc13->Write();
+
   anafile_dc_tdcdist->Close();
 }//ana_dc()
