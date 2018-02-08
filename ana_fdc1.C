@@ -323,8 +323,8 @@ void ana_fdc1(){
   
   //===== Begin LOOP =====
   int nEntry = caltreeDC->GetEntries();
-  for(int iEntry=0;iEntry<100;++iEntry){
-    //for(int iEntry=0;iEntry<nEntry;++iEntry){
+  //for(int iEntry=0;iEntry<100;++iEntry){
+  for(int iEntry=0;iEntry<nEntry;++iEntry){
     
     if(iEntry%100 == 0){
       clog<< iEntry/1000 << "k events treated..." << "\r";
@@ -458,20 +458,20 @@ void ana_fdc1(){
     for(Int_t hl2=0;hl2<FDC1_hit_num[2]&&tr<16;++hl2){
       for(Int_t hl3=0;hl3<FDC1_hit_num[3]&&tr<16;++hl3){
 	for(Int_t hl8=0;hl8<FDC1_hit_num[8]&&tr<16;++hl8){
-	  for(Int_t hl9=0;hl9<FDC1_hit_num[9]+1&&tr<16;++hl9){
+	  //for(Int_t hl9=0;hl9<FDC1_hit_num[9]+1&&tr<16;++hl9){
 	    FDC1_trackU_pos[tr][0] = FDC1_hit_pos[2][hl2];
 	    FDC1_trackU_pos[tr][1] = FDC1_hit_pos[3][hl3];
 	    FDC1_trackU_pos[tr][2] = FDC1_hit_pos[8][hl8];
-	    FDC1_trackU_pos[tr][3] = FDC1_hit_pos[9][hl9];
+	    //FDC1_trackU_pos[tr][3] = FDC1_hit_pos[9][hl9];
 	    FDC1_trackU_mm[tr][0] = tdc2mm[2][2][FDC1_hit_tdc[2][hl2]];
 	    FDC1_trackU_mm[tr][1] = tdc2mm[2][3][FDC1_hit_tdc[3][hl3]];
 	    FDC1_trackU_mm[tr][2] = tdc2mm[2][8][FDC1_hit_tdc[8][hl8]];
-	    FDC1_trackU_mm[tr][3] = tdc2mm[2][9][FDC1_hit_tdc[9][hl9]];
+	    //FDC1_trackU_mm[tr][3] = tdc2mm[2][9][FDC1_hit_tdc[9][hl9]];
 
 	    //cout << "U " << tr << " " << FDC1_trackU_pos[tr][0] << endl;
 
 	    tr++;
-	  }
+	    //}
 	}
       }
     }
@@ -549,29 +549,31 @@ void ana_fdc1(){
 	  }
 	}
 	//cout << i << " " << "bitUV = {" << bitUV[0] << bitUV[1] << bitUV[2] << bitUV[3] << "}, signUV = {" << signUV[0] << signUV[1] << signUV[2] << signUV[3] << "}" << endl;
-	Int_t de = 0;
-	Int_t abc;
-	for(abc=0;abc<4;++abc){
-	  if(FDC1_trackU_pos[tr][abc]>-200&&FDC1_trackU_pos[tr][abc]<200){
-	    /*tempU = (FDC1_trackU_pos[tr][0] + pow(-1,signUV[0])*FDC1_trackU_mm[tr][0] +
-		     FDC1_trackU_pos[tr][1] + pow(-1,signUV[1])*FDC1_trackU_mm[tr][1] +
-		     FDC1_trackU_pos[tr][2] + pow(-1,signUV[2])*FDC1_trackU_mm[tr][2] +
-		     FDC1_trackU_pos[tr][3] + pow(-1,signUV[3])*FDC1_trackU_mm[tr][3])/4.;*/	    
-	    tempU += FDC1_trackU_pos[tr][abc] + pow(-1,signUV[abc])*FDC1_trackU_mm[tr][abc];
-	    cout << pow(-1,signUV[abc])*FDC1_trackU_mm[tr][abc] << " ";
-	    ++de;
-	  }else continue;
-	}
-	tempU = tempU/de;
+	//Int_t de = 0;
+	//Int_t abc;
+	//for(abc=0;abc<4;++abc){
+	//if(FDC1_trackU_pos[tr][abc]>-200&&FDC1_trackU_pos[tr][abc]<200){
+	tempU = (FDC1_trackU_pos[tr][0] + pow(-1,signUV[0])*FDC1_trackU_mm[tr][0] +
+		 FDC1_trackU_pos[tr][1] + pow(-1,signUV[1])*FDC1_trackU_mm[tr][1] +
+		 FDC1_trackU_pos[tr][2] + pow(-1,signUV[2])*FDC1_trackU_mm[tr][2]
+		 /*FDC1_trackU_pos[tr][3] + pow(-1,signUV[3])*FDC1_trackU_mm[tr][3]*/)/3.;	    
+	//tempU += FDC1_trackU_pos[tr][abc] + pow(-1,signUV[abc])*FDC1_trackU_mm[tr][abc];
+	//cout << pow(-1,signUV[abc])*FDC1_trackU_mm[tr][abc] << " ";
+	//++de;
+	//}else continue;
+	    //}
+	//tempU = tempU/de;
 
 	tempV = (FDC1_trackV_pos[tr][0] + pow(-1,signUV[0])*FDC1_trackV_mm[tr][0] +
 		 FDC1_trackV_pos[tr][1] + pow(-1,signUV[1])*FDC1_trackV_mm[tr][1] +
 		 FDC1_trackV_pos[tr][2] + pow(-1,signUV[2])*FDC1_trackV_mm[tr][2] +
 		 FDC1_trackV_pos[tr][3] + pow(-1,signUV[3])*FDC1_trackV_mm[tr][3])/4.;
-	for(Int_t j=0;j<4;++j){
-	  if(FDC1_trackU_pos[tr][abc]>-200&&FDC1_trackU_pos[tr][abc]<200){
+	for(Int_t j=0;j<3;++j){
+	  //if(FDC1_trackU_pos[tr][abc]>-200&&FDC1_trackU_pos[tr][abc]<200){
 	    tempChi2U += pow(tempU - (FDC1_trackU_pos[tr][j] + pow(-1,signUV[j])*FDC1_trackU_mm[tr][j]),2);
-	  }
+	    //}
+	}
+	for(Int_t j=0;j<4;++j){
 	    tempChi2V += pow(tempV - (FDC1_trackV_pos[tr][j] + pow(-1,signUV[j])*FDC1_trackV_mm[tr][j]),2);	  
 	}
 	//cout << "tempU = " << tempU << ", tempChi2U = " << tempChi2U << endl;
