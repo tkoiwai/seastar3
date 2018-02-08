@@ -158,7 +158,8 @@ void ana_dc_tdcdist(){
       if(BDC2_TDC[5][i]>0) hbdc2tdc5 -> Fill(BDC2_TDC[5][i]);
       if(BDC2_TDC[6][i]>0) hbdc2tdc6 -> Fill(BDC2_TDC[6][i]);
       if(BDC2_TDC[7][i]>0) hbdc2tdc7 -> Fill(BDC2_TDC[7][i]);
-
+    }
+    for(int i=0;i<32;++i){
       if(FDC1_TDC[0][i]>0)  hfdc1tdc0 ->  Fill(FDC1_TDC[0][i]);
       if(FDC1_TDC[1][i]>0)  hfdc1tdc1 ->  Fill(FDC1_TDC[1][i]);
       if(FDC1_TDC[2][i]>0)  hfdc1tdc2 ->  Fill(FDC1_TDC[2][i]);
