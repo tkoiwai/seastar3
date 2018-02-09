@@ -211,11 +211,14 @@ void ana_fdc2(){
   Int_t FDC2_hit_num[14];
   Double_t FDC2_trackX_pos[16][6], FDC2_trackU_pos[16][4], FDC2_trackV_pos[16][4];
   Double_t FDC2_trackX_mm[16][6], FDC2_trackU_mm[16][4], FDC2_trackV_mm[16][4];
-
+  Double_t FDC2_trackX[64][6], FDC2_trackU[64][4], FDC2_trackV[64][4];
+  Double_t FDC2_trackX_z[6] = {-308.66, -291.34, -8.66, 8.66, 291.34, 308.66};
+  Double_t FDC2_trackU_z[6] = {-208.66, -191.34, 91.34, 108.66};
+  Double_t FDC2_trackV_z[6] = {-108.66, -91.34, 191.34, 208.66};
 
   Double_t FDC2_Xpos, FDC2_Upos, FDC2_Vpos, FDC2_Chi2X, FDC2_Chi2U, FDC2_Chi2V;
 
-  Double_t FDC2_X, FDC2_Y;
+  Double_t FDC2_X, FDC2_Y, FDC2_A, FDC2_B;
 
   Int_t BG_flag;
   
@@ -306,10 +309,18 @@ void ana_fdc2(){
   
   anatreeFDC2->Branch("FDC2_trackX_pos",FDC2_trackX_pos,"FDC2_trackX_pos[16][6]/D");
   anatreeFDC2->Branch("FDC2_trackX_mm",FDC2_trackX_mm,"FDC2_trackX_mm[16][6/D");
+  anatreeFDC2->Branch("FDC2_trackX_z",FDC2_trackX_z,"FDC2_trackX_z[6]/D");
+  anatreeFDC2->Branch("FDC2_trackX",FDC2_trackX,"FDC2_trackX[64][6]/D");
+
   anatreeFDC2->Branch("FDC2_trackU_pos",FDC2_trackU_pos,"FDC2_trackU_pos[16][4]/D");
   anatreeFDC2->Branch("FDC2_trackU_mm",FDC2_trackU_mm,"FDC2_trackU_mm[16][4]/D");
+  anatreeFDC2->Branch("FDC2_trackU_z",FDC2_trackU_z,"FDC2_trackU_z[6]/D");
+  anatreeFDC2->Branch("FDC2_trackU",FDC2_trackU,"FDC2_trackU[64][6]/D");
+
   anatreeFDC2->Branch("FDC2_trackV_pos",FDC2_trackV_pos,"FDC2_trackV_pos[16][4]/D");
   anatreeFDC2->Branch("FDC2_trackV_mm",FDC2_trackV_mm,"FDC2_trackV_mm[16][4]/D");
+  anatreeFDC2->Branch("FDC2_trackV_z",FDC2_trackV_z,"FDC2_trackV_z[6]/D");
+  anatreeFDC2->Branch("FDC2_trackV",FDC2_trackV,"FDC2_trackV[64][6]/D");
 
   anatreeFDC2->Branch("FDC2_Xpos",&FDC2_Xpos);
   anatreeFDC2->Branch("FDC2_Upos",&FDC2_Upos);
@@ -320,6 +331,8 @@ void ana_fdc2(){
 
   anatreeFDC2->Branch("FDC2_X",&FDC2_X);
   anatreeFDC2->Branch("FDC2_Y",&FDC2_Y);
+  anatreeFDC2->Branch("FDC2_A",&FDC2_A);
+  anatreeFDC2->Branch("FDC2_B",&FDC2_B);
 
   anatreeFDC2->Branch("BG_flag",&BG_flag);
   
@@ -377,6 +390,8 @@ void ana_fdc2(){
     FDC2_Vpos = TMath::Sqrt(-1);
     FDC2_X = TMath::Sqrt(-1);
     FDC2_Y = TMath::Sqrt(-1);
+    FDC2_A = TMath::Sqrt(-1);
+    FDC2_B = TMath::Sqrt(-1);
     FDC2_Chi2X = 9999.;
     FDC2_Chi2U = 9999.;
     FDC2_Chi2V = 9999.;
@@ -384,7 +399,7 @@ void ana_fdc2(){
     BG_flag = 0;
     
     //=== Calclation ===
-
+    
     for(Int_t l=0;l<14;++l){
       Int_t h = 0;
       for(Int_t i=0;i<112;++i){
@@ -429,7 +444,7 @@ void ana_fdc2(){
 		FDC2_trackX_mm[tr][2] = tdc2mm[3][6][FDC2_hit_tdc[6][hl6]];
 		FDC2_trackX_mm[tr][3] = tdc2mm[3][7][FDC2_hit_tdc[7][hl7]];
 		FDC2_trackX_mm[tr][4] = tdc2mm[3][12][FDC2_hit_tdc[12][hl12]];
-		FDC2_trackX_mm[tr][5] = tdc2mm[3][13][FDC2_hit_tdc[13][hl13]];
+		FDC2_trackX_mm[tr][5] = tdc2mm[3][13][FDC2_hit_tdc[13][hl13]];	
 		tr++;
 	      }
 	    }
@@ -472,7 +487,7 @@ void ana_fdc2(){
 	    FDC2_trackV_mm[tr][1] = tdc2mm[3][5][FDC2_hit_tdc[5][hl5]];
 	    FDC2_trackV_mm[tr][2] = tdc2mm[3][10][FDC2_hit_tdc[10][hl10]];
 	    FDC2_trackV_mm[tr][3] = tdc2mm[3][11][FDC2_hit_tdc[11][hl11]];
-
+	    
 	    //cout << "V " << tr << " " << FDC2_trackV_pos[tr][0] << endl;
 	    
 	    tr++;
@@ -482,6 +497,18 @@ void ana_fdc2(){
     }
     
     for(tr=0;tr<16;++tr){
+
+      for(Int_t i=0;i<64;++i){
+	for(Int_t l=0;l<6;++l) FDC2_trackX[i][l] = TMath::Sqrt(-1);
+	for(Int_t l=0;l<4;++l){
+	  FDC2_trackU[i][l] = TMath::Sqrt(-1);
+	  FDC2_trackV[i][l] = TMath::Sqrt(-1);      
+      }
+      }
+
+      Double_t slope, intersept;
+
+      
       //if(!(FDC1_trackX_pos[tr][0]>-200&&FDC1_trackX_pos[tr][0]<200)) continue;
       //X
       for(Int_t i=0;i<64;++i){
@@ -496,25 +523,56 @@ void ana_fdc2(){
 	    signX[j] = 0;
 	  }
 	}
-	//cout << i << "bitX = {" << bitX[0] << bitX[1] << bitX[2] << bitX[3] << bitX[4] << bitX[5] <<  "}, signX = {" << pow(-1,signX[0]) << signX[1] << signX[2] << signX[3] << signX[4] << signX[5] << "}" << endl;
 	
-	tempX = (FDC2_trackX_pos[tr][0] + pow(-1,signX[0])*FDC2_trackX_mm[tr][0] +
-		 FDC2_trackX_pos[tr][1] + pow(-1,signX[1])*FDC2_trackX_mm[tr][1] +
-		 FDC2_trackX_pos[tr][2] + pow(-1,signX[2])*FDC2_trackX_mm[tr][2] +
-		 FDC2_trackX_pos[tr][3] + pow(-1,signX[3])*FDC2_trackX_mm[tr][3] +
-		 FDC2_trackX_pos[tr][4] + pow(-1,signX[4])*FDC2_trackX_mm[tr][4] +
-		 FDC2_trackX_pos[tr][5] + pow(-1,signX[5])*FDC2_trackX_mm[tr][5])/6.;
-	//cout << "tempX = " << tempX << endl;
-	for(Int_t j=0;j<6;++j){
-	  tempChi2X += pow(tempX - (FDC2_trackX_pos[tr][j] + pow(-1,signX[j])*FDC2_trackX_mm[tr][j]),2);
+	for(Int_t l=0;l<6;++l){
+	  FDC2_trackX[i][l] = FDC2_trackX_pos[tr][l] + pow(-1,signX[l])*FDC2_trackX_mm[tr][l];
 	}
-	//cout << "tempX = " << tempX << ", tempChi2X = " << tempChi2X << endl;
+
+	if(FDC2_trackX[i][0]>-1200&&FDC2_trackX[i][0]<1200){
+	
+	//===== Least square =====
+	Double_t aX[2] = {-9999,-9999};
+	Double_t sX[3] = {0};
+	Double_t tX[2] = {0};
+	
+	for(Int_t l=0;l<6;++l){
+	  sX[0] += 1.;
+	  sX[1] += FDC2_trackX_z[l];
+	  sX[2] += pow(FDC2_trackX_z[l],2);
+	  tX[0] += FDC2_trackX[i][l];
+	  tX[1] += FDC2_trackX[i][l]*FDC2_trackX_z[l];
+	}
+	aX[0] = (sX[2]*tX[0]-sX[1]*tX[1])/(sX[0]*sX[2]-sX[1]*sX[1]);
+	aX[1] = (sX[0]*tX[1]-sX[1]*tX[0])/(sX[0]*sX[2]-sX[1]*sX[1]);
+
+	tempX = aX[0];
+
+	//cout << aX[0] << " " << aX[1] << endl;
+	
+	for(Int_t l=0;l<6;++l){
+	  tempChi2X += pow(FDC2_trackX[i][l] - (aX[1]*FDC2_trackX_z[l] + aX[0]),2);
+	}
+
+	//cout << tempChi2X << endl;
+	
 	if(tempChi2X<FDC2_Chi2X){
 	  FDC2_Chi2X = tempChi2X;
 	  FDC2_Xpos = tempX;
+	  slope = aX[1];
+	  intersept = aX[0];
 	}
-      }
 
+	//cout << "Chi2 " << FDC2_Chi2X << "X " << FDC2_Xpos <<  endl;
+	//cout << "slope " << slope << " const " << intersept << endl;
+	
+	
+	}else continue;
+
+      }
+	
+	//===== Least square end =====
+	
+      
       //U,V
       for(Int_t i=0;i<16;++i){
 	Double_t tempU = TMath::Sqrt(-1);
@@ -531,34 +589,105 @@ void ana_fdc2(){
 	  }
 	}
 	
-	tempU = (FDC2_trackU_pos[tr][0] + pow(-1,signUV[0])*FDC2_trackU_mm[tr][0] +
-		 FDC2_trackU_pos[tr][1] + pow(-1,signUV[1])*FDC2_trackU_mm[tr][1] +
-		 FDC2_trackU_pos[tr][2] + pow(-1,signUV[2])*FDC2_trackU_mm[tr][2] +
-		 FDC2_trackU_pos[tr][3] + pow(-1,signUV[3])*FDC2_trackU_mm[tr][3])/3.;	    
+	for(Int_t l=0;l<4;++l){
+	  FDC2_trackU[i][l] = FDC2_trackU_pos[tr][l] + pow(-1,signUV[l])*FDC2_trackU_mm[tr][l];
+	  FDC2_trackV[i][l] = FDC2_trackV_pos[tr][l] + pow(-1,signUV[l])*FDC2_trackV_mm[tr][l];
+	}
+
+	if(FDC2_trackU[i][0]>-1200&&FDC2_trackU[i][0]<1200){
+	  
+	  //===== Least square =====
+	  Double_t aU[2] = {-9999,-9999};
+	  Double_t sU[3] = {0};
+	  Double_t tU[2] = {0};
+	  
+	  for(Int_t l=0;l<4;++l){
+	    sU[0] += 1.;
+	    sU[1] += FDC2_trackU_z[l];
+	    sU[2] += pow(FDC2_trackU_z[l],2);
+	    tU[0] += FDC2_trackU[i][l];
+	    tU[1] += FDC2_trackU[i][l]*FDC2_trackU_z[l];
+	  }
+	  aU[0] = (sU[2]*tU[0]-sU[1]*tU[1])/(sU[0]*sU[2]-sU[1]*sU[1]);
+	  aU[1] = (sU[0]*tU[1]-sU[1]*tU[0])/(sU[0]*sU[2]-sU[1]*sU[1]);
+	  
+	  tempU = aU[0];
+	  
+	  //cout << aU[0] << " " << aU[1] << endl;
+	  
+	  for(Int_t l=0;l<4;++l){
+	    tempChi2U += pow(FDC2_trackU[i][l] - (aU[1]*FDC2_trackU_z[l] + aU[0]),2);
+	  }
+	  
+	  //cout << tempChi2U << endl;
+	  
+	  if(tempChi2U<FDC2_Chi2U){
+	    FDC2_Chi2U = tempChi2U;
+	    FDC2_Upos = tempU;
+	    slope = aU[1];
+	    intersept = aU[0];
+	  }
+	  
+	  //cout << "Chi2 " << FDC2_Chi2U << "U " << FDC2_Upos <<  endl;
+	  //cout << "slope " << slope << " const " << intersept << endl;
+	  
+	  
+	}else continue;
+
 	
-	tempV = (FDC2_trackV_pos[tr][0] + pow(-1,signUV[0])*FDC2_trackV_mm[tr][0] +
-		 FDC2_trackV_pos[tr][1] + pow(-1,signUV[1])*FDC2_trackV_mm[tr][1] +
-		 FDC2_trackV_pos[tr][2] + pow(-1,signUV[2])*FDC2_trackV_mm[tr][2] +
-		 FDC2_trackV_pos[tr][3] + pow(-1,signUV[3])*FDC2_trackV_mm[tr][3])/4.;
-	for(Int_t j=0;j<4;++j){
-	  tempChi2U += pow(tempU - (FDC2_trackU_pos[tr][j] + pow(-1,signUV[j])*FDC2_trackU_mm[tr][j]),2);
-	  tempChi2V += pow(tempV - (FDC2_trackV_pos[tr][j] + pow(-1,signUV[j])*FDC2_trackV_mm[tr][j]),2);	  
-	}
-	//cout << "tempU = " << tempU << ", tempChi2U = " << tempChi2U << endl;
-	if(tempChi2U<FDC2_Chi2U){
-	  FDC2_Chi2U = tempChi2U;
-	  FDC2_Upos = tempU;
-	}
-	if(tempChi2V<FDC2_Chi2V){
-	  FDC2_Chi2V = tempChi2V;
-	  FDC2_Vpos = tempV;
-	}
-      }
-    }
-    
-    FDC2_X = (FDC2_Xpos + (FDC2_Vpos + FDC2_Upos)/2.)/2.;
-    FDC2_Y = TMath::Sqrt(3)/2.*(FDC2_Vpos-FDC2_Upos);
+	if(FDC2_trackV[i][0]>-1200&&FDC2_trackV[i][0]<1200){
+	  
+	  //===== Least square =====
+	  Double_t aV[2] = {-9999,-9999};
+	  Double_t sV[3] = {0};
+	  Double_t tV[2] = {0};
+	  
+	  for(Int_t l=0;l<4;++l){
+	    sV[0] += 1.;
+	    sV[1] += FDC2_trackV_z[l];
+	    sV[2] += pow(FDC2_trackV_z[l],2);
+	    tV[0] += FDC2_trackV[i][l];
+	  tV[1] += FDC2_trackV[i][l]*FDC2_trackV_z[l];
+	  }
+	  aV[0] = (sV[2]*tV[0]-sV[1]*tV[1])/(sV[0]*sV[2]-sV[1]*sV[1]);
+	  aV[1] = (sV[0]*tV[1]-sV[1]*tV[0])/(sV[0]*sV[2]-sV[1]*sV[1]);
+	  
+	  tempV = aV[0];
+	  
+	//cout << aV[0] << " " << aV[1] << endl;
+	  
+	  for(Int_t l=0;l<4;++l){
+	    tempChi2V += pow(FDC2_trackV[i][l] - (aV[1]*FDC2_trackV_z[l] + aV[0]),2);
+	  }
+	  
+	  //cout << tempChi2V << endl;
+	  
+	  if(tempChi2V<FDC2_Chi2V){
+	    FDC2_Chi2V = tempChi2V;
+	    FDC2_Vpos = tempV;
+	    slope = aV[1];
+	    intersept = aV[0];
+	  }
+	  
+	  //cout << "Chi2 " << FDC2_Chi2V << "V " << FDC2_Vpos <<  endl;
+	  //cout << "slope " << slope << " const " << intersept << endl;
+	  
+	  
+	}else continue;
+	
+	
+	
+      }//i = right left 2^4 UV
+
+      //cout << "slope " << slope << " intersept " << intersept << endl;
+
+    }//tr
+    //FDC2_X = (FDC2_Xpos + (FDC2_Vpos + FDC2_Upos)/2.)/2.;
+    //FDC2_Y = TMath::Sqrt(3)/2.*(FDC2_Vpos-FDC2_Upos);
     //@@@ FDC2 end @@@
+
+    
+    
     anatreeFDC2->Fill();
   }//for LOOP
   anafile_fdc2->cd();
