@@ -495,6 +495,15 @@ void ana_fdc2(){
 	}
       }
     }
+
+    Double_t slopeX = TMath::Sqrt(-1);
+    Double_t interseptX = TMath::Sqrt(-1);
+    Double_t slopeU = TMath::Sqrt(-1);
+    Double_t interseptU = TMath::Sqrt(-1);
+    Double_t slopeV = TMath::Sqrt(-1);
+    Double_t interseptV = TMath::Sqrt(-1);
+
+      
     
     for(tr=0;tr<16;++tr){
 
@@ -506,8 +515,7 @@ void ana_fdc2(){
       }
       }
 
-      Double_t slope, intersept;
-
+      
       
       //if(!(FDC1_trackX_pos[tr][0]>-200&&FDC1_trackX_pos[tr][0]<200)) continue;
       //X
@@ -558,8 +566,8 @@ void ana_fdc2(){
 	if(tempChi2X<FDC2_Chi2X){
 	  FDC2_Chi2X = tempChi2X;
 	  FDC2_Xpos = tempX;
-	  slope = aX[1];
-	  intersept = aX[0];
+	  slopeX = aX[1];
+	  interseptX = aX[0];
 	}
 
 	//cout << "Chi2 " << FDC2_Chi2X << "X " << FDC2_Xpos <<  endl;
@@ -624,8 +632,8 @@ void ana_fdc2(){
 	  if(tempChi2U<FDC2_Chi2U){
 	    FDC2_Chi2U = tempChi2U;
 	    FDC2_Upos = tempU;
-	    slope = aU[1];
-	    intersept = aU[0];
+	    slopeU = aU[1];
+	    interseptU = aU[0];
 	  }
 	  
 	  //cout << "Chi2 " << FDC2_Chi2U << "U " << FDC2_Upos <<  endl;
@@ -665,8 +673,8 @@ void ana_fdc2(){
 	  if(tempChi2V<FDC2_Chi2V){
 	    FDC2_Chi2V = tempChi2V;
 	    FDC2_Vpos = tempV;
-	    slope = aV[1];
-	    intersept = aV[0];
+	    slopeV = aV[1];
+	    interseptV = aV[0];
 	  }
 	  
 	  //cout << "Chi2 " << FDC2_Chi2V << "V " << FDC2_Vpos <<  endl;
@@ -682,8 +690,10 @@ void ana_fdc2(){
       //cout << "slope " << slope << " intersept " << intersept << endl;
 
     }//tr
-    //FDC2_X = (FDC2_Xpos + (FDC2_Vpos + FDC2_Upos)/2.)/2.;
-    //FDC2_Y = TMath::Sqrt(3)/2.*(FDC2_Vpos-FDC2_Upos);
+    FDC2_X = (FDC2_Xpos + (FDC2_Vpos + FDC2_Upos)/2.)/2.;
+    FDC2_Y = TMath::Sqrt(3)/2.*(FDC2_Vpos-FDC2_Upos);
+    FDC2_A = (6*TMath::ATan(slopeX) + 2/TMath::Sqrt(3)*4*TMath::ATan(slopeU) + 2/TMath::Sqrt(3)*4*TMath::ATan(slopeV))/14.;
+    FDC2_B = (-TMath::ATan(slopeU) + TMath::ATan(slopeV))/2.;
     //@@@ FDC2 end @@@
 
     
