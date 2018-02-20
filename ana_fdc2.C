@@ -350,7 +350,7 @@ void ana_fdc2(){
     
     caltreeDC->GetEntry(iEntry);
 
-    //@@@ FDC1 @@@
+    //@@@ FDC2 @@@
     //=== Initialization ===    
     for(Int_t l=0;l<14;++l){
       for(Int_t i=0;i<112;++i){
