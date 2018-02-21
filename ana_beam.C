@@ -13,12 +13,14 @@
 
 using namespace std;
 
-void ana_beam(){
+int main(int argc, char *argv[]){
 
+  Int_t FileNumber = TString(argv[optind]).Atoi();
+    
   //===== Load input file =================================================
-  TFile *infile = TFile::Open("rootfiles/run0056/run0056_BEAM.root");
-  TTree *caltreeB;
-  infile->GetObject("caltreeB",caltreeB);
+  TFile *infile = TFile::Open(Form("/home/koiwai/analysis/rootfiles/run%04d/run%04d_ALL.root"),FileNumber,FileNumber);
+  TTree *caltr;
+  infile->GetObject("caltr",caltr);
 
   //===== in tree variables ===============================================
   Long64_t EventNumber = 0;
@@ -191,8 +193,8 @@ void ana_beam(){
   }
   
   //===== Create output file/tree =========================================
-  TFile *anafile = new TFile("rootfiles/ana_beam.root","RECREATE");
-  TTree *anatreeB = new TTree("anatreeB","anatreeB");
+  TFile *anafile = new TFile("anafiles/ana_beam.root","RECREATE");
+  TTree *anatrB = new TTree("anatrB","anatrB");
 
   //===== Declear const.s =================================================
   double DistF3F7 = 46568.; //[mm]
@@ -269,55 +271,55 @@ void ana_beam(){
   Int_t BG_flag; //flag for background
 
   //======
-  anatreeB->Branch("tofF3F7",&tofF3F7);
-  anatreeB->Branch("vF3F7",&vF3F7);
-  anatreeB->Branch("vF3F5",&vF3F5);
-  anatreeB->Branch("vF5F7",&vF5F7);
-  anatreeB->Branch("betaF3F7",&betaF3F7);
-  anatreeB->Branch("betaF3F5",&betaF3F5);
-  anatreeB->Branch("betaF5F7",&betaF5F7);
-  anatreeB->Branch("gammaF3F7",&gammaF3F7);
-  anatreeB->Branch("gammaF3F5",&gammaF3F5);
-  anatreeB->Branch("gammaF5F7",&gammaF5F7);
-  anatreeB->Branch("zetBR",&zetBR);
+  anatrB->Branch("tofF3F7",&tofF3F7);
+  anatrB->Branch("vF3F7",&vF3F7);
+  anatrB->Branch("vF3F5",&vF3F5);
+  anatrB->Branch("vF5F7",&vF5F7);
+  anatrB->Branch("betaF3F7",&betaF3F7);
+  anatrB->Branch("betaF3F5",&betaF3F5);
+  anatrB->Branch("betaF5F7",&betaF5F7);
+  anatrB->Branch("gammaF3F7",&gammaF3F7);
+  anatrB->Branch("gammaF3F5",&gammaF3F5);
+  anatrB->Branch("gammaF5F7",&gammaF5F7);
+  anatrB->Branch("zetBR",&zetBR);
  
-  anatreeB->Branch("F3X",&F3X);
-  anatreeB->Branch("F3Y",&F3Y);
-  anatreeB->Branch("F3A",&F3A);
-  anatreeB->Branch("F3B",&F3B);
-  anatreeB->Branch("F5X",&F5X);
-  anatreeB->Branch("F5Y",&F5Y);
-  anatreeB->Branch("F5A",&F5A);
-  anatreeB->Branch("F5B",&F5B);
-  anatreeB->Branch("F7X",&F7X);
-  anatreeB->Branch("F7Y",&F7Y);
-  anatreeB->Branch("F7A",&F7A);
-  anatreeB->Branch("F7B",&F7B);
-  anatreeB->Branch("deltaF3F5",&deltaF3F5);
-  anatreeB->Branch("deltaF5F7",&deltaF5F7);
-  anatreeB->Branch("brhoF3F5",&brhoF3F5);
-  anatreeB->Branch("brhoF5F7",&brhoF5F7);
-  anatreeB->Branch("aoqF3F5",&aoqF3F5);
-  anatreeB->Branch("aoqF5F7",&aoqF5F7);
-  anatreeB->Branch("recoF3A",&recoF3A);
-  anatreeB->Branch("recodeltaF3F5_A",&recodeltaF3F5_A);
-  anatreeB->Branch("recodeltaF3F5_X",&recodeltaF3F5_X);
-  anatreeB->Branch("deltaF3F5_A",&deltaF3F5_A);
-  anatreeB->Branch("deltaF3F5_X",&deltaF3F5_X);
-  anatreeB->Branch("aoqBR",&aoqBR);
+  anatrB->Branch("F3X",&F3X);
+  anatrB->Branch("F3Y",&F3Y);
+  anatrB->Branch("F3A",&F3A);
+  anatrB->Branch("F3B",&F3B);
+  anatrB->Branch("F5X",&F5X);
+  anatrB->Branch("F5Y",&F5Y);
+  anatrB->Branch("F5A",&F5A);
+  anatrB->Branch("F5B",&F5B);
+  anatrB->Branch("F7X",&F7X);
+  anatrB->Branch("F7Y",&F7Y);
+  anatrB->Branch("F7A",&F7A);
+  anatrB->Branch("F7B",&F7B);
+  anatrB->Branch("deltaF3F5",&deltaF3F5);
+  anatrB->Branch("deltaF5F7",&deltaF5F7);
+  anatrB->Branch("brhoF3F5",&brhoF3F5);
+  anatrB->Branch("brhoF5F7",&brhoF5F7);
+  anatrB->Branch("aoqF3F5",&aoqF3F5);
+  anatrB->Branch("aoqF5F7",&aoqF5F7);
+  anatrB->Branch("recoF3A",&recoF3A);
+  anatrB->Branch("recodeltaF3F5_A",&recodeltaF3F5_A);
+  anatrB->Branch("recodeltaF3F5_X",&recodeltaF3F5_X);
+  anatrB->Branch("deltaF3F5_A",&deltaF3F5_A);
+  anatrB->Branch("deltaF3F5_X",&deltaF3F5_X);
+  anatrB->Branch("aoqBR",&aoqBR);
   
-  anatreeB->Branch("anaF3_Time",&anaF3_Time); 
-  anatreeB->Branch("anaF5_Time",&anaF5_Time);
-  anatreeB->Branch("anaF7_Time",&anaF7_Time);
+  anatrB->Branch("anaF3_Time",&anaF3_Time); 
+  anatrB->Branch("anaF5_Time",&anaF5_Time);
+  anatrB->Branch("anaF7_Time",&anaF7_Time);
 
-  anatreeB->Branch("BG_flag",&BG_flag);
+  anatrB->Branch("BG_flag",&BG_flag);
   
   infile->cd();
 
   //===== Begin LOOP ======================================================
-  int nEntry = caltreeB->GetEntries();
+  int nEntry = caltr->GetEntries();
   for(int iEntry=0;iEntry<nEntry;++iEntry){
-    caltreeB->GetEntry(iEntry);
+    caltr->GetEntry(iEntry);
 
     //=== Initialization ===
     BG_flag = 0;
@@ -549,9 +551,9 @@ void ana_beam(){
        ){
       BG_flag = 1;
     }
-    anatreeB->Fill();
+    anatrB->Fill();
   }
   anafile->cd();
-  anatreeB->Write();
+  anatrB->Write();
   anafile->Close();
 }
