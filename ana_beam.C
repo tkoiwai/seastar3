@@ -3,6 +3,14 @@
 #include<fstream>
 #include<math.h>
 
+#include <TSystem.h>
+#include <string>
+#include <sstream> //string stream
+#include <sys/stat.h> //get the status of files. "st_"
+#include <sys/types.h>
+#include <unistd.h> //UNIx STanDard Header file
+#include <climits> //char limits
+
 #include"TROOT.h"
 #include"TDirectory.h"
 #include"TFile.h"
@@ -10,18 +18,31 @@
 #include"TCut.h"
 #include"TCutG.h"
 #include"TMath.h"
+#include"TString.h"
 
 using namespace std;
 
+//void ana_beam(){
+//void ana_beam(Int_t runnum){
+//cout << "0" << endl;
 int main(int argc, char *argv[]){
-
-  Int_t FileNumber = TString(argv[optind]).Atoi();
-    
+  Int_t FileNumber = TString(argv[1]).Atoi();
+  //Char_t FileNumber = &argv[1];
+  //Int_t FileNumber = runnum;
+  //Int_t FileNumber = 56;
   //===== Load input file =================================================
-  TFile *infile = TFile::Open(Form("/home/koiwai/analysis/rootfiles/run%04d/run%04d_ALL.root"),FileNumber,FileNumber);
+  TString FileName = Form("/home/koiwai/analysis/rootfiles/run%04d/run%04d_ALL.root",FileNumber,FileNumber);
+  TFile *infile = TFile::Open(FileName);
+
+  //TFile *infile = TFile::Open(Form("/home/koiwai/analysis/rootfiles/run%04d/run%04d_ALL.root",FileNumber,FileNumber));
+  //TFile *infile = TFile::Open("/home/koiwai/analysis/rootfiles/run0036/run0036_ALL.root");
+
+  
   TTree *caltr;
   infile->GetObject("caltr",caltr);
 
+  //cout << "1" << endl;
+  
   //===== in tree variables ===============================================
   Long64_t EventNumber = 0;
   Int_t RunNumber = -1;
@@ -57,133 +78,135 @@ int main(int argc, char *argv[]){
   Double_t F7IC_E;
   
   Int_t F7IC_raw[6];
+
+  //cout << "2" << endl;
   
   //=== Set value ===
-  caltreeB->SetBranchAddress("RunNumber",&RunNumber);
-  caltreeB->SetBranchAddress("EventNumber",&EventNumber);
+  caltr->SetBranchAddress("RunNumber",&RunNumber);
+  caltr->SetBranchAddress("EventNumber",&EventNumber);
   
-  caltreeB->SetBranchAddress("F3_Charge",&F3_Charge);
-  caltreeB->SetBranchAddress("F5_Charge",&F5_Charge);
-  caltreeB->SetBranchAddress("F7_Charge",&F7_Charge);
-  caltreeB->SetBranchAddress("F3_Time",&F3_Time);
-  caltreeB->SetBranchAddress("F5_Time",&F5_Time);
-  caltreeB->SetBranchAddress("F7_Time",&F7_Time);
-  caltreeB->SetBranchAddress("F3_TimeDiff",&F3_TimeDiff);
-  caltreeB->SetBranchAddress("F5_TimeDiff",&F5_TimeDiff);
-  caltreeB->SetBranchAddress("F7_TimeDiff",&F7_TimeDiff);
+  caltr->SetBranchAddress("F3_Charge",&F3_Charge);
+  caltr->SetBranchAddress("F5_Charge",&F5_Charge);
+  caltr->SetBranchAddress("F7_Charge",&F7_Charge);
+  caltr->SetBranchAddress("F3_Time",&F3_Time);
+  caltr->SetBranchAddress("F5_Time",&F5_Time);
+  caltr->SetBranchAddress("F7_Time",&F7_Time);
+  caltr->SetBranchAddress("F3_TimeDiff",&F3_TimeDiff);
+  caltr->SetBranchAddress("F5_TimeDiff",&F5_TimeDiff);
+  caltr->SetBranchAddress("F7_TimeDiff",&F7_TimeDiff);
   
-  caltreeB->SetBranchAddress("F3_QL",&F3_QL);
-  caltreeB->SetBranchAddress("F3_QR",&F3_QR);
-  caltreeB->SetBranchAddress("F5_QL",&F5_QL);
-  caltreeB->SetBranchAddress("F5_QR",&F5_QR);
-  caltreeB->SetBranchAddress("F7_QL",&F7_QL);
-  caltreeB->SetBranchAddress("F7_QR",&F7_QR);
+  caltr->SetBranchAddress("F3_QL",&F3_QL);
+  caltr->SetBranchAddress("F3_QR",&F3_QR);
+  caltr->SetBranchAddress("F5_QL",&F5_QL);
+  caltr->SetBranchAddress("F5_QR",&F5_QR);
+  caltr->SetBranchAddress("F7_QL",&F7_QL);
+  caltr->SetBranchAddress("F7_QR",&F7_QR);
   
-  caltreeB->SetBranchAddress("F3_TL",&F3_TL);
-  caltreeB->SetBranchAddress("F3_TR",&F3_TR);
-  caltreeB->SetBranchAddress("F5_TL",&F5_TL);
-  caltreeB->SetBranchAddress("F5_TR",&F5_TR);
-  caltreeB->SetBranchAddress("F7_TL",&F7_TL);
-  caltreeB->SetBranchAddress("F7_TR",&F7_TR);
+  caltr->SetBranchAddress("F3_TL",&F3_TL);
+  caltr->SetBranchAddress("F3_TR",&F3_TR);
+  caltr->SetBranchAddress("F5_TL",&F5_TL);
+  caltr->SetBranchAddress("F5_TR",&F5_TR);
+  caltr->SetBranchAddress("F7_TL",&F7_TL);
+  caltr->SetBranchAddress("F7_TR",&F7_TR);
   
-  caltreeB->SetBranchAddress("F31A_X",&F31A_X);
-  caltreeB->SetBranchAddress("F31A_Y",&F31A_Y);
-  caltreeB->SetBranchAddress("F31B_X",&F31B_X);
-  caltreeB->SetBranchAddress("F31B_Y",&F31B_Y);
-  caltreeB->SetBranchAddress("F32A_X",&F32A_X);
-  caltreeB->SetBranchAddress("F32A_Y",&F32A_Y);
-  caltreeB->SetBranchAddress("F32B_X",&F32B_X);
-  caltreeB->SetBranchAddress("F32B_Y",&F32B_Y);
+  caltr->SetBranchAddress("F31A_X",&F31A_X);
+  caltr->SetBranchAddress("F31A_Y",&F31A_Y);
+  caltr->SetBranchAddress("F31B_X",&F31B_X);
+  caltr->SetBranchAddress("F31B_Y",&F31B_Y);
+  caltr->SetBranchAddress("F32A_X",&F32A_X);
+  caltr->SetBranchAddress("F32A_Y",&F32A_Y);
+  caltr->SetBranchAddress("F32B_X",&F32B_X);
+  caltr->SetBranchAddress("F32B_Y",&F32B_Y);
   
-  caltreeB->SetBranchAddress("F51A_X",&F51A_X);
-  caltreeB->SetBranchAddress("F51A_Y",&F51A_Y);
-  caltreeB->SetBranchAddress("F51B_X",&F51B_X);
-  caltreeB->SetBranchAddress("F51B_Y",&F51B_Y);
-  caltreeB->SetBranchAddress("F52A_X",&F52A_X);
-  caltreeB->SetBranchAddress("F52A_Y",&F52A_Y);
-  caltreeB->SetBranchAddress("F52B_X",&F52B_X);
-  caltreeB->SetBranchAddress("F52B_Y",&F52B_Y);
+  caltr->SetBranchAddress("F51A_X",&F51A_X);
+  caltr->SetBranchAddress("F51A_Y",&F51A_Y);
+  caltr->SetBranchAddress("F51B_X",&F51B_X);
+  caltr->SetBranchAddress("F51B_Y",&F51B_Y);
+  caltr->SetBranchAddress("F52A_X",&F52A_X);
+  caltr->SetBranchAddress("F52A_Y",&F52A_Y);
+  caltr->SetBranchAddress("F52B_X",&F52B_X);
+  caltr->SetBranchAddress("F52B_Y",&F52B_Y);
   
-  caltreeB->SetBranchAddress("F71A_X",&F71A_X);
-  caltreeB->SetBranchAddress("F71A_Y",&F71A_Y);
-  caltreeB->SetBranchAddress("F71B_X",&F71B_X);
-  caltreeB->SetBranchAddress("F71B_Y",&F71B_Y);
-  caltreeB->SetBranchAddress("F72A_X",&F72A_X);
-  caltreeB->SetBranchAddress("F72A_Y",&F72A_Y);
-  caltreeB->SetBranchAddress("F72B_X",&F72B_X);
-  caltreeB->SetBranchAddress("F72B_Y",&F72B_Y);
+  caltr->SetBranchAddress("F71A_X",&F71A_X);
+  caltr->SetBranchAddress("F71A_Y",&F71A_Y);
+  caltr->SetBranchAddress("F71B_X",&F71B_X);
+  caltr->SetBranchAddress("F71B_Y",&F71B_Y);
+  caltr->SetBranchAddress("F72A_X",&F72A_X);
+  caltr->SetBranchAddress("F72A_Y",&F72A_Y);
+  caltr->SetBranchAddress("F72B_X",&F72B_X);
+  caltr->SetBranchAddress("F72B_Y",&F72B_Y);
   
-  caltreeB->SetBranchAddress("F31A_X_T1",&F31A_X_T1);
-  caltreeB->SetBranchAddress("F31A_X_T2",&F31A_X_T2);
-  caltreeB->SetBranchAddress("F31A_Y_T1",&F31A_Y_T1);
-  caltreeB->SetBranchAddress("F31A_Y_T2",&F31A_Y_T2);
-  caltreeB->SetBranchAddress("F31B_X_T1",&F31B_X_T1);
-  caltreeB->SetBranchAddress("F31B_X_T2",&F31B_X_T2);
-  caltreeB->SetBranchAddress("F31B_Y_T1",&F31B_Y_T1);
-  caltreeB->SetBranchAddress("F31B_Y_T2",&F31B_Y_T2);
-  caltreeB->SetBranchAddress("F32A_X_T1",&F32A_X_T1);
-  caltreeB->SetBranchAddress("F32A_X_T2",&F32A_X_T2);
-  caltreeB->SetBranchAddress("F32A_Y_T1",&F32A_Y_T1);
-  caltreeB->SetBranchAddress("F32A_Y_T2",&F32A_Y_T2);
-  caltreeB->SetBranchAddress("F32B_X_T1",&F32B_X_T1);
-  caltreeB->SetBranchAddress("F32B_X_T2",&F32B_X_T2);
-  caltreeB->SetBranchAddress("F32B_Y_T1",&F32B_Y_T1);
-  caltreeB->SetBranchAddress("F32B_Y_T2",&F32B_Y_T2);
-  caltreeB->SetBranchAddress("F51A_X_T1",&F51A_X_T1);
-  caltreeB->SetBranchAddress("F51A_X_T2",&F51A_X_T2);
-  caltreeB->SetBranchAddress("F51A_Y_T1",&F51A_Y_T1);
-  caltreeB->SetBranchAddress("F51A_Y_T2",&F51A_Y_T2);
-  caltreeB->SetBranchAddress("F51B_X_T1",&F51B_X_T1);
-  caltreeB->SetBranchAddress("F51B_X_T2",&F51B_X_T2);
-  caltreeB->SetBranchAddress("F51B_Y_T1",&F51B_Y_T1);
-  caltreeB->SetBranchAddress("F51B_Y_T2",&F51B_Y_T2);
-  caltreeB->SetBranchAddress("F52A_X_T1",&F52A_X_T1);
-  caltreeB->SetBranchAddress("F52A_X_T2",&F52A_X_T2);
-  caltreeB->SetBranchAddress("F52A_Y_T1",&F52A_Y_T1);
-  caltreeB->SetBranchAddress("F52A_Y_T2",&F52A_Y_T2);
-  caltreeB->SetBranchAddress("F52B_X_T1",&F52B_X_T1);
-  caltreeB->SetBranchAddress("F52B_X_T2",&F52B_X_T2);
-  caltreeB->SetBranchAddress("F52B_Y_T1",&F52B_Y_T1);
-  caltreeB->SetBranchAddress("F52B_Y_T2",&F52B_Y_T2);
-  caltreeB->SetBranchAddress("F71A_X_T1",&F71A_X_T1);
-  caltreeB->SetBranchAddress("F71A_X_T2",&F71A_X_T2);
-  caltreeB->SetBranchAddress("F71A_Y_T1",&F71A_Y_T1);
-  caltreeB->SetBranchAddress("F71A_Y_T2",&F71A_Y_T2);
-  caltreeB->SetBranchAddress("F71B_X_T1",&F71B_X_T1);
-  caltreeB->SetBranchAddress("F71B_X_T2",&F71B_X_T2);
-  caltreeB->SetBranchAddress("F71B_Y_T1",&F71B_Y_T1);
-  caltreeB->SetBranchAddress("F71B_Y_T2",&F71B_Y_T2);
-  caltreeB->SetBranchAddress("F72A_X_T1",&F72A_X_T1);
-  caltreeB->SetBranchAddress("F72A_X_T2",&F72A_X_T2);
-  caltreeB->SetBranchAddress("F72A_Y_T1",&F72A_Y_T1);
-  caltreeB->SetBranchAddress("F72A_Y_T2",&F72A_Y_T2);
-  caltreeB->SetBranchAddress("F72B_X_T1",&F72B_X_T1);
-  caltreeB->SetBranchAddress("F72B_X_T2",&F72B_X_T2);
-  caltreeB->SetBranchAddress("F72B_Y_T1",&F72B_Y_T1);
-  caltreeB->SetBranchAddress("F72B_Y_T2",&F72B_Y_T2);
+  caltr->SetBranchAddress("F31A_X_T1",&F31A_X_T1);
+  caltr->SetBranchAddress("F31A_X_T2",&F31A_X_T2);
+  caltr->SetBranchAddress("F31A_Y_T1",&F31A_Y_T1);
+  caltr->SetBranchAddress("F31A_Y_T2",&F31A_Y_T2);
+  caltr->SetBranchAddress("F31B_X_T1",&F31B_X_T1);
+  caltr->SetBranchAddress("F31B_X_T2",&F31B_X_T2);
+  caltr->SetBranchAddress("F31B_Y_T1",&F31B_Y_T1);
+  caltr->SetBranchAddress("F31B_Y_T2",&F31B_Y_T2);
+  caltr->SetBranchAddress("F32A_X_T1",&F32A_X_T1);
+  caltr->SetBranchAddress("F32A_X_T2",&F32A_X_T2);
+  caltr->SetBranchAddress("F32A_Y_T1",&F32A_Y_T1);
+  caltr->SetBranchAddress("F32A_Y_T2",&F32A_Y_T2);
+  caltr->SetBranchAddress("F32B_X_T1",&F32B_X_T1);
+  caltr->SetBranchAddress("F32B_X_T2",&F32B_X_T2);
+  caltr->SetBranchAddress("F32B_Y_T1",&F32B_Y_T1);
+  caltr->SetBranchAddress("F32B_Y_T2",&F32B_Y_T2);
+  caltr->SetBranchAddress("F51A_X_T1",&F51A_X_T1);
+  caltr->SetBranchAddress("F51A_X_T2",&F51A_X_T2);
+  caltr->SetBranchAddress("F51A_Y_T1",&F51A_Y_T1);
+  caltr->SetBranchAddress("F51A_Y_T2",&F51A_Y_T2);
+  caltr->SetBranchAddress("F51B_X_T1",&F51B_X_T1);
+  caltr->SetBranchAddress("F51B_X_T2",&F51B_X_T2);
+  caltr->SetBranchAddress("F51B_Y_T1",&F51B_Y_T1);
+  caltr->SetBranchAddress("F51B_Y_T2",&F51B_Y_T2);
+  caltr->SetBranchAddress("F52A_X_T1",&F52A_X_T1);
+  caltr->SetBranchAddress("F52A_X_T2",&F52A_X_T2);
+  caltr->SetBranchAddress("F52A_Y_T1",&F52A_Y_T1);
+  caltr->SetBranchAddress("F52A_Y_T2",&F52A_Y_T2);
+  caltr->SetBranchAddress("F52B_X_T1",&F52B_X_T1);
+  caltr->SetBranchAddress("F52B_X_T2",&F52B_X_T2);
+  caltr->SetBranchAddress("F52B_Y_T1",&F52B_Y_T1);
+  caltr->SetBranchAddress("F52B_Y_T2",&F52B_Y_T2);
+  caltr->SetBranchAddress("F71A_X_T1",&F71A_X_T1);
+  caltr->SetBranchAddress("F71A_X_T2",&F71A_X_T2);
+  caltr->SetBranchAddress("F71A_Y_T1",&F71A_Y_T1);
+  caltr->SetBranchAddress("F71A_Y_T2",&F71A_Y_T2);
+  caltr->SetBranchAddress("F71B_X_T1",&F71B_X_T1);
+  caltr->SetBranchAddress("F71B_X_T2",&F71B_X_T2);
+  caltr->SetBranchAddress("F71B_Y_T1",&F71B_Y_T1);
+  caltr->SetBranchAddress("F71B_Y_T2",&F71B_Y_T2);
+  caltr->SetBranchAddress("F72A_X_T1",&F72A_X_T1);
+  caltr->SetBranchAddress("F72A_X_T2",&F72A_X_T2);
+  caltr->SetBranchAddress("F72A_Y_T1",&F72A_Y_T1);
+  caltr->SetBranchAddress("F72A_Y_T2",&F72A_Y_T2);
+  caltr->SetBranchAddress("F72B_X_T1",&F72B_X_T1);
+  caltr->SetBranchAddress("F72B_X_T2",&F72B_X_T2);
+  caltr->SetBranchAddress("F72B_Y_T1",&F72B_Y_T1);
+  caltr->SetBranchAddress("F72B_Y_T2",&F72B_Y_T2);
   
-  caltreeB->SetBranchAddress("F7IC_E",&F7IC_E);
-  caltreeB->SetBranchAddress("F7IC_raw",F7IC_raw);
+  caltr->SetBranchAddress("F7IC_E",&F7IC_E);
+  caltr->SetBranchAddress("F7IC_raw",F7IC_raw);
 
-
+  //cout << "3" << endl;
   
   //===== Load CUT files ==================================================
   //=== Plastic (graphical cut)===
-  TFile *cutfileF3pla = new TFile("cutfiles/cut_F3pla.root");
+  TFile *cutfileF3pla = new TFile("/home/koiwai/analysis/cutfiles/cut_F3pla.root");
   TCutG *cF3pla = (TCutG*)cutfileF3pla->Get("F3pla");
-  TFile *cutfileF7pla = new TFile("cutfiles/cut_F7pla.root");
+  TFile *cutfileF7pla = new TFile("/home/koiwai/analysis/cutfiles/cut_F7pla.root");
   TCutG *cF7pla = (TCutG*)cutfileF7pla->Get("F7pla");
 
   //=== Chrage change @ F5 (graphical cut) ===
-  TFile *cutfileF5Qchange = new TFile("cutfiles/cut_bigripsZvsF5Qchange.root");
+  TFile *cutfileF5Qchange = new TFile("/home/koiwai/analysis/cutfiles/cut_bigripsZvsF5Qchange.root");
   TCutG *cF5Qchange = (TCutG*)cutfileF5Qchange->Get("CUTG");
 
   //=== PPAC Tsum gate ===
   ifstream fin;
-  fin.open("cutfiles/cut_PPAC_Tsum.dat");
+  fin.open("/home/koiwai/analysis/cutfiles/cut_PPAC_Tsum.dat");
   if(fin.fail()){
     cout << "Error: file is not found." << endl;
-    return;
+    return 1;
   }
   
   Int_t cPPAC_Tsum_low[24], cPPAC_Tsum_up[24];
@@ -191,9 +214,17 @@ int main(int argc, char *argv[]){
   for(Int_t cPPAC_index = 0;cPPAC_index<24;++cPPAC_index){
     fin >> cPPAC_Tsum_low[cPPAC_index] >> cPPAC_Tsum_up[cPPAC_index];
   }
+
+  
+  //cout << "4" << endl;
   
   //===== Create output file/tree =========================================
-  TFile *anafile = new TFile("anafiles/ana_beam.root","RECREATE");
+  TString AnaFileName = Form("/home/koiwai/analysis/anafiles/beam/ana_beam%04d.root",FileNumber);
+  TFile *anafile = new TFile(AnaFileName,"recreate");
+
+
+  //TFile *anafile = new TFile(Form("/home/koiwai/analysis/anafiles/ana_beam%04d.root","RECREATE"),FileNumber);
+  //TFile *anafile = new TFile("/home/koiwai/analysis/anafiles/ana_beam0036.root","recreate");
   TTree *anatrB = new TTree("anatrB","anatrB");
 
   //===== Declear const.s =================================================
@@ -241,6 +272,8 @@ int main(int argc, char *argv[]){
   double Brho0F5F7 = 6.854; //Tm
   
   //===== Define ana variables ============================================
+  Int_t EventNum, RunNum;
+  
   //=== for Z ===
   Double_t tofF3F7;
   Double_t vF3F7, vF3F5, vF5F7;
@@ -270,7 +303,13 @@ int main(int argc, char *argv[]){
   
   Int_t BG_flag; //flag for background
 
+
+  //cout << "5" << endl;
+
   //======
+  anatrB->Branch("EventNumber",&EventNum);
+  anatrB->Branch("RunNumber",&RunNum);
+  
   anatrB->Branch("tofF3F7",&tofF3F7);
   anatrB->Branch("vF3F7",&vF3F7);
   anatrB->Branch("vF3F5",&vF3F5);
@@ -316,11 +355,21 @@ int main(int argc, char *argv[]){
   
   infile->cd();
 
+
+  //cout << "6" << endl;
+  
   //===== Begin LOOP ======================================================
   int nEntry = caltr->GetEntries();
   for(int iEntry=0;iEntry<nEntry;++iEntry){
     caltr->GetEntry(iEntry);
 
+    if(iEntry%100 == 0){
+      std::clog << iEntry/1000 << "k events treated..." << "\r";
+    }
+
+    EventNum = EventNumber;
+    RunNum = RunNumber;
+    
     //=== Initialization ===
     BG_flag = 0;
     tofF3F7 = TMath::Sqrt(-1);
@@ -399,7 +448,7 @@ int main(int argc, char *argv[]){
     zetBR = zetBR_c1 * raw_zetBR + zetBR_c2;
   
   
-   
+    
     //=== F3 Tsum gate ===
     if((cPPAC_Tsum_low[0]<F31A_X_T1+F31A_X_T2&&F31A_X_T1+F31A_X_T2<cPPAC_Tsum_up[0])&&(cPPAC_Tsum_low[1]<F31B_X_T1+F31B_X_T2&&F31B_X_T1+F31B_X_T2<cPPAC_Tsum_up[1])){
       F31_X = (F31A_X + F31B_X)/2.;
@@ -512,6 +561,7 @@ int main(int argc, char *argv[]){
       BG_flag = 2;
     }
     
+    
     F3X = (F31_X + F32_X)/2.;
     F3Y = (F31_Y + F32_Y)/2.;
     F3A = 1000.*TMath::ATan((F31_X-F32_X)/DistF3PPAC);
@@ -547,13 +597,16 @@ int main(int argc, char *argv[]){
     //===== Cut by graphical cut ==========================================================
     if(!cF3pla->IsInside(F3_TR-F3_TL,log(F3_QL/F3_QR))
        ||!cF7pla->IsInside(F7_TR-F7_TL,log(F7_QL/F7_QR))
-       /*||!cF5Qchange->IsInside(aoqF3F5/aoqF5F7,zetBR)*/
+       ||!cF5Qchange->IsInside(aoqF3F5/aoqF5F7,zetBR)
        ){
       BG_flag = 1;
     }
+  
     anatrB->Fill();
   }
   anafile->cd();
   anatrB->Write();
   anafile->Close();
+
+  return 0;
 }
