@@ -19,65 +19,82 @@
 #include"TCutG.h"
 #include"TMath.h"
 #include"TString.h"
+#include"TVector3.h"
+#include"TClass.h"
+#include"TTreeIndex.h"
+#include"TEnv.h"
 
 using namespace std;
 using namespace TMath;
 
 int main(int argc, char *argv[]){
 
-  Int_t FileNumber = TString(argv[1]).Atoi();
+  TEnv *env = new TEnv("/home/koiwai/analysis/db/geometry_psp17.dat");
 
+  Int_t FileNumber = TString(argv[1]).Atoi();
+  
   //B===== Load input file =================================================
-  TString FileName_beam = Form("/home/koiwai/analysis/anailes/beam/ana_beam%04d.root",FileNumber);
-  TFile *infile_beam = TFile::Open(FileName);
+  TString FileName_beam = Form("/home/koiwai/analysis/anafiles/beam/ana_beam%04d.root",FileNumber);
+  TFile *infile_beam = TFile::Open(FileName_beam);
 
   TTree *anatrB;
-  infile->GetObject("anatrB",anatrB);
+  infile_beam->GetObject("anatrB",anatrB);
 
   //B===== beam variables =====
-  Double_t ENum, RNum;
+  Int_t EventNumber, RunNumber;
   Double_t zetBR, aoqBR;
   Double_t betaF5F7;
-  Int_t BG_flagB;
+  Double_t anaF7_Time;
+  
 
   //B===== SetBranchAddress =====
-  anatrB->SetBranchAddress("ENum",&ENum);
-  anatrB->SetBranchAddress("RNum",&RNum);
+  anatrB->SetBranchAddress("EventNumber",&EventNumber);
+  anatrB->SetBranchAddress("RunNumber",&RunNumber);
   anatrB->SetBranchAddress("zetBR",&zetBR);
   anatrB->SetBranchAddress("aoqBR",&aoqBR);
   anatrB->SetBranchAddress("betaF5F7",&betaF5F7);
-  anatrB->SetBranchAddress("BG_flagB",&BG_flag);
-
+  anatrB->SetBranchAddress("anaF7_Time",&anaF7_Time);
+  /*
   //D===== Load input file =====
-  TString FileName_dali = Form("/home/koiwai/analysis/rootfiles/dali/run%04d_DALI.root",FileNumber);
-  TFile *infile_dali = TFile::Open(FileName);
+  TString FileName_dali = Form("/home/koiwai/analysis/rootdali/run%04d_DALI.root",FileNumber);
+  TFile *infile_dali = TFile::Open(FileName_dali);
 
   TTree *caltrD;
-  infile->GetObject("caltrD",caltrD);
+  infile_dali->GetObject("caltrD",caltrD);
   
   //D===== dali variables =====
-  Double_t DALI_Energy, DALI_CosTheta, DALI_Time, DALI_ID, DALI_Layer;
-  Double_t DALI_X, DALI_Y, DALI_Z, DALI_Pos;
+  vector<Double_t> *DALI_Energy;
+  //TBranch *bDALI_Energy;
+  vector<Double_t> *DALI_CosTheta;
+  //TBranch *bDALI_CosTheta;
+  vector<Double_t> *DALI_Time;
+  //TBranch *bDALI_Time;
+  //vector<Int_t> *DALI_ID;
+  //vector<Double_t> *DALI_Layer;
+  //vector<Double_t> *DALI_X;
+  //vector<Double_t> *DALI_Y;
+  //vector<Double_t> *DALI_Z;
+  //vector<TVector3> DALI_Pos;
   Int_t DALI_Multi;
 
   //D===== SetBranchAddress =====
   caltrD->SetBranchAddress("DALI_Energy",&DALI_Energy);
-  caltrD->SetBranchAddress("DALI_CosTheta",&CosTheta);
+  caltrD->SetBranchAddress("DALI_CosTheta",&DALI_CosTheta);
   caltrD->SetBranchAddress("DALI_Time",&DALI_Time);
-  caltrD->SetBranchAddress("DALI_ID",&DALI_ID);
-  caltrD->SetBranchAddress("DALI_Layer",&DALI_Layer);
-  caltrD->SetBranchAddress("DALI_X",&DALI_X);
-  caltrD->SetBranchAddress("DALI_Y",&DALI_Y);
-  caltrD->SetBranchAddress("DALI_Z",&DALI_Z);
-  caltrD->SetBranchAddress("DALI_Pos",&DALI_Pos);
+  //caltrD->SetBranchAddress("DALI_ID",&DALI_ID);
+  //caltrD->SetBranchAddress("DALI_Layer",&DALI_Layer);
+  //caltrD->SetBranchAddress("DALI_X",&DALI_X);
+  //caltrD->SetBranchAddress("DALI_Y",&DALI_Y);
+  //caltrD->SetBranchAddress("DALI_Z",&DALI_Z);
+  //caltrD->SetBranchAddress("DALI_Pos",&DALI_Pos);
   caltrD->SetBranchAddress("DALI_Multi",&DALI_Multi);
-
+  */
   //A===== Load input file =====
-  TString FileName_all = Form("/home/koiwai/analysis/rootfiles/run%04d/run%04d.root",FileNumber,FileNumber);
-  TFile *infile_all = TFile::Open(FileName);
+  TString FileName_all = Form("/home/koiwai/analysis/rootfiles/run%04d/run%04d_ALL.root",FileNumber,FileNumber);
+  TFile *infile_all = TFile::Open(FileName_all);
 
   TTree *caltr;
-  infile->GetObject("caltr",caltr);
+  infile_all->GetObject("caltr",caltr);
 
   //A===== input variables =====
   Int_t Hodo_ID; // ID of the hodoscope with the highest charge
@@ -102,50 +119,136 @@ int main(int argc, char *argv[]){
       caltr->SetBranchAddress(Form("Hodo%d_QCal",i+1),&Hodoi_QCal[i]);
       caltr->SetBranchAddress(Form("Hodo%d_TCal",i+1),&Hodoi_TCal[i]);
     }
-
+  
   //===== Load CUT file =====
   TFile *cutfile = TFile::Open("/home/koiwai/analysis/cutfiles/cutBR56Ca.root");
   TCutG *cBR56Ca = (TCutG*)cutfile->Get("CUTG");
   
   //===== Create output file/tree =====
-  TString AnaFileName = Form("/home/koiwai/analysis/anafiles/jps/ana_jps%04d.root",FuileNumber);
-  TFile *ana_file = new TFile(AnaFileName,"recreate");
-  TTree * anatrJ = new TTree("anatrJ","anatrJ");
+  TString AnaFileName = Form("/home/koiwai/analysis/anafiles/jps/ana_jps%04d.root",FileNumber);
+  TFile *anafile = new TFile(AnaFileName,"recreate");
+  TTree *anatrJ = new TTree("anatrJ","anatrJ");
 
   //===== Dealare const.s =====
-  
+  Double_t distSBTMinos = env->GetValue("Dist_SBTTarget",0.0);
+  Double_t distF7SBT = env->GetValue("Dist_F7SBT",0.0);
+  Double_t offsetF7SBT = env->GetValue("offsetF7SBT",0.0);
+  Double_t offsethodo = env->GetValue("offsethodo",0.0); //each bar
 
   //===== Declare ana variables =====
-  Int_t EventNumber, RunNumber;
+  Int_t ENum, RNum;
+  /*
+  vector<Double_t> dali_e;
+  vector<Double_t> dali_cos;
+  vector<Double_t> dali_t;
+  */
 
+  Double_t hodo_q, hodo_t, hodoi_q[24], hodoi_t[24];
+  Int_t hodo_id;
+  Double_t SBT_t;
+  Double_t tofF7SBT, tofSBThodo, tofSBTMinos, tofMinoshodo;
+
+  Double_t hodoi_Z[24];
+  
   Int_t BR56Ca;
   //===== Set Branches ======
-  anatrJ->Branch("EventNumber",&EventNumber);
-  anatrJ->Branch("RunNumber",&RunNumber);
+  anatrJ->Branch("ENum",&ENum);
+  anatrJ->Branch("RNum",&RNum);
+  /*
+  anatrJ->Branch("dali_e",&dali_e);
+  anatrJ->Branch("dali_cos",&dali_cos);
+  anatrJ->Branch("dali_t",&dali_t);
+  */
 
+  anatrJ->Branch("zetBR",&zetBR);
+  anatrJ->Branch("aoqBR",&aoqBR);
+    
+  anatrJ->Branch("hodo_q",&hodo_q);
+  anatrJ->Branch("hodo_t",&hodo_t);
+  for(Int_t i=0;i<24;++i){
+    anatrJ->Branch(Form("hodo%02d_q",i+1),&hodoi_q[i]);
+    anatrJ->Branch(Form("hodo%02d_t",i+1),&hodoi_t[i]);
+  }
+  anatrJ->Branch("hodo_id",&hodo_id);
+  anatrJ->Branch("SBT_t",&SBT_t);
+  anatrJ->Branch("tofF7SBT",&tofF7SBT);
+  anatrJ->Branch("tofSBThodo",&tofSBThodo);
+  anatrJ->Branch("tofSBTMinos",&tofSBTMinos);
+  anatrJ->Branch("tofMinoshodo",&tofMinoshodo);
+  for(Int_t i=0;i<24;++i){
+    anatrJ->Branch(Form("hodo%02d_Z",i+1),&hodoi_Z[i]);
+  }
+  
   anatrJ->Branch("BR56Ca",&BR56Ca);
+
   //===== LOOP =====
   int nEntry = caltr->GetEntries();
   for(Int_t iEntry=0;iEntry<nEntry;++iEntry){
-    //for(Int_t iEntry;iEmtry<100,++iEntry){
+    //for(Int_t iEntry;iEntry<100,++iEntry){
+    
+    if(iEntry%100==0){
+      clog << iEntry/1000 << "k events treated..." << "\r";
+    }
 
-    if(iEntry%100==0) clog << iEntry/1000 << "k events treated..." << "\r";
-
+    anatrB->GetEntry(iEntry);
+    //caltrD->GetEntry(iEntry);
     caltr->GetEntry(iEntry);
     
-    RunNumber = RNum;
-    EventNumber = ENum;
-
+    RNum = RunNumber;
+    ENum = EventNumber;
+    
     //=== Initialization ===
+    /*
+    dali_e.clear();
+    dali_cos.clear();
+    dali_t.clear();
+    */
+    hodo_q = Sqrt(-1);
+    hodo_t = Sqrt(-1);
+    for(Int_t i=0;i<24;++i){
+      hodoi_q[i] = Sqrt(-1);
+      hodoi_t[i] = Sqrt(-1);
+      hodoi_Z[i] = Sqrt(-1);
+    }
+    hodo_id = 0;
+    SBT_t = Sqrt(-1);
+    tofF7SBT = Sqrt(-1);
+    tofSBThodo = Sqrt(-1);
+    tofSBTMinos = Sqrt(-1);
+    tofMinoshodo = Sqrt(-1);
+    
     BR56Ca = 0;
-
-
+    
     //=== Calc. ===
+    /*
+    for(Int_t i=0;i<DALI_Energy->size();++i){
+      dali_e.push_back(DALI_Energy->at(i));
+      dali_cos.push_back(DALI_CosTheta->at(i));
+      dali_t.push_back(DALI_Time->at(i));
+    }
+    */
+    hodo_q = Hodo_QCal;
+    hodo_t = Hodo_TCal;
+    for(Int_t i=0;i<24;++i){
+      hodoi_q[i] = Hodoi_QCal[i];
+      hodoi_t[i] = Hodoi_TCal[i];
+    }
+    hodo_id = Hodo_ID;
+    
+    SBT_t = (SBT1_Time + SBT2_Time)/2.;
+    tofF7SBT = (SBT_t - anaF7_Time + offsetF7SBT);
+    tofSBThodo = (hodo_t - SBT_t);
+    tofSBTMinos = distSBTMinos/(distF7SBT/(SBT_t - anaF7_Time + offsetF7SBT));
+    tofMinoshodo = tofSBThodo - tofSBTMinos + offsethodo;
 
-
+    Double_t zraw[24] = {0};
+    if(hodo_id==12){
+      zraw[11] = hodo_q - (58.3888*tofMinoshodo - 3570.69);
+      hodoi_Z[11] = 18.9417 + 0.00533762*zraw[11] - 8.10244*pow(10,-7)*tofMinoshodo*tofMinoshodo;
+    }
     //=== CUT ===
-    if(cutfile->IsInside(aoqBR,zetBR)) BR56Ca = 1;
-
+    if(cBR56Ca->IsInside(aoqBR,zetBR)) BR56Ca = 1;
+    
     anatrJ->Fill();
   }//LOOP
   anafile->cd();
