@@ -30,6 +30,7 @@ using namespace TMath;
 int main(int argc, char *argv[]){
 
   TEnv *env = new TEnv("/home/koiwai/analysis/db/geometry_psp17.dat");
+  TEnv *env_hodo = new TEnv("/home/koiwai/analysis/db/hodo_calib_jps.dat");
 
   Int_t FileNumber = TString(argv[1]).Atoi();
   
@@ -135,6 +136,23 @@ int main(int argc, char *argv[]){
   Double_t offsetF7SBT = env->GetValue("offsetF7SBT",0.0);
   Double_t offsethodo = env->GetValue("offsethodo",0.0); //each bar
 
+  //=== hodo calib coeff ===
+  Double_t hodot2q0[24] = {0};
+  Double_t hodot2q1[24] = {0};
+
+  Double_t hodozraw2z0[24] = {0};
+  Double_t hodozraw2z1[24] = {0};
+  Double_t hodozraw2z2[24] = {0};
+  
+  for(Int_t i=0;i<24;++i){
+    hodot2q0[i] = env_hodo->GetValue(Form("hodo%02dt2q0",i+1),0.0);
+    hodot2q1[i] = env_hodo->GetValue(Form("hodo%02dt2q1",i+1),0.0);
+
+    hodozraw2z0[i] = env_hodo->GetValue(Form("hodo%02dzraw2z0",i+1),0.0);
+    hodozraw2z1[i] = env_hodo->GetValue(Form("hodo%02dzraw2z1",i+1),0.0);
+    hodozraw2z2[i] = env_hodo->GetValue(Form("hodo%02dzraw2z2",i+1),0.0);
+  }
+
   //===== Declare ana variables =====
   Int_t ENum, RNum;
   /*
@@ -148,7 +166,7 @@ int main(int argc, char *argv[]){
   Double_t SBT_t;
   Double_t tofF7SBT, tofSBThodo, tofSBTMinos, tofMinoshodo;
 
-  Double_t hodoi_Z[24];
+  Double_t hodoi_Z[24], hodoi_Zraw[24];
   
   Int_t BR56Ca;
   //===== Set Branches ======
@@ -177,6 +195,7 @@ int main(int argc, char *argv[]){
   anatrJ->Branch("tofMinoshodo",&tofMinoshodo);
   for(Int_t i=0;i<24;++i){
     anatrJ->Branch(Form("hodo%02d_Z",i+1),&hodoi_Z[i]);
+    anatrJ->Branch(Form("hodo%02d_Zraw",i+1),&hodoi_Zraw[i]);
   }
   
   anatrJ->Branch("BR56Ca",&BR56Ca);
@@ -206,9 +225,10 @@ int main(int argc, char *argv[]){
     hodo_q = Sqrt(-1);
     hodo_t = Sqrt(-1);
     for(Int_t i=0;i<24;++i){
-      hodoi_q[i] = Sqrt(-1);
-      hodoi_t[i] = Sqrt(-1);
-      hodoi_Z[i] = Sqrt(-1);
+      hodoi_q[i]    = Sqrt(-1);
+      hodoi_t[i]    = Sqrt(-1);
+      hodoi_Z[i]    = Sqrt(-1);
+      hodoi_Zraw[i] = Sqrt(-1);
     }
     hodo_id = 0;
     SBT_t = Sqrt(-1);
@@ -241,11 +261,15 @@ int main(int argc, char *argv[]){
     tofSBTMinos = distSBTMinos/(distF7SBT/(SBT_t - anaF7_Time + offsetF7SBT));
     tofMinoshodo = tofSBThodo - tofSBTMinos + offsethodo;
 
-    Double_t zraw[24] = {0};
+    /*Double_t zraw[24] = {0};
     if(hodo_id==12){
       zraw[11] = hodo_q - (58.3888*tofMinoshodo - 3570.69);
       hodoi_Z[11] = 18.9417 + 0.00533762*zraw[11] - 8.10244*pow(10,-7)*tofMinoshodo*tofMinoshodo;
-    }
+      }*/
+
+    hodoi_Zraw[hodo_id-1] = hodo_q - (hodot2q0[hodo_id-1] + hodot2q1[hodo_id-1]*tofMinoshodo);
+    hodoi_Z[hodo_id-1]    = hodozraw2z0[hodo_id-1] + hodozraw2z1[hodo_id-1]*hodoi_Zraw[hodo_id-1] + hodozraw2z2[hodo_id-1]*hodoi_Zraw[hodo_id-1]*hodoi_Zraw[hodo_id-1];
+    
     //=== CUT ===
     if(cBR56Ca->IsInside(aoqBR,zetBR)) BR56Ca = 1;
     
