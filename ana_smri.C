@@ -21,7 +21,8 @@ int main(int argc, char *argv[]){
   Int_t FileNum = TString(argv[1]).Atoi();
   
   //===== Load input file =====
-  TFile *infile = TFile::Open(Form("/home/koiwai/analysis/strage2018feb20/run%04d_ALL.root",FileNum));
+  TString infname = Form("/home/koiwai/analysis/strage2018feb20/run%04d_ALL.root",FileNum);
+  TFile *infile = TFile::Open(infname);
   
   TTree *caltr;
   infile->GetObject("caltr",caltr);
@@ -123,30 +124,31 @@ int main(int argc, char *argv[]){
 	caltr->SetBranchAddress(Form("Hodo%d_QUCal",i+1),&Hodoi_QUCal[i]);
 	caltr->SetBranchAddress(Form("Hodo%d_QDCal",i+1),&Hodoi_QDCal[i]);
       }
-    caltr->SetBranchAddress("Hodo_Multiplicity",&Hodo_Multiplicity);
-    caltr->SetBranchAddress("Hodo_ID",&Hodo_ID);
-    caltr->SetBranchAddress("Hodo_QCal",&Hodo_QCal);
-    caltr->SetBranchAddress("Hodo_TCal",&Hodo_TCal);
-    caltr->SetBranchAddress("Hodo_QRaw",&Hodo_QRaw);
-    caltr->SetBranchAddress("Hodo_TRaw",&Hodo_TRaw);
-
-    caltr->SetBranchAddress("SBT1_Charge",&SBT1_Charge);
-    caltr->SetBranchAddress("SBT1_Time",&SBT1_Time);
-    caltr->SetBranchAddress("SBT1_TimeDiff",&SBT1_TimeDiff);
-    caltr->SetBranchAddress("SBT2_Charge",&SBT2_Charge);
-    caltr->SetBranchAddress("SBT2_Time",&SBT2_Time);
-    caltr->SetBranchAddress("SBT2_TimeDiff",&SBT2_TimeDiff);
-    caltr->SetBranchAddress("SBT1_QL",&SBT1_QL);
-    caltr->SetBranchAddress("SBT1_QR",&SBT1_QR);
-    caltr->SetBranchAddress("SBT1_TL",&SBT1_TL);
-    caltr->SetBranchAddress("SBT1_TR",&SBT1_TR);
-    caltr->SetBranchAddress("SBT2_QL",&SBT2_QL);
-    caltr->SetBranchAddress("SBT2_QR",&SBT2_QR);
-    caltr->SetBranchAddress("SBT2_TL",&SBT2_TL);
-    caltr->SetBranchAddress("SBT2_TR",&SBT2_TR);
+  caltr->SetBranchAddress("Hodo_Multiplicity",&Hodo_Multiplicity);
+  caltr->SetBranchAddress("Hodo_ID",&Hodo_ID);
+  caltr->SetBranchAddress("Hodo_QCal",&Hodo_QCal);
+  caltr->SetBranchAddress("Hodo_TCal",&Hodo_TCal);
+  caltr->SetBranchAddress("Hodo_QRaw",&Hodo_QRaw);
+  caltr->SetBranchAddress("Hodo_TRaw",&Hodo_TRaw);
+  
+  caltr->SetBranchAddress("SBT1_Charge",&SBT1_Charge);
+  caltr->SetBranchAddress("SBT1_Time",&SBT1_Time);
+  caltr->SetBranchAddress("SBT1_TimeDiff",&SBT1_TimeDiff);
+  caltr->SetBranchAddress("SBT2_Charge",&SBT2_Charge);
+  caltr->SetBranchAddress("SBT2_Time",&SBT2_Time);
+  caltr->SetBranchAddress("SBT2_TimeDiff",&SBT2_TimeDiff);
+  caltr->SetBranchAddress("SBT1_QL",&SBT1_QL);
+  caltr->SetBranchAddress("SBT1_QR",&SBT1_QR);
+  caltr->SetBranchAddress("SBT1_TL",&SBT1_TL);
+  caltr->SetBranchAddress("SBT1_TR",&SBT1_TR);
+  caltr->SetBranchAddress("SBT2_QL",&SBT2_QL);
+  caltr->SetBranchAddress("SBT2_QR",&SBT2_QR);
+  caltr->SetBranchAddress("SBT2_TL",&SBT2_TL);
+  caltr->SetBranchAddress("SBT2_TR",&SBT2_TR);
   
   //===== Create output file/tree =====
-  TFile *anafile_smri = new TFile("/home/koiwai/analysis/anafiles/ana_smri.root","RECREATE");
+  TString ofname = Form("/home/koiwai/analysis/anafiles/ana_smri%04d.root",FileNum);
+  TFile *anafile_smri = new TFile(ofname,"RECREATE");
   TTree *anatrS  = new TTree("anatrS","anatrS");
   
   
@@ -161,9 +163,9 @@ int main(int argc, char *argv[]){
   Double_t wire_gap[DCNum] = {2.5, 2.5, 5, 10};
   char DCName[DCNum] = {'b','b','f','f'};
   
-  TFile *RootFile = new TFile("/home/koiwai/analysis/anafiles/ana_dc_tdcdist.root","READ");
+  TFile *RootFile = new TFile("/home/koiwai/analysis/rootfiles/ana_dc_tdcdist.root","READ");
   if(RootFile){
-    gROOT->cd();
+    gROOT->cd();f
     for(Int_t n=0;n<DCNum;++n){
       TH1I *h = NULL;    
       for(Int_t l=0;l<DCLayerNum[n];++l){
@@ -1215,7 +1217,17 @@ int main(int argc, char *argv[]){
     FDC2_B = (-TMath::ATan(slopeU) + TMath::ATan(slopeV))/2.;
     //@@@ FDC2 end @@@
 
+    //@@@ HODO @@@
 
+
+
+
+
+
+
+
+
+    //@@@ HODO end @@@
     
     anatrS->Fill();
   }//for LOOP
