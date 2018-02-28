@@ -17,9 +17,9 @@ using namespace std;
 void ana_dc_tdcdist(){
 
   //===== Load input file =====
-  TFile *infile_dc   = TFile::Open("rootfiles/run0056/run0056_DC.root");
-  TTree *caltreeDC;
-  infile_dc->GetObject("caltreeDC",caltreeDC);
+  TFile *infile_dc   = TFile::Open("/home/koiwai/analysis/rootfiles/run0056/run0056_ALL.root");
+  TTree *caltr;
+  infile_dc->GetObject("caltr",caltr);
 
   //===== input tree variables =====
   Long64_t EventNumber = 0;
@@ -49,49 +49,49 @@ void ana_dc_tdcdist(){
   Int_t NumBDC1Hit, NumBDC2Hit, NumFDC1Hit, NumFDC2Hit;
   
   //===== SetBranchAddress =====
-  caltreeDC->SetBranchAddress("RunNumber",&RunNumber);
-  caltreeDC->SetBranchAddress("EventNumber",&EventNumber);
+  caltr->SetBranchAddress("RunNumber",&RunNumber);
+  caltr->SetBranchAddress("EventNumber",&EventNumber);
 
-  caltreeDC->SetBranchAddress("BDC1_TDC",BDC1_TDC);
-  caltreeDC->SetBranchAddress("BDC1_TrailTDC",BDC1_TrailTDC);
-  caltreeDC->SetBranchAddress("BDC1_WireID",BDC1_WireID);
-  caltreeDC->SetBranchAddress("BDC1_WirePosition",BDC1_WirePosition);
-  caltreeDC->SetBranchAddress("BDC1_WireZPosition",BDC1_WireZPosition);
-  caltreeDC->SetBranchAddress("BDC1_Layer",BDC1_Layer);
-  caltreeDC->SetBranchAddress("BDC1_PlaneID",BDC1_PlaneID);
-  caltreeDC->SetBranchAddress("BDC1_HitID",BDC1_HitID);
+  caltr->SetBranchAddress("BDC1_TDC",BDC1_TDC);
+  caltr->SetBranchAddress("BDC1_TrailTDC",BDC1_TrailTDC);
+  caltr->SetBranchAddress("BDC1_WireID",BDC1_WireID);
+  caltr->SetBranchAddress("BDC1_WirePosition",BDC1_WirePosition);
+  caltr->SetBranchAddress("BDC1_WireZPosition",BDC1_WireZPosition);
+  caltr->SetBranchAddress("BDC1_Layer",BDC1_Layer);
+  caltr->SetBranchAddress("BDC1_PlaneID",BDC1_PlaneID);
+  caltr->SetBranchAddress("BDC1_HitID",BDC1_HitID);
   
-  caltreeDC->SetBranchAddress("BDC2_TDC",BDC2_TDC);
-  caltreeDC->SetBranchAddress("BDC2_TrailTDC",BDC2_TrailTDC);
-  caltreeDC->SetBranchAddress("BDC2_WireID",BDC2_WireID);
-  caltreeDC->SetBranchAddress("BDC2_WirePosition",BDC2_WirePosition);
-  caltreeDC->SetBranchAddress("BDC2_WireZPosition",BDC2_WireZPosition);
-  caltreeDC->SetBranchAddress("BDC2_Layer",BDC2_Layer);
-  caltreeDC->SetBranchAddress("BDC2_PlaneID",BDC2_PlaneID);
-  caltreeDC->SetBranchAddress("BDC2_HitID",BDC2_HitID);
+  caltr->SetBranchAddress("BDC2_TDC",BDC2_TDC);
+  caltr->SetBranchAddress("BDC2_TrailTDC",BDC2_TrailTDC);
+  caltr->SetBranchAddress("BDC2_WireID",BDC2_WireID);
+  caltr->SetBranchAddress("BDC2_WirePosition",BDC2_WirePosition);
+  caltr->SetBranchAddress("BDC2_WireZPosition",BDC2_WireZPosition);
+  caltr->SetBranchAddress("BDC2_Layer",BDC2_Layer);
+  caltr->SetBranchAddress("BDC2_PlaneID",BDC2_PlaneID);
+  caltr->SetBranchAddress("BDC2_HitID",BDC2_HitID);
   
-  caltreeDC->SetBranchAddress("FDC1_TDC",FDC1_TDC);
-  caltreeDC->SetBranchAddress("FDC1_TrailTDC",FDC1_TrailTDC);
-  caltreeDC->SetBranchAddress("FDC1_WireID",FDC1_WireID);
-  caltreeDC->SetBranchAddress("FDC1_WirePosition",FDC1_WirePosition);
-  caltreeDC->SetBranchAddress("FDC1_WireZPosition",FDC1_WireZPosition);
-  caltreeDC->SetBranchAddress("FDC1_Layer",FDC1_Layer);
-  caltreeDC->SetBranchAddress("FDC1_PlaneID",FDC1_PlaneID);
-  caltreeDC->SetBranchAddress("FDC1_HitID",FDC1_HitID);
+  caltr->SetBranchAddress("FDC1_TDC",FDC1_TDC);
+  caltr->SetBranchAddress("FDC1_TrailTDC",FDC1_TrailTDC);
+  caltr->SetBranchAddress("FDC1_WireID",FDC1_WireID);
+  caltr->SetBranchAddress("FDC1_WirePosition",FDC1_WirePosition);
+  caltr->SetBranchAddress("FDC1_WireZPosition",FDC1_WireZPosition);
+  caltr->SetBranchAddress("FDC1_Layer",FDC1_Layer);
+  caltr->SetBranchAddress("FDC1_PlaneID",FDC1_PlaneID);
+  caltr->SetBranchAddress("FDC1_HitID",FDC1_HitID);
   
-  caltreeDC->SetBranchAddress("FDC2_TDC",FDC2_TDC);
-  caltreeDC->SetBranchAddress("FDC2_TrailTDC",FDC2_TrailTDC);
-  caltreeDC->SetBranchAddress("FDC2_WireID",FDC2_WireID);
-  caltreeDC->SetBranchAddress("FDC2_WirePosition",FDC2_WirePosition);
-  caltreeDC->SetBranchAddress("FDC2_WireZPosition",FDC2_WireZPosition);
-  caltreeDC->SetBranchAddress("FDC2_Layer",FDC2_Layer);
-  caltreeDC->SetBranchAddress("FDC2_PlaneID",FDC2_PlaneID);
-  caltreeDC->SetBranchAddress("FDC2_HitID",FDC2_HitID);
+  caltr->SetBranchAddress("FDC2_TDC",FDC2_TDC);
+  caltr->SetBranchAddress("FDC2_TrailTDC",FDC2_TrailTDC);
+  caltr->SetBranchAddress("FDC2_WireID",FDC2_WireID);
+  caltr->SetBranchAddress("FDC2_WirePosition",FDC2_WirePosition);
+  caltr->SetBranchAddress("FDC2_WireZPosition",FDC2_WireZPosition);
+  caltr->SetBranchAddress("FDC2_Layer",FDC2_Layer);
+  caltr->SetBranchAddress("FDC2_PlaneID",FDC2_PlaneID);
+  caltr->SetBranchAddress("FDC2_HitID",FDC2_HitID);
   
   //===== Load CUT files =====
   
   //===== Create output file/tree =====
-  TFile *anafile_dc_tdcdist = new TFile("rootfiles/ana_dc_tdcdist.root","RECREATE");
+  TFile *anafile_dc_tdcdist = new TFile("/home/koiwai/analysis/rootfiles/ana_dc_tdcdist.root","RECREATE");
   //TTree *anatreeDC  = new TTree("anatreeDC","anatreeDC");
 
   //===== Create TDC Distributions =====
@@ -151,9 +151,9 @@ void ana_dc_tdcdist(){
   //===== Create anatree Branch =====
 
   //===== Begin LOOP =====
-  int nEntry = caltreeDC->GetEntries();
+  int nEntry = caltr->GetEntries();
   for(int iEntry=0;iEntry<nEntry;++iEntry){
-    caltreeDC->GetEntry(iEntry);
+    caltr->GetEntry(iEntry);
 
     for(int i=0;i<16;++i){
       if(BDC1_TDC[0][i]>0) hbdc1tdc0 -> Fill(BDC1_TDC[0][i]);
