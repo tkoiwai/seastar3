@@ -19,6 +19,7 @@
 #include"TCutG.h"
 #include"TMath.h"
 #include"TString.h"
+#include"TEnv.h"
 
 using namespace std;
 
@@ -26,6 +27,10 @@ using namespace std;
 //void ana_beam(Int_t runnum){
 //cout << "0" << endl;
 int main(int argc, char *argv[]){
+
+  TEnv *env_toff = new TEnv("/home/koiwai/analysis/time_offset.dat");
+
+  
   Int_t FileNumber = TString(argv[1]).Atoi();
   //Char_t FileNumber = &argv[1];
   //Int_t FileNumber = runnum;
@@ -231,10 +236,10 @@ int main(int argc, char *argv[]){
   double DistF3F7 = 46568.; //[mm]
   double DistF3F5 = 23284.;
   double DistF5F7 = 23284.;
-  double OffsetF3F7 = 292.379; //[nsec]
-  double OffsetF3F5 = 159.572;
+  double OffsetF3F7 = env_toff->GetValue("OffsetF3F7",292.379); //[nsec]
+  double OffsetF3F5 = env_toff->GetValue("OffsetF3F5",159.572);
   //double OffsetF3F5 = 160.572;
-  double OffsetF5F7 = 132.807;
+  double OffsetF5F7 = env_toff->GetValue("OffsetF5F7",132.807);
   double Ionpair = 4.866; //[keV]
   double m_e = 511.; //[keV]
   double m_u = 931.49432; //[MeV]
@@ -300,6 +305,7 @@ int main(int argc, char *argv[]){
 
   //=== Imported from intree ===
   Double_t anaF3_Time, anaF5_Time, anaF7_Time;
+  Double_t anaF3_TimeDiff, anaF5_TimeDiff, anaF7_TimeDiff;
   
   Int_t BG_flag; //flag for background
 
@@ -350,7 +356,11 @@ int main(int argc, char *argv[]){
   anatrB->Branch("anaF3_Time",&anaF3_Time); 
   anatrB->Branch("anaF5_Time",&anaF5_Time);
   anatrB->Branch("anaF7_Time",&anaF7_Time);
-
+  anatrB->Branch("anaF3_TimeDiff",&anaF3_TimeDiff);
+  anatrB->Branch("anaF5_TimeDiff",&anaF5_TimeDiff);
+  anatrB->Branch("anaF7_TimeDiff",&anaF7_TimeDiff);
+  
+  
   anatrB->Branch("BG_flag",&BG_flag);
   
   infile->cd();
@@ -457,7 +467,8 @@ int main(int argc, char *argv[]){
     }else if(!(cPPAC_Tsum_low[0]<F31A_X_T1+F31A_X_T2&&F31A_X_T1+F31A_X_T2<cPPAC_Tsum_up[0])&&(cPPAC_Tsum_low[1]<F31B_X_T1+F31B_X_T2&&F31B_X_T1+F31B_X_T2<cPPAC_Tsum_up[1])){
       F31_X = F31B_X;
     }else{
-      BG_flag = 2;
+      F31_X = 16.64*F3_TimeDiff + 20.82;
+      //BG_flag = 2;
     }
     if((cPPAC_Tsum_low[2]<F32A_X_T1+F32A_X_T2&&F32A_X_T1+F32A_X_T2<cPPAC_Tsum_up[2])&&(cPPAC_Tsum_low[3]<F32B_X_T1+F32B_X_T2&&F32B_X_T1+F32B_X_T2<cPPAC_Tsum_up[3])){
       F32_X = (F32A_X + F32B_X)/2.;
@@ -466,7 +477,8 @@ int main(int argc, char *argv[]){
     }else if(!(cPPAC_Tsum_low[2]<F32A_X_T1+F32A_X_T2&&F32A_X_T1+F32A_X_T2<cPPAC_Tsum_up[2])&&(cPPAC_Tsum_low[3]<F32B_X_T1+F32B_X_T2&&F32B_X_T1+F32B_X_T2<cPPAC_Tsum_up[3])){
       F32_X = F32B_X;
     }else{
-      BG_flag = 2;
+      F32_X = 16.64*F3_TimeDiff + 20.82;
+      //BG_flag = 2;
     }
      if((cPPAC_Tsum_low[4]<F31A_Y_T1+F31A_Y_T2&&F31A_Y_T1+F31A_Y_T2<cPPAC_Tsum_up[4])&&(cPPAC_Tsum_low[5]<F31B_Y_T1+F31B_Y_T2&&F31B_Y_T1+F31B_Y_T2<cPPAC_Tsum_up[5])){
       F31_Y = (F31A_Y + F31B_Y)/2.;
@@ -576,8 +588,11 @@ int main(int argc, char *argv[]){
     F7Y = (F71_Y + F72_Y)/2.;
     F7A = 1000.*TMath::ATan((F71_X-F72_X)/DistF7PPAC);
     F7B = 1000.*TMath::ATan((F71_Y-F72_Y)/DistF7PPAC);
+
+    recoF3A = (ADF3F5*F5X - XDF3F5*F5A - (ADF3F5*XXF3F5 - XDF3F5*AXF3F5)*F3X)/(ADF3F5*XAF3F5 - XDF3F5*AAF3F5);
     
-    deltaF3F5 = (F5X - XXF3F5*F3X - XAF3F5*F3A)/XDF3F5; //[%] 
+    //deltaF3F5 = (F5X - XXF3F5*F3X - XAF3F5*F3A)/XDF3F5; //[%]
+    deltaF3F5 = (F5X - XXF3F5*F3X - XAF3F5*recoF3A)/XDF3F5; //[%] 
     deltaF5F7 = (F7X - XXF5F7*F5X - XAF5F7*F5A)/XDF5F7;
 
     brhoF3F5 = Brho0F3F5*(1 + deltaF3F5*0.01);
@@ -588,11 +603,14 @@ int main(int argc, char *argv[]){
 
     aoqBR = aoqF3F5;
 
-    recoF3A = (ADF3F5*F5X - XDF3F5*F5A - (ADF3F5*XXF3F5 - XDF3F5*AXF3F5)*F3X)/(ADF3F5*XAF3F5 - XDF3F5*AAF3F5);
+    //recoF3A = (ADF3F5*F5X - XDF3F5*F5A - (ADF3F5*XXF3F5 - XDF3F5*AXF3F5)*F3X)/(ADF3F5*XAF3F5 - XDF3F5*AAF3F5);
     
     anaF3_Time = F3_Time;
     anaF5_Time = F5_Time;
-    anaF7_Time = F7_Time;    
+    anaF7_Time = F7_Time;
+    anaF3_TimeDiff = F3_TimeDiff;
+    anaF5_TimeDiff = F5_TimeDiff;
+    anaF7_TimeDiff = F7_TimeDiff;
 
     //===== Cut by graphical cut ==========================================================
     if(!cF3pla->IsInside(F3_TR-F3_TL,log(F3_QL/F3_QR))
