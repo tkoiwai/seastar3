@@ -36,12 +36,9 @@ int main(int argc, char *argv[]){
   //Int_t FileNumber = runnum;
   //Int_t FileNumber = 56;
   //===== Load input file =================================================
-  TString FileName = Form("/home/koiwai/analysis/rootfiles/run%04d/run%04d_ALL.root",FileNumber,FileNumber);
+  //TString FileName = Form("/home/koiwai/analysis/rootfiles/run%04d/run%04d_ALL.root",FileNumber,FileNumber);
+  TString FileName = Form("/home/koiwai/analysis/rootfiles/all/run%04d/run%04d_ALL.root",FileNumber,FileNumber);
   TFile *infile = TFile::Open(FileName);
-
-  //TFile *infile = TFile::Open(Form("/home/koiwai/analysis/rootfiles/run%04d/run%04d_ALL.root",FileNumber,FileNumber));
-  //TFile *infile = TFile::Open("/home/koiwai/analysis/rootfiles/run0036/run0036_ALL.root");
-
   
   TTree *caltr;
   infile->GetObject("caltr",caltr);
@@ -224,12 +221,10 @@ int main(int argc, char *argv[]){
   //cout << "4" << endl;
   
   //===== Create output file/tree =========================================
-  TString AnaFileName = Form("/home/koiwai/analysis/anafiles/beam/ana_beam%04d.root",FileNumber);
+  //TString AnaFileName = Form("/home/koiwai/analysis/anafiles/beam/ana_beam%04d.root",FileNumber);
+  TString AnaFileName = Form("/home/koiwai/analysis/rootfiles/ana/beam/ana_beam%04d.root",FileNumber);
   TFile *anafile = new TFile(AnaFileName,"recreate");
 
-
-  //TFile *anafile = new TFile(Form("/home/koiwai/analysis/anafiles/ana_beam%04d.root","RECREATE"),FileNumber);
-  //TFile *anafile = new TFile("/home/koiwai/analysis/anafiles/ana_beam0036.root","recreate");
   TTree *anatrB = new TTree("anatrB","anatrB");
 
   //===== Declear const.s =================================================
@@ -313,8 +308,8 @@ int main(int argc, char *argv[]){
   //cout << "5" << endl;
 
   //======
-  anatrB->Branch("EventNumber",&EventNum);
-  anatrB->Branch("RunNumber",&RunNum);
+  anatrB->Branch("EventNum",&EventNum);
+  anatrB->Branch("RunNum",&RunNum);
   
   anatrB->Branch("tofF3F7",&tofF3F7);
   anatrB->Branch("vF3F7",&vF3F7);
