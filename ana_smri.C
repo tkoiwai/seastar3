@@ -14,6 +14,9 @@
 #include"TMath.h"
 #include"TString.h"
 
+#include"/home/koiwai/analysis/brho_func/Brho_A56Z20_br56Ca_sa56Ca.C"
+#include"/home/koiwai/analysis/brho_func/Len_A56Z20_br56Ca_sa56Ca.C"
+
 using namespace std;
 
 int main(int argc, char *argv[]){
@@ -21,7 +24,7 @@ int main(int argc, char *argv[]){
   Int_t FileNum = TString(argv[1]).Atoi();
   
   //===== Load input file =====
-  TString infname = Form("/home/koiwai/analysis/strage2018feb20/run%04d_ALL.root",FileNum);
+  TString infname = Form("/home/koiwai/analysis/rootfiles/all/run%04d_ALL.root",FileNum);
   TFile *infile = TFile::Open(infname);
   
   TTree *caltr;
@@ -147,7 +150,7 @@ int main(int argc, char *argv[]){
   caltr->SetBranchAddress("SBT2_TR",&SBT2_TR);
   
   //===== Create output file/tree =====
-  TString ofname = Form("/home/koiwai/analysis/anafiles/ana_smri%04d.root",FileNum);
+  TString ofname = Form("/home/koiwai/analysis/rootfiles/ana/smri/ana_smri%04d.root",FileNum);
   TFile *anafile_smri = new TFile(ofname,"RECREATE");
   TTree *anatrS  = new TTree("anatrS","anatrS");
   
@@ -163,9 +166,9 @@ int main(int argc, char *argv[]){
   Double_t wire_gap[DCNum] = {2.5, 2.5, 5, 10};
   char DCName[DCNum] = {'b','b','f','f'};
   
-  TFile *RootFile = new TFile("/home/koiwai/analysis/rootfiles/ana_dc_tdcdist.root","READ");
+  TFile *RootFile = new TFile("/home/koiwai/analysis/rootfiles/tdc_dist/ana_dc_tdcdist.root","READ");
   if(RootFile){
-    gROOT->cd();f
+    gROOT->cd();
     for(Int_t n=0;n<DCNum;++n){
       TH1I *h = NULL;    
       for(Int_t l=0;l<DCLayerNum[n];++l){
@@ -195,9 +198,13 @@ int main(int argc, char *argv[]){
   Int_t tmphitnumX, tmphitnumY, tmphitnumU, tmphitnumV;
   Int_t tr;
 
+  Double_t FDC1_trackX_z[6] = {-65,-55,-5,5,55,65};
+  Double_t FDC1_trackU_z[4] = {-45,-35,15,25};
+  Double_t FDC1_trackV_z[4] = {-25,15,35,45};
+
   Double_t FDC2_trackX_z[6] = {-308.66, -291.34, -8.66, 8.66, 291.34, 308.66};
-  Double_t FDC2_trackU_z[6] = {-208.66, -191.34, 91.34, 108.66};
-  Double_t FDC2_trackV_z[6] = {-108.66, -91.34, 191.34, 208.66};
+  Double_t FDC2_trackU_z[4] = {-208.66, -191.34, 91.34, 108.66};
+  Double_t FDC2_trackV_z[4] = {-108.66, -91.34, 191.34, 208.66};
 
 
   //===== Declare valables for calc. =====
@@ -220,6 +227,7 @@ int main(int argc, char *argv[]){
   Int_t FDC1_hit_num[14];
   Double_t FDC1_trackX_pos[16][6], FDC1_trackU_pos[16][4], FDC1_trackV_pos[16][4];
   Double_t FDC1_trackX_mm[16][6], FDC1_trackU_mm[16][4], FDC1_trackV_mm[16][4];
+  Double_t FDC1_trackX[64][6], FDC1_trackU[64][4], FDC1_trackV[64][4];
   Int_t FDC1_allhitnumX;
   Int_t FDC1_allhitnumU;
   Int_t FDC1_allhitnumV;  
@@ -246,10 +254,12 @@ int main(int argc, char *argv[]){
   Double_t Target_X, Target_Y;
 
   Double_t FDC1_Xpos, FDC1_Upos, FDC1_Vpos, FDC1_Chi2X, FDC1_Chi2U, FDC1_Chi2V;
-  Double_t FDC1_X, FDC1_Y;
+  Double_t FDC1_X, FDC1_Y, FDC1_A, FDC1_B;
   
   Double_t FDC2_Xpos, FDC2_Upos, FDC2_Vpos, FDC2_Chi2X, FDC2_Chi2U, FDC2_Chi2V;
   Double_t FDC2_X, FDC2_Y, FDC2_A, FDC2_B;
+
+  Double_t brhoSAMURAI;
 
   Int_t BG_flag;
   
@@ -277,6 +287,7 @@ int main(int argc, char *argv[]){
   anatrS->Branch("Target_X",&Target_X);
   anatrS->Branch("Target_Y",&Target_Y);
 
+
   anatrS->Branch("FDC1_Xpos",&FDC1_Xpos);
   anatrS->Branch("FDC1_Upos",&FDC1_Upos);
   anatrS->Branch("FDC1_Vpos",&FDC1_Vpos);
@@ -286,6 +297,8 @@ int main(int argc, char *argv[]){
 
   anatrS->Branch("FDC1_X",&FDC1_X);
   anatrS->Branch("FDC1_Y",&FDC1_Y);
+  anatrS->Branch("FDC1_A",&FDC1_A);
+  anatrS->Branch("FDC1_B",&FDC1_B);
 
   anatrS->Branch("FDC2_Xpos",&FDC2_Xpos);
   anatrS->Branch("FDC2_Upos",&FDC2_Upos);
@@ -298,6 +311,8 @@ int main(int argc, char *argv[]){
   anatrS->Branch("FDC2_Y",&FDC2_Y);
   anatrS->Branch("FDC2_A",&FDC2_A);
   anatrS->Branch("FDC2_B",&FDC2_B);
+
+  anatrS->Branch("brhoSAMURAI",&brhoSAMURAI);
 
   anatrS->Branch("BG_flag",&BG_flag);
   
@@ -662,6 +677,8 @@ int main(int argc, char *argv[]){
     FDC1_Vpos = TMath::Sqrt(-1);
     FDC1_X = TMath::Sqrt(-1);
     FDC1_Y = TMath::Sqrt(-1);
+    FDC1_A = TMath::Sqrt(-1);
+    FDC1_B = TMath::Sqrt(-1);
     FDC1_Chi2X = 9999.;
     FDC1_Chi2U = 9999.;
     FDC1_Chi2V = 9999.;
@@ -784,7 +801,25 @@ int main(int argc, char *argv[]){
       }
     }
     
+    Double_t FDC1_slopeX = TMath::Sqrt(-1);
+    Double_t FDC1_interseptX = TMath::Sqrt(-1);
+    Double_t FDC1_slopeU = TMath::Sqrt(-1);
+    Double_t FDC1_interseptU = TMath::Sqrt(-1);
+    Double_t FDC1_slopeV = TMath::Sqrt(-1);
+    Double_t FDC1_interseptV = TMath::Sqrt(-1);
+
+    
     for(tr=0;tr<16;++tr){
+
+      for(Int_t i=0;i<64;++i){
+	for(Int_t l=0;l<6;++l) FDC1_trackX[i][l] = TMath::Sqrt(-1);
+	for(Int_t l=0;l<4;++l){
+	  FDC1_trackU[i][l] = TMath::Sqrt(-1);
+	  FDC1_trackV[i][l] = TMath::Sqrt(-1);      
+	}
+      }
+
+ 
       //if(!(FDC1_trackX_pos[tr][0]>-200&&FDC1_trackX_pos[tr][0]<200)) continue;
       //X
       for(Int_t i=0;i<64;++i){
@@ -799,6 +834,58 @@ int main(int argc, char *argv[]){
 	    signX[j] = 0;
 	  }
 	}
+
+	for(Int_t l=0;l<6;++l){
+	  FDC1_trackX[i][l] = FDC1_trackX_pos[tr][l] + pow(-1,signX[l])*FDC1_trackX_mm[tr][l];
+	}
+
+	if(FDC1_trackX[i][0]>-1200&&FDC1_trackX[i][0]<1200){
+	
+	//===== Least square =====
+	Double_t aX[2] = {-9999,-9999};
+	Double_t sX[3] = {0};
+	Double_t tX[2] = {0};
+	
+	for(Int_t l=0;l<6;++l){
+	  sX[0] += 1.;
+	  sX[1] += FDC1_trackX_z[l];
+	  sX[2] += pow(FDC1_trackX_z[l],2);
+	  tX[0] += FDC1_trackX[i][l];
+	  tX[1] += FDC1_trackX[i][l]*FDC1_trackX_z[l];
+	}
+	aX[0] = (sX[2]*tX[0]-sX[1]*tX[1])/(sX[0]*sX[2]-sX[1]*sX[1]);
+	aX[1] = (sX[0]*tX[1]-sX[1]*tX[0])/(sX[0]*sX[2]-sX[1]*sX[1]);
+
+	tempX = aX[0];
+
+	//cout << aX[0] << " " << aX[1] << endl;
+	
+	for(Int_t l=0;l<6;++l){
+	  tempChi2X += pow(FDC1_trackX[i][l] - (aX[1]*FDC1_trackX_z[l] + aX[0]),2);
+	}
+
+	//cout << tempChi2X << endl;
+	
+	if(tempChi2X<FDC1_Chi2X){
+	  FDC1_Chi2X = tempChi2X;
+	  FDC1_Xpos = tempX;
+	  FDC1_slopeX = aX[1];
+	  FDC1_interseptX = aX[0];
+	}
+
+	//cout << "Chi2 " << FDC2_Chi2X << "X " << FDC2_Xpos <<  endl;
+	//cout << "slope " << slope << " const " << intersept << endl;
+	
+	
+	}else continue;
+
+      }
+	
+	//===== Least square end =====
+	
+
+      /*
+	
 	//cout << i << "bitX = {" << bitX[0] << bitX[1] << bitX[2] << bitX[3] << bitX[4] << bitX[5] <<  "}, signX = {" << pow(-1,signX[0]) << signX[1] << signX[2] << signX[3] << signX[4] << signX[5] << "}" << endl;
 	
 	tempX = (FDC1_trackX_pos[tr][0] + pow(-1,signX[0])*FDC1_trackX_mm[tr][0] +
@@ -817,7 +904,9 @@ int main(int argc, char *argv[]){
 	  FDC1_Xpos = tempX;
 	}
       }
+      */
 
+      
       //U,V
       for(Int_t i=0;i<16;++i){
 	Double_t tempU = TMath::Sqrt(-1);
@@ -833,20 +922,109 @@ int main(int argc, char *argv[]){
 	    signUV[j] = 0;
 	  }
 	}
-	//cout << i << " " << "bitUV = {" << bitUV[0] << bitUV[1] << bitUV[2] << bitUV[3] << "}, signUV = {" << signUV[0] << signUV[1] << signUV[2] << signUV[3] << "}" << endl;
-	//Int_t de = 0;
-	//Int_t abc;
-	//for(abc=0;abc<4;++abc){
+
+	for(Int_t l=0;l<4;++l){
+	  FDC1_trackU[i][l] = FDC1_trackU_pos[tr][l] + pow(-1,signUV[l])*FDC1_trackU_mm[tr][l];
+	  FDC1_trackV[i][l] = FDC1_trackV_pos[tr][l] + pow(-1,signUV[l])*FDC1_trackV_mm[tr][l];
+	}
+
+	if(FDC2_trackU[i][0]>-1200&&FDC2_trackU[i][0]<1200){
+	  
+	  //===== Least square =====
+	  Double_t aU[2] = {-9999,-9999};
+	  Double_t sU[3] = {0};
+	  Double_t tU[2] = {0};
+	  
+	  for(Int_t l=0;l<3;++l){
+	    sU[0] += 1.;
+	    sU[1] += FDC1_trackU_z[l];
+	    sU[2] += pow(FDC1_trackU_z[l],2);
+	    tU[0] += FDC1_trackU[i][l];
+	    tU[1] += FDC1_trackU[i][l]*FDC1_trackU_z[l];
+	  }
+	  aU[0] = (sU[2]*tU[0]-sU[1]*tU[1])/(sU[0]*sU[2]-sU[1]*sU[1]);
+	  aU[1] = (sU[0]*tU[1]-sU[1]*tU[0])/(sU[0]*sU[2]-sU[1]*sU[1]);
+	  
+	  tempU = aU[0];
+	  
+	  //cout << aU[0] << " " << aU[1] << endl;
+	  
+	  for(Int_t l=0;l<3;++l){
+	    tempChi2U += pow(FDC1_trackU[i][l] - (aU[1]*FDC1_trackU_z[l] + aU[0]),2);
+	  }
+	  
+	  //cout << tempChi2U << endl;
+	  
+	  if(tempChi2U<FDC1_Chi2U){
+	    FDC1_Chi2U = tempChi2U;
+	    FDC1_Upos = tempU;
+	    FDC1_slopeU = aU[1];
+	    FDC1_interseptU = aU[0];
+	  }
+	  
+	  //cout << "Chi2 " << FDC2_Chi2U << "U " << FDC2_Upos <<  endl;
+	  //cout << "slope " << slope << " const " << intersept << endl;
+	  
+	  
+	}else continue;
+
+	if(FDC1_trackV[i][0]>-1200&&FDC1_trackV[i][0]<1200){
+	  
+	  //===== Least square =====
+	  Double_t aV[2] = {-9999,-9999};
+	  Double_t sV[3] = {0};
+	  Double_t tV[2] = {0};
+	  
+	  for(Int_t l=0;l<4;++l){
+	    sV[0] += 1.;
+	    sV[1] += FDC1_trackV_z[l];
+	    sV[2] += pow(FDC1_trackV_z[l],2);
+	    tV[0] += FDC1_trackV[i][l];
+	  tV[1] += FDC1_trackV[i][l]*FDC1_trackV_z[l];
+	  }
+	  aV[0] = (sV[2]*tV[0]-sV[1]*tV[1])/(sV[0]*sV[2]-sV[1]*sV[1]);
+	  aV[1] = (sV[0]*tV[1]-sV[1]*tV[0])/(sV[0]*sV[2]-sV[1]*sV[1]);
+	  
+	  tempV = aV[0];
+	  
+	//cout << aV[0] << " " << aV[1] << endl;
+	  
+	  for(Int_t l=0;l<4;++l){
+	    tempChi2V += pow(FDC1_trackV[i][l] - (aV[1]*FDC1_trackV_z[l] + aV[0]),2);
+	  }
+	  
+	  //cout << tempChi2V << endl;
+	  
+	  if(tempChi2V<FDC1_Chi2V){
+	    FDC1_Chi2V = tempChi2V;
+	    FDC1_Vpos = tempV;
+	    FDC1_slopeV = aV[1];
+	    FDC1_interseptV = aV[0];
+	  }
+	  
+	  //cout << "Chi2 " << FDC1_Chi2V << "V " << FDC1_Vpos <<  endl;
+	  //cout << "slope " << slope << " const " << intersept << endl;
+	  
+	  
+	}else continue;
+
+      }//i
+
+    }//tr
+    
+    FDC1_X = (FDC1_Xpos + (FDC1_Vpos + FDC1_Upos)/2.)/2.;
+    FDC1_Y = TMath::Sqrt(3)/2.*(FDC1_Vpos-FDC1_Upos);
+    FDC1_A = (6*TMath::ATan(FDC1_slopeX) + 2/TMath::Sqrt(3)*4*TMath::ATan(FDC1_slopeU) + 2/TMath::Sqrt(3)*4*TMath::ATan(FDC1_slopeV))/14.;
+    FDC1_B = (-TMath::ATan(FDC1_slopeU) + TMath::ATan(FDC1_slopeV))/2.;
+    /*
 	//if(FDC1_trackU_pos[tr][abc]>-200&&FDC1_trackU_pos[tr][abc]<200){
 	tempU = (FDC1_trackU_pos[tr][0] + pow(-1,signUV[0])*FDC1_trackU_mm[tr][0] +
 		 FDC1_trackU_pos[tr][1] + pow(-1,signUV[1])*FDC1_trackU_mm[tr][1] +
 		 FDC1_trackU_pos[tr][2] + pow(-1,signUV[2])*FDC1_trackU_mm[tr][2]
-		 /*FDC1_trackU_pos[tr][3] + pow(-1,signUV[3])*FDC1_trackU_mm[tr][3]*/)/3.;	    
+		 FDC1_trackU_pos[tr][3] + pow(-1,signUV[3])*FDC1_trackU_mm[tr][3])/3.;	    
 	//tempU += FDC1_trackU_pos[tr][abc] + pow(-1,signUV[abc])*FDC1_trackU_mm[tr][abc];
-	//cout << pow(-1,signUV[abc])*FDC1_trackU_mm[tr][abc] << " ";
-	//++de;
 	//}else continue;
-	    //}
+	//}
 	//tempU = tempU/de;
 
 	tempV = (FDC1_trackV_pos[tr][0] + pow(-1,signUV[0])*FDC1_trackV_mm[tr][0] +
@@ -875,6 +1053,8 @@ int main(int argc, char *argv[]){
     
     FDC1_X = (FDC1_Xpos + (FDC1_Vpos + FDC1_Upos)/2.)/2.;
     FDC1_Y = TMath::Sqrt(3)/2.*(FDC1_Vpos-FDC1_Upos);
+
+    */
     //@@@ FDC1 end @@@
 
     //@@@ FDC2 @@@
@@ -1217,6 +1397,19 @@ int main(int argc, char *argv[]){
     FDC2_B = (-TMath::ATan(slopeU) + TMath::ATan(slopeV))/2.;
     //@@@ FDC2 end @@@
 
+    //@@@ Brho Length Function @@@
+
+    Double_t x[6];
+
+    x[0] = FDC1_X;
+    x[1] = FDC1_A;
+    x[2] = FDC1_Y;
+    x[3] = FDC1_B;
+    x[4] = FDC2_X;
+    x[5] = FDC2_A;
+
+    brhoSAMURAI = MDF_Brho_A56Z20(x);
+    
     //@@@ HODO @@@
 
 
