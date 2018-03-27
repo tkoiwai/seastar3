@@ -14,12 +14,17 @@
 
 using namespace std;
 
+//int main(int argc, char *argv[]){
 void ana_dc_tdcdist(){
-
+  //Int_t FileNum = TString(argv[1]).Atoi();
+  
   //===== Load input file =====
-  TFile *infile_dc   = TFile::Open("/home/koiwai/analysis/rootfiles/run0056/run0056_ALL.root");
+  //TString infname = Form("/home/koiwai/analysis/rootfiles/all/run%04d_ALL.root",FileNum);
+  //TFile *infile = TFile::Open(infname);
+  //TFile *infile = TFile::Open("/home/koiwai/analysis/rootfiles/all/run0056_ALL.root");
+  TFile *infile = TFile::Open("/home/koiwai/analysis/chain/calch.root");
   TTree *caltr;
-  infile_dc->GetObject("caltr",caltr);
+  infile->GetObject("caltr",caltr);
 
   //===== input tree variables =====
   Long64_t EventNumber = 0;
@@ -88,11 +93,8 @@ void ana_dc_tdcdist(){
   caltr->SetBranchAddress("FDC2_PlaneID",FDC2_PlaneID);
   caltr->SetBranchAddress("FDC2_HitID",FDC2_HitID);
   
-  //===== Load CUT files =====
-  
   //===== Create output file/tree =====
-  TFile *anafile_dc_tdcdist = new TFile("/home/koiwai/analysis/rootfiles/ana_dc_tdcdist.root","RECREATE");
-  //TTree *anatreeDC  = new TTree("anatreeDC","anatreeDC");
+  TFile *anafile_dc_tdcdist = new TFile("/home/koiwai/analysis/rootfiles/tdc_dist/ana_dc_tdcdist.root","RECREATE");
 
   //===== Create TDC Distributions =====
   TH1I *hbdc1tdc0 = new TH1I("hbdc1tdc0","BDC1 TDC Layer 0",600,1400,2000);
@@ -146,15 +148,16 @@ void ana_dc_tdcdist(){
   //===== Declear const.s =====
   Int_t BDCNumLayer = 8;
   Int_t FDCNumLayer = 14;
-  //===== Define ana variables =====
-
-  //===== Create anatree Branch =====
 
   //===== Begin LOOP =====
   int nEntry = caltr->GetEntries();
+  cout << TMath::Ceil(nEntry/1000) << "k events to be treated." << endl;
+  
   for(int iEntry=0;iEntry<nEntry;++iEntry){
     caltr->GetEntry(iEntry);
 
+    if(iEntry%100==0) clog << iEntry/1000 << "k events done..." << "\r";
+    
     for(int i=0;i<16;++i){
       if(BDC1_TDC[0][i]>0) hbdc1tdc0 -> Fill(BDC1_TDC[0][i]);
       if(BDC1_TDC[1][i]>0) hbdc1tdc1 -> Fill(BDC1_TDC[1][i]);
@@ -207,10 +210,6 @@ void ana_dc_tdcdist(){
       if(FDC2_TDC[13][i]>0) hfdc2tdc13 -> Fill(FDC2_TDC[13][i]);
     }
     
-
-
-
-    //anatreeDC->Fill();
   }//for LOOP
   anafile_dc_tdcdist->cd();
   //anatreeDC->Write();
