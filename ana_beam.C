@@ -23,6 +23,7 @@
 
 using namespace std;
 using namespace TMath;
+
 int main(int argc, char *argv[]){
 
   Int_t FileNumber = TString(argv[1]).Atoi();
@@ -194,15 +195,19 @@ int main(int argc, char *argv[]){
   
   //===== Load CUT files ==================================================
   //=== Plastic (graphical cut)===
-  TFile *cutfileF3pla = new TFile("/home/koiwai/analysis/cutfiles/cut_F3pla.root");
-  TCutG *cF3pla = (TCutG*)cutfileF3pla->Get("F3pla");
-  TFile *cutfileF7pla = new TFile("/home/koiwai/analysis/cutfiles/cut_F7pla.root");
-  TCutG *cF7pla = (TCutG*)cutfileF7pla->Get("F7pla");
+  TFile *cutfileF3pla = new TFile("/home/koiwai/analysis/cutfiles/cutf3pla.root");
+  TCutG *cF3pla = (TCutG*)cutfileF3pla->Get("f3pla");
+  TFile *cutfileF5pla = new TFile("/home/koiwai/analysis/cutfiles/cutf5pla.root");
+  TCutG *cF5pla = (TCutG*)cutfileF5pla->Get("f5pla");
+  TFile *cutfileF7pla = new TFile("/home/koiwai/analysis/cutfiles/cutf7pla.root");
+  TCutG *cF7pla = (TCutG*)cutfileF7pla->Get("f7pla");
 
+  /*
   //=== Chrage change @ F5 (graphical cut) ===
   TFile *cutfileF5Qchange = new TFile("/home/koiwai/analysis/cutfiles/cut_bigripsZvsF5Qchange.root");
   TCutG *cF5Qchange = (TCutG*)cutfileF5Qchange->Get("CUTG");
-
+  */
+  
   //=== PPAC Tsum gate ===
   ifstream fin;
   fin.open("/home/koiwai/analysis/cutfiles/cut_PPAC_Tsum.dat");
@@ -260,19 +265,13 @@ int main(int argc, char *argv[]){
   double DistF3F13 = env->GetValue("Dist_F3F13",0.0);
   double OffsetF3F7 = env->GetValue("offsetF3F7",292.379); //[nsec]
   double OffsetF3F5 = env->GetValue("offsetF3F5",159.572);
-  //double OffsetF5F7 = env->GetValue("offsetF5F7",132.807);
-  double OffsetF5F7 = 134.9;
+  double OffsetF5F7 = env->GetValue("offsetF5F7",132.807);
   double OffsetF7F13 = env->GetValue("offsetF7SBT",588.109);
   double OffsetF3F13 = env->GetValue("offsetF3F13",0.0);
-  //double OffsetF3F5 = 160.572;
   double Ionpair = 4.866; //[keV]
   double m_e = 511.; //[keV]
   double m_u = 931.49432; //[MeV]
   double clight = 299.792458; //[mm/nsec]
-  //double zetBR_c1 = 0.0374179; //slope
-  //double zetBR_c2 = -4.2354; //const.
-  //double zetBR_c1 = 0.0631928; //slop
-  //double zetBR_c2 = -4.62805; //const.
   double zetBR_c0 = env->GetValue("zetBR_c0",0.0);
   double zetBR_c1 = env->GetValue("zetBR_c1",0.0);
   double DistF3PPAC = 890.; //[mm]
@@ -501,7 +500,6 @@ int main(int argc, char *argv[]){
     tofF3F7 = F7_Time - F3_Time + OffsetF3F7;
     tofF3F5 = F5_Time - F3_Time + OffsetF3F5;
     tofF5F7 = F7_Time - F5_Time + OffsetF5F7;
-    //tofF7F13 = (SBT1_Time + SBT2_Time)/2. - F7_Time + OffsetF7F13;
     tofF7F13 = SBT1_Time - F7_Time + OffsetF7F13;
     tofF3F13 = SBT1_Time - F3_Time + OffsetF3F13;
     vF3F7 = DistF3F7/tofF3F7;
@@ -521,21 +519,22 @@ int main(int argc, char *argv[]){
     gammaF7F13 = 1/TMath::Sqrt(1.-betaF7F13*betaF7F13);
     gammaF3F13 = 1/TMath::Sqrt(1.-betaF3F13*betaF3F13);
 
-    //zetBRraw = vF3F7 * TMath::Sqrt(F7IC_E/(TMath::Log(2*m_e*vF3F7*vF3F7/Ionpair)-TMath::Log(1-betaF3F7*betaF3F7)-betaF3F7*betaF3F7));
-
     zetBRraw = vF7F13 * TMath::Sqrt(F7IC_E/(TMath::Log(2*m_e*vF7F13*vF7F13/Ionpair)-TMath::Log(1-betaF7F13*betaF7F13)-betaF7F13*betaF7F13));
     
     zetBR = zetBR_c1 * zetBRraw + zetBR_c0;
 
+    /*
+    //@@@ tried to deduce Z with pla charge @@@
     Double_t de;
-     //de = F7IC_E*(pla3q2e[0]+pla3q2e[1]*F3_Charge)*(pla7q2e[0]+pla7q2e[1]*F7_Charge)*(pla13_1q2e[0]+pla13_1q2e[1]*SBT1_Charge)*(pla13_2q2e[0]+pla13_2q2e[1]*SBT2_Charge);
+    //square average
+    de = F7IC_E*(pla3q2e[0]+pla3q2e[1]*F3_Charge)*(pla7q2e[0]+pla7q2e[1]*F7_Charge)*(pla13_1q2e[0]+pla13_1q2e[1]*SBT1_Charge)*(pla13_2q2e[0]+pla13_2q2e[1]*SBT2_Charge);
+    de = pow(de,1./5.); 
 
-    //cout << "pla3" << pla3q2e[0]+pla3q2e[1]*F3_Charge << "pla7" << pla7q2e[0]+pla7q2e[1]*F7_Charge << endl;
-    //de = pow(de,1./5.);
-
+    //sum average
     de = (F7IC_E + (pla3q2e[0]+pla3q2e[1]*F3_Charge) + (pla7q2e[0]+pla7q2e[1]*F7_Charge) + (pla13_1q2e[0]+pla13_1q2e[1]*SBT1_Charge) + (pla13_2q2e[0]+pla13_2q2e[1]*SBT2_Charge))/5.;
     
     zetplaic = vF3F7 * TMath::Sqrt(de/(TMath::Log(2*m_e*vF3F7*vF3F7/Ionpair)-TMath::Log(1-betaF3F7*betaF3F7)-betaF3F7*betaF3F7));
+    */
     
     //=== F3 Tsum gate ===
     if((cPPAC_Tsum_low[0]<F31A_X_T1+F31A_X_T2&&F31A_X_T1+F31A_X_T2<cPPAC_Tsum_up[0])&&(cPPAC_Tsum_low[1]<F31B_X_T1+F31B_X_T2&&F31B_X_T1+F31B_X_T2<cPPAC_Tsum_up[1])){
@@ -565,7 +564,7 @@ int main(int argc, char *argv[]){
     }else if(!(cPPAC_Tsum_low[4]<F31A_Y_T1+F31A_Y_T2&&F31A_Y_T1+F31A_Y_T2<cPPAC_Tsum_up[4])&&(cPPAC_Tsum_low[5]<F31B_Y_T1+F31B_Y_T2&&F31B_Y_T1+F31B_Y_T2<cPPAC_Tsum_up[5])){
       F31_Y = F31B_Y;
     }else{
-      BG_flag = 2;
+       //BG_flag = 2;
     }
     if((cPPAC_Tsum_low[6]<F32A_Y_T1+F32A_Y_T2&&F32A_Y_T1+F32A_Y_T2<cPPAC_Tsum_up[6])&&(cPPAC_Tsum_low[7]<F32B_Y_T1+F32B_Y_T2&&F32B_Y_T1+F32B_Y_T2<cPPAC_Tsum_up[7])){
       F32_Y = (F32A_Y + F32B_Y)/2.;
@@ -574,7 +573,7 @@ int main(int argc, char *argv[]){
     }else if(!(cPPAC_Tsum_low[6]<F32A_Y_T1+F32A_Y_T2&&F32A_Y_T1+F32A_Y_T2<cPPAC_Tsum_up[6])&&(cPPAC_Tsum_low[7]<F32B_Y_T1+F32B_Y_T2&&F32B_Y_T1+F32B_Y_T2<cPPAC_Tsum_up[7])){
       F32_Y = F32B_Y;
     }else{
-      BG_flag = 2;
+      //BG_flag = 2;
     }
     //=== F5 ===
      if((cPPAC_Tsum_low[8]<F51A_X_T1+F51A_X_T2&&F51A_X_T1+F51A_X_T2<cPPAC_Tsum_up[8])&&(cPPAC_Tsum_low[9]<F51B_X_T1+F51B_X_T2&&F51B_X_T1+F51B_X_T2<cPPAC_Tsum_up[9])){
@@ -602,7 +601,7 @@ int main(int argc, char *argv[]){
     }else if(!(cPPAC_Tsum_low[12]<F51A_Y_T1+F51A_Y_T2&&F51A_Y_T1+F51A_Y_T2<cPPAC_Tsum_up[12])&&(cPPAC_Tsum_low[13]<F51B_Y_T1+F51B_Y_T2&&F51B_Y_T1+F51B_Y_T2<cPPAC_Tsum_up[13])){
       F51_Y = F51B_Y;
     }else{
-      BG_flag = 2;
+      //BG_flag = 2;
     }
     if((cPPAC_Tsum_low[14]<F52A_Y_T1+F52A_Y_T2&&F52A_Y_T1+F52A_Y_T2<cPPAC_Tsum_up[14])&&(cPPAC_Tsum_low[15]<F52B_Y_T1+F52B_Y_T2&&F52B_Y_T1+F52B_Y_T2<cPPAC_Tsum_up[15])){
       F52_Y = (F52A_Y + F52B_Y)/2.;
@@ -611,7 +610,7 @@ int main(int argc, char *argv[]){
     }else if(!(cPPAC_Tsum_low[14]<F52A_Y_T1+F52A_Y_T2&&F52A_Y_T1+F52A_Y_T2<cPPAC_Tsum_up[14])&&(cPPAC_Tsum_low[15]<F52B_Y_T1+F52B_Y_T2&&F52B_Y_T1+F52B_Y_T2<cPPAC_Tsum_up[15])){
       F52_Y = F52B_Y;
     }else{
-      BG_flag = 2;
+      //BG_flag = 2;
     }
     //=== F7 ===
      if((cPPAC_Tsum_low[16]<F71A_X_T1+F71A_X_T2&&F71A_X_T1+F71A_X_T2<cPPAC_Tsum_up[16])&&(cPPAC_Tsum_low[17]<F71B_X_T1+F71B_X_T2&&F71B_X_T1+F71B_X_T2<cPPAC_Tsum_up[17])){
@@ -641,7 +640,7 @@ int main(int argc, char *argv[]){
     }else if(!(cPPAC_Tsum_low[20]<F71A_Y_T1+F71A_Y_T2&&F71A_Y_T1+F71A_Y_T2<cPPAC_Tsum_up[20])&&(cPPAC_Tsum_low[21]<F71B_Y_T1+F71B_Y_T2&&F71B_Y_T1+F71B_Y_T2<cPPAC_Tsum_up[21])){
       F71_Y = F71B_Y;
     }else{
-      BG_flag = 2;
+       //BG_flag = 2;
     }
     if((cPPAC_Tsum_low[22]<F72A_Y_T1+F72A_Y_T2&&F72A_Y_T1+F72A_Y_T2<cPPAC_Tsum_up[22])&&(cPPAC_Tsum_low[23]<F72B_Y_T1+F72B_Y_T2&&F72B_Y_T1+F72B_Y_T2<cPPAC_Tsum_up[23])){
       F72_Y = (F72A_Y + F72B_Y)/2.;
@@ -650,7 +649,7 @@ int main(int argc, char *argv[]){
     }else if(!(cPPAC_Tsum_low[22]<F72A_Y_T1+F72A_Y_T2&&F72A_Y_T1+F72A_Y_T2<cPPAC_Tsum_up[22])&&(cPPAC_Tsum_low[23]<F72B_Y_T1+F72B_Y_T2&&F72B_Y_T1+F72B_Y_T2<cPPAC_Tsum_up[23])){
       F72_Y = F72B_Y;
     }else{
-      BG_flag = 2;
+      //BG_flag = 2;
     }
     
     
@@ -671,7 +670,6 @@ int main(int argc, char *argv[]){
 
     recoF3A = (ADF3F5*F5X - XDF3F5*F5A - (ADF3F5*XXF3F5 - XDF3F5*AXF3F5)*F3X)/(ADF3F5*XAF3F5 - XDF3F5*AAF3F5);
     
-    //deltaF3F5 = (F5X - XXF3F5*F3X - XAF3F5*F3A)/XDF3F5; //[%]
     deltaF3F5 = (F5X - XXF3F5*F3X - XAF3F5*recoF3A)/XDF3F5; //[%] 
     deltaF5F7 = (F7X - XXF5F7*F5X - XAF5F7*F5A)/XDF5F7;
 
@@ -682,16 +680,12 @@ int main(int argc, char *argv[]){
     //aoqF5F7 = brhoF5F7*clight/m_u/betaF5F7/gammaF5F7 + 0.0006*F5A + 0.00015*F7A;
 
     aoqF3F13 = brhoF5F7*clight/m_u/betaF3F13/gammaF3F13;
-    //aoqF5F7 = brhoF5F7*clight/m_u/betaF5F7/gammaF5F7;
     aoqF5F7 = brhoF5F7*clight/m_u/betaF7F13/gammaF7F13;
     
-    //aoqBR = aoqF3F5;
     //aoqBR = aoqF5F7 + 0.0002*F7X + 0.00025*F5A + 0.00065*F7A + 0.00009*F5X - 0.000002*F5X*F5X + 0.000003*F7Y*F7Y + 0.000007*F7B*F7B;
-
     //aoqBR = aoqF5F7 + 0.0005*F7X - 0.00001*F7X*F7X + 0.00005*F7A - 0.00003*F5X + 0.0000002*F5X*F5X;
+
     aoqBR = aoqF3F13 + 0.0006*F7X + 0.0000*F7A + 0.000000*1*F5X*F5X - 0.00015*F3X;
-    
-    //recoF3A = (ADF3F5*F5X - XDF3F5*F5A - (ADF3F5*XXF3F5 - XDF3F5*AXF3F5)*F3X)/(ADF3F5*XAF3F5 - XDF3F5*AAF3F5);
     
     anaF3_Time = F3_Time;
     anaF5_Time = F5_Time;
@@ -701,10 +695,9 @@ int main(int argc, char *argv[]){
     anaF7_TimeDiff = F7_TimeDiff;
 
     //===== Cut by graphical cut ==========================================================
-    if(!cF3pla->IsInside(F3_TR-F3_TL,log(F3_QL/F3_QR))){
-      BG_flag = 1;
-    }
-    if(!cF7pla->IsInside(F7_TR-F7_TL,log(F7_QL/F7_QR))) BG_flag = 3;
+    if(!cF3pla->IsInside(F3_TR-F3_TL,log(F3_QL/F3_QR))) BG_flag = 1;
+    if(!cF5pla->IsInside(F5_TR-F5_TL,log(F5_QL/F5_QR))) BG_flag = 1;
+    if(!cF7pla->IsInside(F7_TR-F7_TL,log(F7_QL/F7_QR))) BG_flag = 1;
     //if(!cF5Qchange->IsInside(aoqF3F5/aoqF5F7,zetBR)) BG_flag = 4; after finalizing the PID
     if(cBR56Ca->IsInside(aoqBR,zetBR)) BR56Ca = 1;
     if(cBR53Ca->IsInside(aoqBR,zetBR)) BR53Ca = 1;
