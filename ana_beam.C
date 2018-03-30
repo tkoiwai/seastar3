@@ -22,28 +22,19 @@
 #include"TEnv.h"
 
 using namespace std;
-
-//void ana_beam(){
-//void ana_beam(Int_t runnum){
-//cout << "0" << endl;
+using namespace TMath;
 int main(int argc, char *argv[]){
 
-  TEnv *env_toff = new TEnv("/home/koiwai/analysis/time_offset.dat");
-
-  
   Int_t FileNumber = TString(argv[1]).Atoi();
-  //Char_t FileNumber = &argv[1];
-  //Int_t FileNumber = runnum;
-  //Int_t FileNumber = 56;
+
   //===== Load input file =================================================
-  //TString FileName = Form("/home/koiwai/analysis/rootfiles/run%04d/run%04d_ALL.root",FileNumber,FileNumber);
-  TString FileName = Form("/home/koiwai/analysis/rootfiles/all/run%04d/run%04d_ALL.root",FileNumber,FileNumber);
+
+  TString FileName = Form("/home/koiwai/analysis/rootfiles/all/run%04d_ALL.root",FileNumber);
   TFile *infile = TFile::Open(FileName);
   
   TTree *caltr;
   infile->GetObject("caltr",caltr);
 
-  //cout << "1" << endl;
   
   //===== in tree variables ===============================================
   Long64_t EventNumber = 0;
@@ -75,13 +66,16 @@ int main(int argc, char *argv[]){
   Int_t F71B_X_T1, F71B_X_T2, F71B_Y_T1, F71B_Y_T2;
   Int_t F72A_X_T1, F72A_X_T2, F72A_Y_T1, F72A_Y_T2;
   Int_t F72B_X_T1, F72B_X_T2, F72B_Y_T1, F72B_Y_T2;
-  
+
   //=== F7IC === 
   Double_t F7IC_E;
   
   Int_t F7IC_raw[6];
 
-  //cout << "2" << endl;
+  //=== SBT ===
+  Double_t SBT1_Charge, SBT2_Charge;
+  Double_t SBT1_Time, SBT2_Time;
+  Double_t SBT1_TimeDiff, SBT2_TimeDiff;
   
   //=== Set value ===
   caltr->SetBranchAddress("RunNumber",&RunNumber);
@@ -190,7 +184,13 @@ int main(int argc, char *argv[]){
   caltr->SetBranchAddress("F7IC_E",&F7IC_E);
   caltr->SetBranchAddress("F7IC_raw",F7IC_raw);
 
-  //cout << "3" << endl;
+  caltr->SetBranchAddress("SBT1_Charge",&SBT1_Charge);
+  caltr->SetBranchAddress("SBT2_Charge",&SBT2_Charge);
+  caltr->SetBranchAddress("SBT1_Time",&SBT1_Time);
+  caltr->SetBranchAddress("SBT2_Time",&SBT2_Time);
+  caltr->SetBranchAddress("SBT1_TimeDiff",&SBT1_TimeDiff);
+  caltr->SetBranchAddress("SBT2_TimeDiff",&SBT2_TimeDiff);
+
   
   //===== Load CUT files ==================================================
   //=== Plastic (graphical cut)===
@@ -217,30 +217,64 @@ int main(int argc, char *argv[]){
     fin >> cPPAC_Tsum_low[cPPAC_index] >> cPPAC_Tsum_up[cPPAC_index];
   }
 
+  //=== 56Ca gate ===
+  TFile *BRpid = new TFile("/home/koiwai/analysis/cutfiles/BRpid.root");
+  TCutG *cBR56Ca = (TCutG*)BRpid->Get("BR56Ca");
+  TCutG *cBR53Ca = (TCutG*)BRpid->Get("BR53Ca");
+  TCutG *cBR51K  = (TCutG*)BRpid->Get("BR51K");
   
-  //cout << "4" << endl;
+  //===== Load .dat files =====
+  
+  TEnv *env = new TEnv("/home/koiwai/analysis/db/geometry_psp17.dat");
+  TEnv *env_pla  = new TEnv("/home/koiwai/analysis/db/pla2pos_Z.dat");
+  TEnv *env_q = new TEnv("/home/koiwai/analysis/db/plaQ2f7icE.dat");
   
   //===== Create output file/tree =========================================
-  //TString AnaFileName = Form("/home/koiwai/analysis/anafiles/beam/ana_beam%04d.root",FileNumber);
   TString AnaFileName = Form("/home/koiwai/analysis/rootfiles/ana/beam/ana_beam%04d.root",FileNumber);
   TFile *anafile = new TFile(AnaFileName,"recreate");
 
   TTree *anatrB = new TTree("anatrB","anatrB");
 
   //===== Declear const.s =================================================
+  double pla3pos[2];
+  double pla7pos[2];
+  //double pla7z[3];
+  double pla3q2e[2];
+  double pla7q2e[2];
+  double pla13_1q2e[2];
+  double pla13_2q2e[2];
+  for(Int_t i=0;i<2;++i){
+    pla3pos[i] = env_pla->GetValue(Form("pla3pos%d",i),0.0);
+    pla7pos[i] = env_pla->GetValue(Form("pla7pos%d",i),0.0);
+    //pla7z[i] = env_pla->GetValue(Form("pla7Z[%d]",i),0.0);
+    pla3q2e[i]    = env_q->GetValue(Form("pla3q2e%d",i),0.0);
+    pla7q2e[i]    = env_q->GetValue(Form("pla7q2e%d",i),0.0);
+    pla13_1q2e[i] = env_q->GetValue(Form("pla13_1q2e%d",i),0.0);
+    pla13_2q2e[i] = env_q->GetValue(Form("pla13_2q2e%d",i),0.0);
+  }
+
   double DistF3F7 = 46568.; //[mm]
   double DistF3F5 = 23284.;
   double DistF5F7 = 23284.;
-  double OffsetF3F7 = env_toff->GetValue("OffsetF3F7",292.379); //[nsec]
-  double OffsetF3F5 = env_toff->GetValue("OffsetF3F5",159.572);
+  double DistF7F13 = env->GetValue("Dist_F7SBT",0.0);
+  double DistF3F13 = env->GetValue("Dist_F3F13",0.0);
+  double OffsetF3F7 = env->GetValue("offsetF3F7",292.379); //[nsec]
+  double OffsetF3F5 = env->GetValue("offsetF3F5",159.572);
+  //double OffsetF5F7 = env->GetValue("offsetF5F7",132.807);
+  double OffsetF5F7 = 134.9;
+  double OffsetF7F13 = env->GetValue("offsetF7SBT",588.109);
+  double OffsetF3F13 = env->GetValue("offsetF3F13",0.0);
   //double OffsetF3F5 = 160.572;
-  double OffsetF5F7 = env_toff->GetValue("OffsetF5F7",132.807);
   double Ionpair = 4.866; //[keV]
   double m_e = 511.; //[keV]
   double m_u = 931.49432; //[MeV]
   double clight = 299.792458; //[mm/nsec]
-  double zetBR_c1 = 0.0374179; //slope
-  double zetBR_c2 = -4.2354; //const.
+  //double zetBR_c1 = 0.0374179; //slope
+  //double zetBR_c2 = -4.2354; //const.
+  //double zetBR_c1 = 0.0631928; //slop
+  //double zetBR_c2 = -4.62805; //const.
+  double zetBR_c0 = env->GetValue("zetBR_c0",0.0);
+  double zetBR_c1 = env->GetValue("zetBR_c1",0.0);
   double DistF3PPAC = 890.; //[mm]
   double DistF5PPAC = 650.;
   double DistF7PPAC = 945.;
@@ -259,7 +293,8 @@ int main(int argc, char *argv[]){
   //from matrix/mat2.mat
   double XXF5F7 = 1.09101;  //[]
   double XAF5F7 = 0.020415; //[mm/mrad]
-  double XDF5F7 = -34.4457; //[mm/%]
+  //double XDF5F7 = -34.4457; //[mm/%]
+  double XDF5F7 = -33.9457; //[mm/%]
   double AXF5F7 = -0.0172247; //[mrad/mm]
   double AAF5F7 = 0.916262; //[]
   double ADF5F7 = 0.590371; //[mrad/%]
@@ -275,12 +310,12 @@ int main(int argc, char *argv[]){
   Int_t EventNum, RunNum;
   
   //=== for Z ===
-  Double_t tofF3F7;
-  Double_t vF3F7, vF3F5, vF5F7;
-  Double_t betaF3F7, betaF3F5, betaF5F7;
-  Double_t gammaF3F7, gammaF3F5, gammaF5F7;
-  Double_t raw_zetBR;
-  Double_t zetBR;
+  Double_t tofF3F7, tofF3F5, tofF5F7, tofF7F13, tofF3F13;
+  Double_t vF3F7, vF3F5, vF5F7, vF7F13, vF3F13;
+  Double_t betaF3F7, betaF3F5, betaF5F7, betaF7F13, betaF3F13;
+  Double_t gammaF3F7, gammaF3F5, gammaF5F7, gammaF7F13, gammaF3F13;
+  Double_t zetBRraw;
+  Double_t zetBR, zetplaic;
 
   //=== for A/Q ===
   Double_t F3X, F3Y, F3A, F3B; //X, Y:[mm]
@@ -294,7 +329,7 @@ int main(int argc, char *argv[]){
   Double_t deltaF3F5, deltaF5F7;
   Double_t deltaF3F5_X, deltaF3F5_A;
   Double_t brhoF3F5, brhoF5F7;
-  Double_t aoqF3F5, aoqF5F7;
+  Double_t aoqF3F13, aoqF5F7;
   Double_t recoF3A, recodeltaF3F5_X, recodeltaF3F5_A;
   Double_t aoqBR;
 
@@ -303,25 +338,36 @@ int main(int argc, char *argv[]){
   Double_t anaF3_TimeDiff, anaF5_TimeDiff, anaF7_TimeDiff;
   
   Int_t BG_flag; //flag for background
+  Int_t BR56Ca,BR53Ca,BR51K;
 
-
-  //cout << "5" << endl;
 
   //======
-  anatrB->Branch("EventNum",&EventNum);
-  anatrB->Branch("RunNum",&RunNum);
+  anatrB->Branch("EventNumber",&EventNum);
+  anatrB->Branch("RunNumber",&RunNum);
   
   anatrB->Branch("tofF3F7",&tofF3F7);
+  anatrB->Branch("tofF3F5",&tofF3F5);
+  anatrB->Branch("tofF5F7",&tofF5F7);
+  anatrB->Branch("tofF7F13",&tofF7F13);
+  anatrB->Branch("tofF3F13",&tofF3F13);
   anatrB->Branch("vF3F7",&vF3F7);
   anatrB->Branch("vF3F5",&vF3F5);
   anatrB->Branch("vF5F7",&vF5F7);
+  anatrB->Branch("vF7F13",&vF7F13);
+  anatrB->Branch("vF3F13",&vF3F13);
   anatrB->Branch("betaF3F7",&betaF3F7);
   anatrB->Branch("betaF3F5",&betaF3F5);
   anatrB->Branch("betaF5F7",&betaF5F7);
+  anatrB->Branch("betaF7F13",&betaF7F13);
+  anatrB->Branch("betaF3F13",&betaF3F13);
   anatrB->Branch("gammaF3F7",&gammaF3F7);
   anatrB->Branch("gammaF3F5",&gammaF3F5);
   anatrB->Branch("gammaF5F7",&gammaF5F7);
+  anatrB->Branch("gammaF7F13",&gammaF7F13);
+  anatrB->Branch("gammaF3F13",&gammaF3F13);
+  anatrB->Branch("zetBRraw",&zetBRraw);
   anatrB->Branch("zetBR",&zetBR);
+  anatrB->Branch("zetplaic",&zetplaic);
  
   anatrB->Branch("F3X",&F3X);
   anatrB->Branch("F3Y",&F3Y);
@@ -339,7 +385,7 @@ int main(int argc, char *argv[]){
   anatrB->Branch("deltaF5F7",&deltaF5F7);
   anatrB->Branch("brhoF3F5",&brhoF3F5);
   anatrB->Branch("brhoF5F7",&brhoF5F7);
-  anatrB->Branch("aoqF3F5",&aoqF3F5);
+  anatrB->Branch("aoqF3F13",&aoqF3F13);
   anatrB->Branch("aoqF5F7",&aoqF5F7);
   anatrB->Branch("recoF3A",&recoF3A);
   anatrB->Branch("recodeltaF3F5_A",&recodeltaF3F5_A);
@@ -357,15 +403,17 @@ int main(int argc, char *argv[]){
   
   
   anatrB->Branch("BG_flag",&BG_flag);
+  anatrB->Branch("BR56Ca",&BR56Ca);
+  anatrB->Branch("BR53Ca",&BR53Ca);
+  anatrB->Branch("BR51K",&BR51K);
   
   infile->cd();
 
 
-  //cout << "6" << endl;
-  
-  //===== Begin LOOP ======================================================
+ //===== Begin LOOP ======================================================
   int nEntry = caltr->GetEntries();
   for(int iEntry=0;iEntry<nEntry;++iEntry){
+    //for(int iEntry=0;iEntry<10;++iEntry){
     caltr->GetEntry(iEntry);
 
     if(iEntry%100 == 0){
@@ -377,19 +425,34 @@ int main(int argc, char *argv[]){
     
     //=== Initialization ===
     BG_flag = 0;
+    BR56Ca = 0;
+    BR53Ca = 0;
+    BR51K  = 0;
     tofF3F7 = TMath::Sqrt(-1);
+    tofF3F5 = TMath::Sqrt(-1);
+    tofF5F7 = TMath::Sqrt(-1);
+    tofF7F13 = TMath::Sqrt(-1);
+    tofF3F13 = TMath::Sqrt(-1);
     vF3F7 = TMath::Sqrt(-1);
     vF3F5 = TMath::Sqrt(-1);
     vF5F7 = TMath::Sqrt(-1);
+    vF7F13 = TMath::Sqrt(-1);
+    vF3F13 = TMath::Sqrt(-1);
     betaF3F7 = TMath::Sqrt(-1);
     betaF3F5 = TMath::Sqrt(-1);
     betaF5F7 = TMath::Sqrt(-1);
+    betaF7F13 = TMath::Sqrt(-1);
+    betaF3F13 = TMath::Sqrt(-1);
     gammaF3F7 = TMath::Sqrt(-1);
     gammaF3F5 = TMath::Sqrt(-1);
     gammaF5F7 = TMath::Sqrt(-1);
+    gammaF7F13 = TMath::Sqrt(-1);
+    gammaF3F13 = TMath::Sqrt(-1);
 
-    raw_zetBR= TMath::Sqrt(-1);
+    
+    zetBRraw= TMath::Sqrt(-1);
     zetBR = TMath::Sqrt(-1);
+    zetplaic = TMath::Sqrt(-1);
     
     F3X = TMath::Sqrt(-1);
     F3Y = TMath::Sqrt(-1);
@@ -421,7 +484,7 @@ int main(int argc, char *argv[]){
     deltaF5F7 = TMath::Sqrt(-1);
     brhoF3F5 = TMath::Sqrt(-1);
     brhoF5F7 = TMath::Sqrt(-1);
-    aoqF3F5 = TMath::Sqrt(-1);
+    aoqF3F13 = TMath::Sqrt(-1);
     aoqF5F7 = TMath::Sqrt(-1);
     recoF3A = TMath::Sqrt(-1);
     recodeltaF3F5_A = TMath::Sqrt(-1);
@@ -436,23 +499,43 @@ int main(int argc, char *argv[]){
 
     //=== Calculation ===
     tofF3F7 = F7_Time - F3_Time + OffsetF3F7;
-    vF3F7 = DistF3F7/(F7_Time - F3_Time + OffsetF3F7);
-    vF3F5 = DistF3F5/(F5_Time - F3_Time + OffsetF3F5);
-    vF5F7 = DistF5F7/(F7_Time - F5_Time + OffsetF5F7);    
+    tofF3F5 = F5_Time - F3_Time + OffsetF3F5;
+    tofF5F7 = F7_Time - F5_Time + OffsetF5F7;
+    //tofF7F13 = (SBT1_Time + SBT2_Time)/2. - F7_Time + OffsetF7F13;
+    tofF7F13 = SBT1_Time - F7_Time + OffsetF7F13;
+    tofF3F13 = SBT1_Time - F3_Time + OffsetF3F13;
+    vF3F7 = DistF3F7/tofF3F7;
+    vF3F5 = DistF3F5/tofF3F5;
+    vF5F7 = DistF5F7/tofF5F7;
+    vF7F13 = DistF7F13/tofF7F13;
+    vF3F13 = DistF3F13/tofF3F13;
 
     betaF3F7 = vF3F7/clight;
     betaF3F5 = vF3F5/clight;
     betaF5F7 = vF5F7/clight;
-    gammaF3F7 = 1/TMath::Sqrt(1-betaF3F7*betaF3F7);
-    gammaF3F5 = 1/TMath::Sqrt(1-betaF3F5*betaF3F5);
-    gammaF5F7 = 1/TMath::Sqrt(1-betaF5F7*betaF5F7);
+    betaF7F13 = vF7F13/clight;
+    betaF3F13 = vF3F13/clight;
+    gammaF3F7 = 1/TMath::Sqrt(1.-betaF3F7*betaF3F7);
+    gammaF3F5 = 1/TMath::Sqrt(1.-betaF3F5*betaF3F5);
+    gammaF5F7 = 1/TMath::Sqrt(1.-betaF5F7*betaF5F7);
+    gammaF7F13 = 1/TMath::Sqrt(1.-betaF7F13*betaF7F13);
+    gammaF3F13 = 1/TMath::Sqrt(1.-betaF3F13*betaF3F13);
 
-    raw_zetBR = vF3F7 * TMath::Sqrt(F7IC_E/(TMath::Log(2*m_e*vF3F7*vF3F7/Ionpair)-TMath::Log(1-betaF3F7*betaF3F7)-betaF3F7*betaF3F7));
+    //zetBRraw = vF3F7 * TMath::Sqrt(F7IC_E/(TMath::Log(2*m_e*vF3F7*vF3F7/Ionpair)-TMath::Log(1-betaF3F7*betaF3F7)-betaF3F7*betaF3F7));
 
-    //zetBR = raw_zetBR;
-    zetBR = zetBR_c1 * raw_zetBR + zetBR_c2;
-  
-  
+    zetBRraw = vF7F13 * TMath::Sqrt(F7IC_E/(TMath::Log(2*m_e*vF7F13*vF7F13/Ionpair)-TMath::Log(1-betaF7F13*betaF7F13)-betaF7F13*betaF7F13));
+    
+    zetBR = zetBR_c1 * zetBRraw + zetBR_c0;
+
+    Double_t de;
+     //de = F7IC_E*(pla3q2e[0]+pla3q2e[1]*F3_Charge)*(pla7q2e[0]+pla7q2e[1]*F7_Charge)*(pla13_1q2e[0]+pla13_1q2e[1]*SBT1_Charge)*(pla13_2q2e[0]+pla13_2q2e[1]*SBT2_Charge);
+
+    //cout << "pla3" << pla3q2e[0]+pla3q2e[1]*F3_Charge << "pla7" << pla7q2e[0]+pla7q2e[1]*F7_Charge << endl;
+    //de = pow(de,1./5.);
+
+    de = (F7IC_E + (pla3q2e[0]+pla3q2e[1]*F3_Charge) + (pla7q2e[0]+pla7q2e[1]*F7_Charge) + (pla13_1q2e[0]+pla13_1q2e[1]*SBT1_Charge) + (pla13_2q2e[0]+pla13_2q2e[1]*SBT2_Charge))/5.;
+    
+    zetplaic = vF3F7 * TMath::Sqrt(de/(TMath::Log(2*m_e*vF3F7*vF3F7/Ionpair)-TMath::Log(1-betaF3F7*betaF3F7)-betaF3F7*betaF3F7));
     
     //=== F3 Tsum gate ===
     if((cPPAC_Tsum_low[0]<F31A_X_T1+F31A_X_T2&&F31A_X_T1+F31A_X_T2<cPPAC_Tsum_up[0])&&(cPPAC_Tsum_low[1]<F31B_X_T1+F31B_X_T2&&F31B_X_T1+F31B_X_T2<cPPAC_Tsum_up[1])){
@@ -462,7 +545,7 @@ int main(int argc, char *argv[]){
     }else if(!(cPPAC_Tsum_low[0]<F31A_X_T1+F31A_X_T2&&F31A_X_T1+F31A_X_T2<cPPAC_Tsum_up[0])&&(cPPAC_Tsum_low[1]<F31B_X_T1+F31B_X_T2&&F31B_X_T1+F31B_X_T2<cPPAC_Tsum_up[1])){
       F31_X = F31B_X;
     }else{
-      F31_X = 16.64*F3_TimeDiff + 20.82;
+      F31_X = pla3pos[1]*F3_TimeDiff + pla3pos[0];
       //BG_flag = 2;
     }
     if((cPPAC_Tsum_low[2]<F32A_X_T1+F32A_X_T2&&F32A_X_T1+F32A_X_T2<cPPAC_Tsum_up[2])&&(cPPAC_Tsum_low[3]<F32B_X_T1+F32B_X_T2&&F32B_X_T1+F32B_X_T2<cPPAC_Tsum_up[3])){
@@ -472,7 +555,7 @@ int main(int argc, char *argv[]){
     }else if(!(cPPAC_Tsum_low[2]<F32A_X_T1+F32A_X_T2&&F32A_X_T1+F32A_X_T2<cPPAC_Tsum_up[2])&&(cPPAC_Tsum_low[3]<F32B_X_T1+F32B_X_T2&&F32B_X_T1+F32B_X_T2<cPPAC_Tsum_up[3])){
       F32_X = F32B_X;
     }else{
-      F32_X = 16.64*F3_TimeDiff + 20.82;
+      F32_X = pla3pos[1]*F3_TimeDiff + pla3pos[0];
       //BG_flag = 2;
     }
      if((cPPAC_Tsum_low[4]<F31A_Y_T1+F31A_Y_T2&&F31A_Y_T1+F31A_Y_T2<cPPAC_Tsum_up[4])&&(cPPAC_Tsum_low[5]<F31B_Y_T1+F31B_Y_T2&&F31B_Y_T1+F31B_Y_T2<cPPAC_Tsum_up[5])){
@@ -538,7 +621,8 @@ int main(int argc, char *argv[]){
     }else if(!(cPPAC_Tsum_low[16]<F71A_X_T1+F71A_X_T2&&F71A_X_T1+F71A_X_T2<cPPAC_Tsum_up[16])&&(cPPAC_Tsum_low[17]<F71B_X_T1+F71B_X_T2&&F71B_X_T1+F71B_X_T2<cPPAC_Tsum_up[17])){
       F71_X = F71B_X;
     }else{
-      BG_flag = 2;
+       F71_X = pla7pos[1] * F7_TimeDiff + pla7pos[0];
+       //BG_flag = 2;
     }
     if((cPPAC_Tsum_low[18]<F72A_X_T1+F72A_X_T2&&F72A_X_T1+F72A_X_T2<cPPAC_Tsum_up[18])&&(cPPAC_Tsum_low[19]<F72B_X_T1+F72B_X_T2&&F72B_X_T1+F72B_X_T2<cPPAC_Tsum_up[19])){
       F72_X = (F72A_X + F72B_X)/2.;
@@ -547,7 +631,8 @@ int main(int argc, char *argv[]){
     }else if(!(cPPAC_Tsum_low[18]<F72A_X_T1+F72A_X_T2&&F72A_X_T1+F72A_X_T2<cPPAC_Tsum_up[18])&&(cPPAC_Tsum_low[19]<F72B_X_T1+F72B_X_T2&&F72B_X_T1+F72B_X_T2<cPPAC_Tsum_up[19])){
       F72_X = F72B_X;
     }else{
-      BG_flag = 2;
+      F72_X = pla7pos[1] * F7_TimeDiff + pla7pos[0];
+      //BG_flag = 2;
     }
      if((cPPAC_Tsum_low[20]<F71A_Y_T1+F71A_Y_T2&&F71A_Y_T1+F71A_Y_T2<cPPAC_Tsum_up[20])&&(cPPAC_Tsum_low[21]<F71B_Y_T1+F71B_Y_T2&&F71B_Y_T1+F71B_Y_T2<cPPAC_Tsum_up[21])){
       F71_Y = (F71A_Y + F71B_Y)/2.;
@@ -571,7 +656,7 @@ int main(int argc, char *argv[]){
     
     F3X = (F31_X + F32_X)/2.;
     F3Y = (F31_Y + F32_Y)/2.;
-    F3A = 1000.*TMath::ATan((F31_X-F32_X)/DistF3PPAC);
+    if(F31_X!=F32_X) F3A = 1000.*TMath::ATan((F31_X-F32_X)/DistF3PPAC);
     F3B = 1000.*TMath::ATan((F31_Y-F32_Y)/DistF3PPAC);
    
     F5X = (F51_X + F52_X)/2.;
@@ -593,11 +678,18 @@ int main(int argc, char *argv[]){
     brhoF3F5 = Brho0F3F5*(1 + deltaF3F5*0.01);
     brhoF5F7 = Brho0F5F7*(1 + deltaF5F7*0.01);
 
-    aoqF3F5 = brhoF3F5*clight/m_u/betaF3F5/gammaF3F5 + 0.0017*F3X + 0.00005*F5X + 0.000002*F5X*F5X;
-    aoqF5F7 = brhoF5F7*clight/m_u/betaF5F7/gammaF5F7 + 0.0006*F5A + 0.00015*F7A;
+    //aoqF3F5 = brhoF3F5*clight/m_u/betaF3F5/gammaF3F5 + 0.0017*F3X + 0.00005*F5X + 0.000002*F5X*F5X;
+    //aoqF5F7 = brhoF5F7*clight/m_u/betaF5F7/gammaF5F7 + 0.0006*F5A + 0.00015*F7A;
 
-    aoqBR = aoqF3F5;
+    aoqF3F13 = brhoF5F7*clight/m_u/betaF3F13/gammaF3F13;
+    //aoqF5F7 = brhoF5F7*clight/m_u/betaF5F7/gammaF5F7;
+    aoqF5F7 = brhoF5F7*clight/m_u/betaF7F13/gammaF7F13;
+    
+    //aoqBR = aoqF3F5;
+    //aoqBR = aoqF5F7 + 0.0002*F7X + 0.00025*F5A + 0.00065*F7A + 0.00009*F5X - 0.000002*F5X*F5X + 0.000003*F7Y*F7Y + 0.000007*F7B*F7B;
 
+    aoqBR = aoqF5F7 + 0.0005*F7X - 0.00001*F7X*F7X + 0.00005*F7A - 0.00003*F5X + 0.0000002*F5X*F5X;
+    
     //recoF3A = (ADF3F5*F5X - XDF3F5*F5A - (ADF3F5*XXF3F5 - XDF3F5*AXF3F5)*F3X)/(ADF3F5*XAF3F5 - XDF3F5*AAF3F5);
     
     anaF3_Time = F3_Time;
@@ -608,12 +700,14 @@ int main(int argc, char *argv[]){
     anaF7_TimeDiff = F7_TimeDiff;
 
     //===== Cut by graphical cut ==========================================================
-    if(!cF3pla->IsInside(F3_TR-F3_TL,log(F3_QL/F3_QR))
-       ||!cF7pla->IsInside(F7_TR-F7_TL,log(F7_QL/F7_QR))
-       ||!cF5Qchange->IsInside(aoqF3F5/aoqF5F7,zetBR)
-       ){
+    if(!cF3pla->IsInside(F3_TR-F3_TL,log(F3_QL/F3_QR))){
       BG_flag = 1;
     }
+    if(!cF7pla->IsInside(F7_TR-F7_TL,log(F7_QL/F7_QR))) BG_flag = 3;
+    //if(!cF5Qchange->IsInside(aoqF3F5/aoqF5F7,zetBR)) BG_flag = 4; after finalizing the PID
+    if(cBR56Ca->IsInside(aoqBR,zetBR)) BR56Ca = 1;
+    if(cBR53Ca->IsInside(aoqBR,zetBR)) BR53Ca = 1;
+    if(cBR51K->IsInside(aoqBR,zetBR)) BR51K  = 1;
   
     anatrB->Fill();
   }
