@@ -14,9 +14,6 @@
 #include"TMath.h"
 #include"TString.h"
 
-#include"/home/koiwai/analysis/brho_func/Brho_A56Z20_br56Ca_sa56Ca.C"
-#include"/home/koiwai/analysis/brho_func/Len_A56Z20_br56Ca_sa56Ca.C"
-
 using namespace std;
 
 int main(int argc, char *argv[]){
@@ -55,20 +52,6 @@ int main(int argc, char *argv[]){
   Int_t FDC2_Layer[14][112],FDC2_PlaneID[14][112], FDC2_HitID[14][112];
   
   Int_t NumBDC1Hit, NumBDC2Hit, NumFDC1Hit, NumFDC2Hit;
-
-  Double_t AllHodo_Charge[24];
-  Double_t AllHodo_Time[24];
-  Int_t Hodo_ID; // ID of the hodoscope with the highest charge
-  Int_t Hodo_Multiplicity;
-  Double_t Hodo_QCal, Hodo_QRaw; // Highest charge //  Double_t Hodo_Charge;
-  Double_t Hodo_TCal, Hodo_TRaw; // Time of the hodoscope with the highest charge  Double_t Hodo_Time;
-  Int_t Hodoi_TURaw[24], Hodoi_TDRaw[24], Hodoi_QURaw[24], Hodoi_QDRaw[24];
-  Double_t Hodoi_TUCal[24], Hodoi_TDCal[24], Hodoi_QUCal[24], Hodoi_QDCal[24];
-  Double_t Hodoi_TCal[24], Hodoi_TRaw[24], Hodoi_QCal[24], Hodoi_QRaw[24];
-
-  Double_t SBT1_Charge, SBT2_Charge, SBT1_Time, SBT2_Time, SBT1_TimeDiff, SBT2_TimeDiff;
-  Double_t SBT1_QL, SBT1_QR, SBT1_TL, SBT1_TR;
-  Double_t SBT2_QL, SBT2_QR, SBT2_TL, SBT2_TR;
 
   //===== SetBranchAddress =====
   caltr->SetBranchAddress("RunNumber",&RunNumber);
@@ -110,49 +93,10 @@ int main(int argc, char *argv[]){
   caltr->SetBranchAddress("FDC2_PlaneID",FDC2_PlaneID);
   caltr->SetBranchAddress("FDC2_HitID",FDC2_HitID);
 
-  for (Int_t i=0;i<24;i++)
-      {
-	caltr->SetBranchAddress(Form("Hodo%d_QCal",i+1),&Hodoi_QCal[i]);
-	caltr->SetBranchAddress(Form("Hodo%d_TCal",i+1),&Hodoi_TCal[i]);
-	//caltr->SetBranchAddress(Form("Hodo%d_Charge",i+1),&AllHodo_Charge[i]);
-	//caltr->SetBranchAddress(Form("Hodo%d_Time",i+1),&AllHodo_Time[i]);
-	caltr->SetBranchAddress(Form("Hodo%d_QRaw",i+1),&Hodoi_QRaw[i]);
-	caltr->SetBranchAddress(Form("Hodo%d_TRaw",i+1),&Hodoi_TRaw[i]);
-	caltr->SetBranchAddress(Form("Hodo%d_TURaw",i+1),&Hodoi_TURaw[i]);
-	caltr->SetBranchAddress(Form("Hodo%d_TDRaw",i+1),&Hodoi_TDRaw[i]);
-	caltr->SetBranchAddress(Form("Hodo%d_QURaw",i+1),&Hodoi_QURaw[i]);
-	caltr->SetBranchAddress(Form("Hodo%d_QDRaw",i+1),&Hodoi_QDRaw[i]);
-	caltr->SetBranchAddress(Form("Hodo%d_TUCal",i+1),&Hodoi_TUCal[i]);
-	caltr->SetBranchAddress(Form("Hodo%d_TDCal",i+1),&Hodoi_TDCal[i]);
-	caltr->SetBranchAddress(Form("Hodo%d_QUCal",i+1),&Hodoi_QUCal[i]);
-	caltr->SetBranchAddress(Form("Hodo%d_QDCal",i+1),&Hodoi_QDCal[i]);
-      }
-  caltr->SetBranchAddress("Hodo_Multiplicity",&Hodo_Multiplicity);
-  caltr->SetBranchAddress("Hodo_ID",&Hodo_ID);
-  caltr->SetBranchAddress("Hodo_QCal",&Hodo_QCal);
-  caltr->SetBranchAddress("Hodo_TCal",&Hodo_TCal);
-  caltr->SetBranchAddress("Hodo_QRaw",&Hodo_QRaw);
-  caltr->SetBranchAddress("Hodo_TRaw",&Hodo_TRaw);
-  
-  caltr->SetBranchAddress("SBT1_Charge",&SBT1_Charge);
-  caltr->SetBranchAddress("SBT1_Time",&SBT1_Time);
-  caltr->SetBranchAddress("SBT1_TimeDiff",&SBT1_TimeDiff);
-  caltr->SetBranchAddress("SBT2_Charge",&SBT2_Charge);
-  caltr->SetBranchAddress("SBT2_Time",&SBT2_Time);
-  caltr->SetBranchAddress("SBT2_TimeDiff",&SBT2_TimeDiff);
-  caltr->SetBranchAddress("SBT1_QL",&SBT1_QL);
-  caltr->SetBranchAddress("SBT1_QR",&SBT1_QR);
-  caltr->SetBranchAddress("SBT1_TL",&SBT1_TL);
-  caltr->SetBranchAddress("SBT1_TR",&SBT1_TR);
-  caltr->SetBranchAddress("SBT2_QL",&SBT2_QL);
-  caltr->SetBranchAddress("SBT2_QR",&SBT2_QR);
-  caltr->SetBranchAddress("SBT2_TL",&SBT2_TL);
-  caltr->SetBranchAddress("SBT2_TR",&SBT2_TR);
-  
   //===== Create output file/tree =====
-  TString ofname = Form("/home/koiwai/analysis/rootfiles/ana/smri/ana_smri%04d.root",FileNum);
-  TFile *anafile_smri = new TFile(ofname,"RECREATE");
-  TTree *anatrS  = new TTree("anatrS","anatrS");
+  TString ofname = Form("/home/koiwai/analysis/rootfiles/ana/mwdc/ana_mwdc%04d.root",FileNum);
+  TFile *anafile_mwdc = new TFile(ofname,"RECREATE");
+  TTree *anatrDC  = new TTree("anatrDC","anatrDC");
   
   
   //===== Create TDC Distributions =====
@@ -165,14 +109,16 @@ int main(int argc, char *argv[]){
   Int_t tdcint[DCNum][14] = {};
   Double_t wire_gap[DCNum] = {2.5, 2.5, 5, 10};
   char DCName[DCNum] = {'b','b','f','f'};
+  Int_t DCid[DCNum] = {1,2,1,2};
   
   TFile *RootFile = new TFile("/home/koiwai/analysis/rootfiles/tdc_dist/ana_dc_tdcdist.root","READ");
   if(RootFile){
     gROOT->cd();
     for(Int_t n=0;n<DCNum;++n){
-      TH1I *h = NULL;    
+      //TH1I *h = NULL;    
       for(Int_t l=0;l<DCLayerNum[n];++l){
-	h = (TH1I*)RootFile->Get(Form("h%cdc%dtdc%d",DCName[n],n+1,l));
+	TH1I *h = NULL;
+	h = (TH1I*)RootFile->Get(Form("h%cdc%dtdc%d",DCName[n],DCid[n],l));
 	
 	if(h){
 	  tdcint[n][l] = (Double_t)h->Integral(h->FindBin(tdcwindow[0]),h->FindBin(tdcwindow[1]));
@@ -259,68 +205,63 @@ int main(int argc, char *argv[]){
   Double_t FDC2_Xpos, FDC2_Upos, FDC2_Vpos, FDC2_Chi2X, FDC2_Chi2U, FDC2_Chi2V;
   Double_t FDC2_X, FDC2_Y, FDC2_A, FDC2_B;
 
-  Double_t brhoSAMURAI;
-
   Int_t BG_flag;
   
   //===== Create anatree Branch =====
-  anatrS->Branch("RunNum",&RunNum);
-  anatrS->Branch("EventNum",&EventNum);
+  anatrDC->Branch("RunNum",&RunNum);
+  anatrDC->Branch("EventNum",&EventNum);
   
-  anatrS->Branch("BDC1_hit_num",BDC1_hit_num,"BDC1_hit_num[8]/I");
-  anatrS->Branch("BDC1_X",&BDC1_X);
-  anatrS->Branch("BDC1_Y",&BDC1_Y);
-  anatrS->Branch("BDC1_Chi2X",&BDC1_Chi2X);
-  anatrS->Branch("BDC1_Chi2Y",&BDC1_Chi2Y);
+  anatrDC->Branch("BDC1_hit_num",BDC1_hit_num,"BDC1_hit_num[8]/I");
+  anatrDC->Branch("BDC1_X",&BDC1_X);
+  anatrDC->Branch("BDC1_Y",&BDC1_Y);
+  anatrDC->Branch("BDC1_Chi2X",&BDC1_Chi2X);
+  anatrDC->Branch("BDC1_Chi2Y",&BDC1_Chi2Y);
 
-  anatrS->Branch("BDC2_hit_num",BDC2_hit_num,"BDC2_hit_num[8]/I");
-  anatrS->Branch("BDC2_X",&BDC2_X);
-  anatrS->Branch("BDC2_Y",&BDC2_Y);
-  anatrS->Branch("BDC2_Chi2X",&BDC2_Chi2X);
-  anatrS->Branch("BDC2_Chi2Y",&BDC2_Chi2Y);
+  anatrDC->Branch("BDC2_hit_num",BDC2_hit_num,"BDC2_hit_num[8]/I");
+  anatrDC->Branch("BDC2_X",&BDC2_X);
+  anatrDC->Branch("BDC2_Y",&BDC2_Y);
+  anatrDC->Branch("BDC2_Chi2X",&BDC2_Chi2X);
+  anatrDC->Branch("BDC2_Chi2Y",&BDC2_Chi2Y);
 
-  anatrS->Branch("BDC_X",&BDC_X);
-  anatrS->Branch("BDC_Y",&BDC_Y);
-  anatrS->Branch("BDC_A",&BDC_A);
-  anatrS->Branch("BDC_B",&BDC_B);
+  anatrDC->Branch("BDC_X",&BDC_X);
+  anatrDC->Branch("BDC_Y",&BDC_Y);
+  anatrDC->Branch("BDC_A",&BDC_A);
+  anatrDC->Branch("BDC_B",&BDC_B);
 
-  anatrS->Branch("Target_X",&Target_X);
-  anatrS->Branch("Target_Y",&Target_Y);
+  anatrDC->Branch("Target_X",&Target_X);
+  anatrDC->Branch("Target_Y",&Target_Y);
 
+  anatrDC->Branch("FDC1_Xpos",&FDC1_Xpos);
+  anatrDC->Branch("FDC1_Upos",&FDC1_Upos);
+  anatrDC->Branch("FDC1_Vpos",&FDC1_Vpos);
+  anatrDC->Branch("FDC1_Chi2X",&FDC1_Chi2X);
+  anatrDC->Branch("FDC1_Chi2U",&FDC1_Chi2U);
+  anatrDC->Branch("FDC1_Chi2V",&FDC1_Chi2V);
 
-  anatrS->Branch("FDC1_Xpos",&FDC1_Xpos);
-  anatrS->Branch("FDC1_Upos",&FDC1_Upos);
-  anatrS->Branch("FDC1_Vpos",&FDC1_Vpos);
-  anatrS->Branch("FDC1_Chi2X",&FDC1_Chi2X);
-  anatrS->Branch("FDC1_Chi2U",&FDC1_Chi2U);
-  anatrS->Branch("FDC1_Chi2V",&FDC1_Chi2V);
+  anatrDC->Branch("FDC1_X",&FDC1_X);
+  anatrDC->Branch("FDC1_Y",&FDC1_Y);
+  anatrDC->Branch("FDC1_A",&FDC1_A);
+  anatrDC->Branch("FDC1_B",&FDC1_B);
 
-  anatrS->Branch("FDC1_X",&FDC1_X);
-  anatrS->Branch("FDC1_Y",&FDC1_Y);
-  anatrS->Branch("FDC1_A",&FDC1_A);
-  anatrS->Branch("FDC1_B",&FDC1_B);
+  anatrDC->Branch("FDC2_Xpos",&FDC2_Xpos);
+  anatrDC->Branch("FDC2_Upos",&FDC2_Upos);
+  anatrDC->Branch("FDC2_Vpos",&FDC2_Vpos);
+  anatrDC->Branch("FDC2_Chi2X",&FDC2_Chi2X);
+  anatrDC->Branch("FDC2_Chi2U",&FDC2_Chi2U);
+  anatrDC->Branch("FDC2_Chi2V",&FDC2_Chi2V);
 
-  anatrS->Branch("FDC2_Xpos",&FDC2_Xpos);
-  anatrS->Branch("FDC2_Upos",&FDC2_Upos);
-  anatrS->Branch("FDC2_Vpos",&FDC2_Vpos);
-  anatrS->Branch("FDC2_Chi2X",&FDC2_Chi2X);
-  anatrS->Branch("FDC2_Chi2U",&FDC2_Chi2U);
-  anatrS->Branch("FDC2_Chi2V",&FDC2_Chi2V);
+  anatrDC->Branch("FDC2_X",&FDC2_X);
+  anatrDC->Branch("FDC2_Y",&FDC2_Y);
+  anatrDC->Branch("FDC2_A",&FDC2_A);
+  anatrDC->Branch("FDC2_B",&FDC2_B);
 
-  anatrS->Branch("FDC2_X",&FDC2_X);
-  anatrS->Branch("FDC2_Y",&FDC2_Y);
-  anatrS->Branch("FDC2_A",&FDC2_A);
-  anatrS->Branch("FDC2_B",&FDC2_B);
-
-  anatrS->Branch("brhoSAMURAI",&brhoSAMURAI);
-
-  anatrS->Branch("BG_flag",&BG_flag);
+  anatrDC->Branch("BG_flag",&BG_flag);
   
   //===== Begin LOOP =====
   int nEntry = caltr->GetEntries();
-  //for(int iEntry=0;iEntry<100;++iEntry){
   for(int iEntry=0;iEntry<nEntry;++iEntry){
-    
+    //for(int iEntry=0;iEntry<5;++iEntry){
+  
     if(iEntry%100 == 0){
       clog<< iEntry/1000 << "k events treated..." << "\r";
     }
@@ -747,6 +688,9 @@ int main(int argc, char *argv[]){
 		FDC1_trackX_mm[tr][3] = tdc2mm[2][7][FDC1_hit_tdc[7][hl7]];
 		FDC1_trackX_mm[tr][4] = tdc2mm[2][12][FDC1_hit_tdc[12][hl12]];
 		FDC1_trackX_mm[tr][5] = tdc2mm[2][13][FDC1_hit_tdc[13][hl13]];
+		
+		//cout << FDC1_trackX_mm[tr][0] << " " << tdc2mm[2][0][FDC1_hit_tdc[0][hl0]] << endl;
+
 		tr++;
 	      }
 	    }
@@ -770,7 +714,8 @@ int main(int argc, char *argv[]){
 	    FDC1_trackU_mm[tr][2] = tdc2mm[2][8][FDC1_hit_tdc[8][hl8]];
 	    //FDC1_trackU_mm[tr][3] = tdc2mm[2][9][FDC1_hit_tdc[9][hl9]];
 
-	    //cout << "U " << tr << " " << FDC1_trackU_pos[tr][0] << endl;
+	    //cout << "U " << FDC1_trackU_mm[tr][0] << " " << FDC1_trackU_pos[tr][0] << endl;
+	    //cout << "U " << FDC1_hit_pos[2][hl2] << " " << tdc2mm[2][2][FDC1_hit_tdc[2][hl2]] << endl;
 
 	    tr++;
 	    //}
@@ -837,6 +782,7 @@ int main(int argc, char *argv[]){
 
 	for(Int_t l=0;l<6;++l){
 	  FDC1_trackX[i][l] = FDC1_trackX_pos[tr][l] + pow(-1,signX[l])*FDC1_trackX_mm[tr][l];
+	  //cout << FDC1_trackX[i][l] <<endl;
 	}
 
 	if(FDC1_trackX[i][0]>-1200&&FDC1_trackX[i][0]<1200){
@@ -873,8 +819,8 @@ int main(int argc, char *argv[]){
 	  FDC1_interseptX = aX[0];
 	}
 
-	//cout << "Chi2 " << FDC2_Chi2X << "X " << FDC2_Xpos <<  endl;
-	//cout << "slope " << slope << " const " << intersept << endl;
+	//cout << "Chi2 " << FDC1_Chi2X << "X " << FDC1_Xpos <<  endl;
+	//cout << "slope " << FDC1_slopeX << " const " << FDC1_interseptX << endl;
 	
 	
 	}else continue;
@@ -925,10 +871,11 @@ int main(int argc, char *argv[]){
 
 	for(Int_t l=0;l<4;++l){
 	  FDC1_trackU[i][l] = FDC1_trackU_pos[tr][l] + pow(-1,signUV[l])*FDC1_trackU_mm[tr][l];
+	  //cout << FDC1_trackU[i][l] << endl;
 	  FDC1_trackV[i][l] = FDC1_trackV_pos[tr][l] + pow(-1,signUV[l])*FDC1_trackV_mm[tr][l];
 	}
 
-	if(FDC2_trackU[i][0]>-1200&&FDC2_trackU[i][0]<1200){
+	if(FDC1_trackU[i][0]>-1200&&FDC1_trackU[i][0]<1200){
 	  
 	  //===== Least square =====
 	  Double_t aU[2] = {-9999,-9999};
@@ -961,13 +908,15 @@ int main(int argc, char *argv[]){
 	    FDC1_slopeU = aU[1];
 	    FDC1_interseptU = aU[0];
 	  }
+	  //cout << FDC1_Upos << endl;
+	  //cout << "Chi2 " << FDC1_Chi2U << "U " << FDC1_Upos <<  endl;
+	  //cout << "slope " << FDC1_slopeU << " const " << FDC1_interseptU << endl;
 	  
-	  //cout << "Chi2 " << FDC2_Chi2U << "U " << FDC2_Upos <<  endl;
-	  //cout << "slope " << slope << " const " << intersept << endl;
 	  
-	  
-	}else continue;
+	  }else continue;
 
+	// cout << iEntry <<  "Chi2 " << FDC1_Chi2U << "U " << FDC1_Upos <<  endl;
+	
 	if(FDC1_trackV[i][0]>-1200&&FDC1_trackV[i][0]<1200){
 	  
 	  //===== Least square =====
@@ -1003,7 +952,7 @@ int main(int argc, char *argv[]){
 	  }
 	  
 	  //cout << "Chi2 " << FDC1_Chi2V << "V " << FDC1_Vpos <<  endl;
-	  //cout << "slope " << slope << " const " << intersept << endl;
+	  //cout << "slope " << FDC1_slopeV << " const " << FDC1_interseptV << endl;
 	  
 	  
 	}else continue;
@@ -1397,34 +1346,9 @@ int main(int argc, char *argv[]){
     FDC2_B = (-TMath::ATan(slopeU) + TMath::ATan(slopeV))/2.;
     //@@@ FDC2 end @@@
 
-    //@@@ Brho Length Function @@@
-
-    Double_t x[6];
-
-    x[0] = FDC1_X;
-    x[1] = FDC1_A;
-    x[2] = FDC1_Y;
-    x[3] = FDC1_B;
-    x[4] = FDC2_X;
-    x[5] = FDC2_A;
-
-    brhoSAMURAI = MDF_Brho_A56Z20(x);
-    
-    //@@@ HODO @@@
-
-
-
-
-
-
-
-
-
-    //@@@ HODO end @@@
-    
-    anatrS->Fill();
+    anatrDC->Fill();
   }//for LOOP
-  anafile_smri->cd();
-  anatrS->Write();
-  anafile_smri->Close();
-}//ana_smiri()
+  anafile_mwdc->cd();
+  anatrDC->Write();
+  anafile_mwdc->Close();
+}//main()
