@@ -328,7 +328,7 @@ int main(int argc, char *argv[]){
   Double_t deltaF3F5, deltaF5F7;
   Double_t deltaF3F5_X, deltaF3F5_A;
   Double_t brhoF3F5, brhoF5F7;
-  Double_t aoqF3F13, aoqF5F7;
+  Double_t aoqF3F13, aoqF5F7, aoqF3F5;
   Double_t recoF3A, recodeltaF3F5_X, recodeltaF3F5_A;
   Double_t aoqBR;
 
@@ -386,6 +386,7 @@ int main(int argc, char *argv[]){
   anatrB->Branch("brhoF5F7",&brhoF5F7);
   anatrB->Branch("aoqF3F13",&aoqF3F13);
   anatrB->Branch("aoqF5F7",&aoqF5F7);
+  anatrB->Branch("aoqF3F5",&aoqF3F5);
   anatrB->Branch("recoF3A",&recoF3A);
   anatrB->Branch("recodeltaF3F5_A",&recodeltaF3F5_A);
   anatrB->Branch("recodeltaF3F5_X",&recodeltaF3F5_X);
@@ -485,6 +486,7 @@ int main(int argc, char *argv[]){
     brhoF5F7 = TMath::Sqrt(-1);
     aoqF3F13 = TMath::Sqrt(-1);
     aoqF5F7 = TMath::Sqrt(-1);
+    aoqF3F5 = TMath::Sqrt(-1);
     recoF3A = TMath::Sqrt(-1);
     recodeltaF3F5_A = TMath::Sqrt(-1);
     recodeltaF3F5_X = TMath::Sqrt(-1);
@@ -679,6 +681,7 @@ int main(int argc, char *argv[]){
     //aoqF3F5 = brhoF3F5*clight/m_u/betaF3F5/gammaF3F5 + 0.0017*F3X + 0.00005*F5X + 0.000002*F5X*F5X;
     //aoqF5F7 = brhoF5F7*clight/m_u/betaF5F7/gammaF5F7 + 0.0006*F5A + 0.00015*F7A;
 
+    aoqF3F5 = brhoF3F5*clight/m_u/betaF3F13/gammaF3F13;
     aoqF3F13 = brhoF5F7*clight/m_u/betaF3F13/gammaF3F13;
     aoqF5F7 = brhoF5F7*clight/m_u/betaF7F13/gammaF7F13;
     
