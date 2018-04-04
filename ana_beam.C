@@ -681,7 +681,7 @@ int main(int argc, char *argv[]){
     //aoqF3F5 = brhoF3F5*clight/m_u/betaF3F5/gammaF3F5 + 0.0017*F3X + 0.00005*F5X + 0.000002*F5X*F5X;
     //aoqF5F7 = brhoF5F7*clight/m_u/betaF5F7/gammaF5F7 + 0.0006*F5A + 0.00015*F7A;
 
-    aoqF3F5 = brhoF3F5*clight/m_u/betaF3F13/gammaF3F13;
+    aoqF3F5 = brhoF3F5*clight/m_u/betaF3F13/gammaF3F13 + 0.0006*F3X;
     aoqF3F13 = brhoF5F7*clight/m_u/betaF3F13/gammaF3F13;
     aoqF5F7 = brhoF5F7*clight/m_u/betaF7F13/gammaF7F13;
     
