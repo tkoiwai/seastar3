@@ -141,7 +141,7 @@ int main(int argc, char *argv[]){
   //===== Load .dat files =====
   TEnv *env = new TEnv("/home/koiwai/analysis/db/geometry_psp.dat");
   TEnv *env_hodot = new TEnv("/home/koiwai/analysis/db/hodo_toff.dat");
-  TEnv *env_hodoq = new TEnv("/home/koiwai/analysis/db/hodo_qcorr.dat");
+  TEnv *env_hodoq = new TEnv("/home/koiwai/analysis/db/hodo_qcor.dat");
   
   //===== Create output file/tree =====
   TString ofname = Form("/home/koiwai/analysis/rootfiles/ana/smri/ana_smri%04d.root",FileNum);
@@ -191,13 +191,23 @@ int main(int argc, char *argv[]){
   Int_t Width_FDC1 = env->GetValue("FDC1_Width",180.);
   
   //===== Declare anatree const.s =====
+  Double_t hodo_toff[24], hodo_qcor[24];
+  for(Int_t id=0;id<24;id++){
+    hodo_toff[id] = env_hodot->GetValue(Form("hodo_toff%02d",id+1),0.0);
+    hodo_qcor[id] = env_hodoq->GetValue(Form("hodo_qcor%02d",id+1),0.0);
+  }
   
   //===== Declare valables for calc. =====
+  
   //===== Declare anatree variables =====
   Int_t RunNum, EventNum;
   
- 
+
+  Int_t hodo_id, hodo_multi;
+  
   Double_t brhoSAMURAI;
+  
+  Double_t aoqSA, zetSA;
 
   Int_t BG_flag;
   
