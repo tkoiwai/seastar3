@@ -56,8 +56,8 @@ int main(int argc, char *argv[]){
       {
 	caltr->SetBranchAddress(Form("Hodo%d_QCal",i+1),&Hodoi_QCal[i]);
 	caltr->SetBranchAddress(Form("Hodo%d_TCal",i+1),&Hodoi_TCal[i]);
-	//caltr->SetBranchAddress(Form("Hodo%d_Charge",i+1),&AllHodo_Charge[i]);
-	//caltr->SetBranchAddress(Form("Hodo%d_Time",i+1),&AllHodo_Time[i]);
+	caltr->SetBranchAddress(Form("Hodo%d_Charge",i+1),&AllHodo_Charge[i]);
+	caltr->SetBranchAddress(Form("Hodo%d_Time",i+1),&AllHodo_Time[i]);
 	caltr->SetBranchAddress(Form("Hodo%d_QRaw",i+1),&Hodoi_QRaw[i]);
 	caltr->SetBranchAddress(Form("Hodo%d_TRaw",i+1),&Hodoi_TRaw[i]);
 	caltr->SetBranchAddress(Form("Hodo%d_TURaw",i+1),&Hodoi_TURaw[i]);
@@ -189,6 +189,9 @@ int main(int argc, char *argv[]){
   Int_t Dist_SBTTarget = env->GetValue("Dist_SBT_Target",2795.);
   Int_t Width_BDC1 = env->GetValue("BDC1_Width",68.);
   Int_t Width_FDC1 = env->GetValue("FDC1_Width",180.);
+  Double_t clight;
+  Double_t mu;
+
   
   //===== Declare anatree const.s =====
   Double_t hodo_toff[24], hodo_qcor[24];
@@ -204,6 +207,7 @@ int main(int argc, char *argv[]){
   
 
   Int_t hodo_id, hodo_multi;
+  Int_t hodo_q, hodo_t;
   
   Double_t brhoSAMURAI;
   
@@ -214,6 +218,15 @@ int main(int argc, char *argv[]){
   //===== Create anatree Branch =====
   anatrS->Branch("RunNum",&RunNum);
   anatrS->Branch("EventNum",&EventNum);
+
+  anatrS->Branch("hodo_id",&hodo_id);
+  anatrS->Branch("hodo_multi",&hodo_multi);
+  anatrS->Branch("hodo_q",&hodo_q);
+  anatrS->Branch("hodo_t",&hodo_t);
+
+  anatrS->Branch("aoqSA",&aoqSA);
+  anatrS->Branch("zetSA",&zetSA);
+  
   anatrS->Branch("brhoSAMURAI",&brhoSAMURAI);
 
   anatrS->Branch("BG_flag",&BG_flag);
