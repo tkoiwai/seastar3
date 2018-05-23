@@ -136,10 +136,10 @@ int main(int argc, char *argv[]){
   anatrDC->SetBranchAddress("FDC2_A",&FDC2_A);
   anatrDC->SetBranchAddress("FDC2_B",&FDC2_B);
   anatrDC->SetBranchAddress("BG_flag",&BG_flag_dc);
-
+  
   //===== Load input Beam file =====
   TString infnameB = Form("/home/koiwai/analysis/rootfiles/ana/beam/ana_beam%04d.root",FileNum);
-  TFile *infileB = TFile::Open(infname);
+  TFile *infileB = TFile::Open(infnameB);
   
   TTree *anatrB;
   infileB->GetObject("anatrB",anatrB);
@@ -150,9 +150,20 @@ int main(int argc, char *argv[]){
   Double_t betaF7F13;
 
   Double_t zetBR, aoqBR;
+
+  
+  //===== Beam SetBranchAddress =====
+  anatrB->SetBranchAddress("EventNumber",&EventNumber_beam);
+  anatrB->SetBranchAddress("RunNumber",&RunNumber_beam);
+
+  anatrB->SetBranchAddress("betaF7F13",&betaF7F13);
+  
+  anatrB->SetBranchAddress("zetBR",&zetBR);
+  anatrB->SetBranchAddress("aoqBR",&aoqBR);
   
   //===== AddFriend =====
   caltr->AddFriend(anatrDC);
+  caltr->AddFriend(anatrB);
 
   //===== Load .dat files =====
   TEnv *env = new TEnv("/home/koiwai/analysis/db/geometry_psp.dat");
@@ -205,8 +216,9 @@ int main(int argc, char *argv[]){
   Int_t Dist_SBTTarget = env->GetValue("Dist_SBT_Target",2795.);
   Int_t Width_BDC1 = env->GetValue("BDC1_Width",68.);
   Int_t Width_FDC1 = env->GetValue("FDC1_Width",180.);
-  Double_t clight;
-  Double_t mu;
+  Int_t toff_hodo = env->GetValue("toff_hodo",250.);
+  Double_t clight = 299.79258; //[mm/nsec]
+  Double_t mu = 931.49432; //[MeV]
 
   
   //===== Declare anatree const.s =====
@@ -223,7 +235,11 @@ int main(int argc, char *argv[]){
   
 
   Int_t hodo_id, hodo_multi;
-  Int_t hodo_q, hodo_t;
+  Double_t hodo_q, hodo_t;
+
+  Double_t t_minoshodo, v_minoshodo, beta_minoshodo, gamma_minoshodo;
+
+
   
   Double_t brhoSA, lengSA;
   
@@ -234,6 +250,14 @@ int main(int argc, char *argv[]){
   //===== Create anatree Branch =====
   anatrS->Branch("RunNum",&RunNum);
   anatrS->Branch("EventNum",&EventNum);
+
+  anatrS->Branch("t_minoshodo",&t_minoshodo);
+  anatrS->Branch("v_minoshodo",&v_minoshodo);
+  anatrS->Branch("beta_minoshodo",&beta_minoshodo);
+  anatrS->Branch("gamma_minoshodo",&gamma_minoshodo);
+
+
+  
 
   anatrS->Branch("hodo_id",&hodo_id);
   anatrS->Branch("hodo_multi",&hodo_multi);
@@ -247,6 +271,8 @@ int main(int argc, char *argv[]){
   anatrS->Branch("lengSA",&lengSA);
 
   anatrS->Branch("BG_flag",&BG_flag);
+
+  
   
   //===== Begin LOOP =====
   int nEntry = caltr->GetEntries();
@@ -264,6 +290,9 @@ int main(int argc, char *argv[]){
     caltr->GetEntry(iEntry);
  
     //@@@ Brho Length Function @@@
+    //=== Initialize ===
+    brhoSA = Sqrt(-1);
+    lengSA = Sqrt(-1);
 
     Double_t x[6];
 
@@ -279,7 +308,11 @@ int main(int argc, char *argv[]){
     
     //@@@ HODO @@@
     //=== Initialize ===
-    hodo_q = 0;
+    t_minoshodo = Sqrt(-1);
+    v_minoshodo = Sqrt(-1);
+    beta_minoshodo = Sqrt(-1);
+    gamma_minoshodo = Sqrt(-1);
+    hodo_q = 0.;
     hodo_t = Sqrt(-1);
     hodo_id = 0;
     hodo_multi = 0;
@@ -294,7 +327,7 @@ int main(int argc, char *argv[]){
     //=== Calc. ===
     for(Int_t i=0;i<24;i++){
       allHodo_Q[i] = Hodoi_QCal[i]*hodo_qcor[i];
-      allHodo_T[i] = Hodoi_TCal[i]*hodo_toff[i];
+      allHodo_T[i] = Hodoi_TCal[i]+hodo_toff[i];
       if(allHodo_Q[i]>hodo_q){
 	hodo_q = allHodo_Q[i];
 	hodo_t = allHodo_T[i];
@@ -302,8 +335,20 @@ int main(int argc, char *argv[]){
       }
     }
     hodo_multi = Hodo_Multiplicity;
-    
+
     //@@@ HODO end @@@
+    
+    t_minoshodo = hodo_t - SBT1_Time - (Dist_SBTTarget/betaF7F13/clight) + toff_hodo;
+    v_minoshodo = lengSA/t_minoshodo;
+    beta_minoshodo = v_minoshodo/clight;
+    gamma_minoshodo = 1/Sqrt(1-beta_minoshodo*beta_minoshodo);
+    
+    aoqSA = brhoSA/beta_minoshodo/gamma_minoshodo*clight/mu;
+    
+
+
+
+
     
     anatrS->Fill();
   }//for LOOP
