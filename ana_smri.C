@@ -13,11 +13,13 @@
 #include"TCutG.h"
 #include"TMath.h"
 #include"TString.h"
+#include"TEnv.h"
 
 #include"/home/koiwai/analysis/brho_func/Brho_A56Z20_br56Ca_sa56Ca.C"
 #include"/home/koiwai/analysis/brho_func/Len_A56Z20_br56Ca_sa56Ca.C"
 
 using namespace std;
+using namespace TMath;
 
 int main(int argc, char *argv[]){
 
@@ -34,8 +36,8 @@ int main(int argc, char *argv[]){
   Long64_t EventNumber_all;
   Int_t RunNumber_all;
 
-  Double_t AllHodo_Charge[24];
-  Double_t AllHodo_Time[24];
+  //Double_t AllHodo_Charge[24];
+  //Double_t AllHodo_Time[24];
   Int_t Hodo_ID; // ID of the hodoscope with the highest charge
   Int_t Hodo_Multiplicity;
   Double_t Hodo_QCal, Hodo_QRaw; // Highest charge //  Double_t Hodo_Charge;
@@ -56,8 +58,8 @@ int main(int argc, char *argv[]){
       {
 	caltr->SetBranchAddress(Form("Hodo%d_QCal",i+1),&Hodoi_QCal[i]);
 	caltr->SetBranchAddress(Form("Hodo%d_TCal",i+1),&Hodoi_TCal[i]);
-	caltr->SetBranchAddress(Form("Hodo%d_Charge",i+1),&AllHodo_Charge[i]);
-	caltr->SetBranchAddress(Form("Hodo%d_Time",i+1),&AllHodo_Time[i]);
+	//caltr->SetBranchAddress(Form("Hodo%d_Charge",i+1),&AllHodo_Charge[i]);
+	//caltr->SetBranchAddress(Form("Hodo%d_Time",i+1),&AllHodo_Time[i]);
 	caltr->SetBranchAddress(Form("Hodo%d_QRaw",i+1),&Hodoi_QRaw[i]);
 	caltr->SetBranchAddress(Form("Hodo%d_TRaw",i+1),&Hodoi_TRaw[i]);
 	caltr->SetBranchAddress(Form("Hodo%d_TURaw",i+1),&Hodoi_TURaw[i]);
@@ -135,6 +137,20 @@ int main(int argc, char *argv[]){
   anatrDC->SetBranchAddress("FDC2_B",&FDC2_B);
   anatrDC->SetBranchAddress("BG_flag",&BG_flag_dc);
 
+  //===== Load input Beam file =====
+  TString infnameB = Form("/home/koiwai/analysis/rootfiles/ana/beam/ana_beam%04d.root",FileNum);
+  TFile *infileB = TFile::Open(infname);
+  
+  TTree *anatrB;
+  infileB->GetObject("anatrB",anatrB);
+
+  //===== Declare Beam Variable =====
+  Int_t EventNumber_beam, RunNumber_beam;
+
+  Double_t betaF7F13;
+
+  Double_t zetBR, aoqBR;
+  
   //===== AddFriend =====
   caltr->AddFriend(anatrDC);
 
@@ -196,8 +212,8 @@ int main(int argc, char *argv[]){
   //===== Declare anatree const.s =====
   Double_t hodo_toff[24], hodo_qcor[24];
   for(Int_t id=0;id<24;id++){
-    hodo_toff[id] = env_hodot->GetValue(Form("hodo_toff%02d",id+1),0.0);
-    hodo_qcor[id] = env_hodoq->GetValue(Form("hodo_qcor%02d",id+1),0.0);
+    hodo_toff[id] = env_hodot->GetValue(Form("hodo_toff_%02d",id+1),0.0);
+    hodo_qcor[id] = env_hodoq->GetValue(Form("hodo_qcor_%02d",id+1),0.0);
   }
   
   //===== Declare valables for calc. =====
@@ -209,7 +225,7 @@ int main(int argc, char *argv[]){
   Int_t hodo_id, hodo_multi;
   Int_t hodo_q, hodo_t;
   
-  Double_t brhoSAMURAI;
+  Double_t brhoSA, lengSA;
   
   Double_t aoqSA, zetSA;
 
@@ -227,22 +243,23 @@ int main(int argc, char *argv[]){
   anatrS->Branch("aoqSA",&aoqSA);
   anatrS->Branch("zetSA",&zetSA);
   
-  anatrS->Branch("brhoSAMURAI",&brhoSAMURAI);
+  anatrS->Branch("brhoSA",&brhoSA);
+  anatrS->Branch("lengSA",&lengSA);
 
   anatrS->Branch("BG_flag",&BG_flag);
   
   //===== Begin LOOP =====
   int nEntry = caltr->GetEntries();
   for(int iEntry=0;iEntry<nEntry;++iEntry){
-    //for(int iEntry=0;iEntry<5;++iEntry){
+    //  for(int iEntry=0;iEntry<5;++iEntry){
   
     
     if(iEntry%100 == 0){
       clog<< iEntry/1000 << "k events treated..." << "\r";
     }
 
-    RunNum = RunNumber;
-    EventNum = EventNumber;
+    RunNum = RunNumber_all;
+    EventNum = EventNumber_all;
     
     caltr->GetEntry(iEntry);
  
@@ -257,18 +274,35 @@ int main(int argc, char *argv[]){
     x[4] = FDC2_X;
     x[5] = FDC2_A;
 
-    brhoSAMURAI = MDF_Brho_A56Z20(x);
+    brhoSA = MDF_Brho_A56Z20(x);
+    lengSA = MDF_Len_A56Z20(x);
     
     //@@@ HODO @@@
+    //=== Initialize ===
+    hodo_q = 0;
+    hodo_t = Sqrt(-1);
+    hodo_id = 0;
+    hodo_multi = 0;
 
+    Double_t allHodo_Q[24];
+    Double_t allHodo_T[24];
+    for(Int_t i=0;i<24;i++){
+      allHodo_Q[i] = Sqrt(-1);
+      allHodo_T[i] = Sqrt(-1);
+    }
 
-
-
-
-
-
-
-
+    //=== Calc. ===
+    for(Int_t i=0;i<24;i++){
+      allHodo_Q[i] = Hodoi_QCal[i]*hodo_qcor[i];
+      allHodo_T[i] = Hodoi_TCal[i]*hodo_toff[i];
+      if(allHodo_Q[i]>hodo_q){
+	hodo_q = allHodo_Q[i];
+	hodo_t = allHodo_T[i];
+	hodo_id = i+1;
+      }
+    }
+    hodo_multi = Hodo_Multiplicity;
+    
     //@@@ HODO end @@@
     
     anatrS->Fill();
