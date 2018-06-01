@@ -53,7 +53,7 @@ int main(int argc, char *argv[]){
   //===== SetBranchAddress =====
   caltr->SetBranchAddress("RunNumber",&RunNumber_all);
   caltr->SetBranchAddress("EventNumber",&EventNumber_all);
-
+  
   for (Int_t i=0;i<24;i++)
       {
 	caltr->SetBranchAddress(Form("Hodo%d_QCal",i+1),&Hodoi_QCal[i]);
@@ -151,6 +151,8 @@ int main(int argc, char *argv[]){
 
   Double_t zetBR, aoqBR;
 
+  Int_t BG_flag_beam;
+
   
   //===== Beam SetBranchAddress =====
   anatrB->SetBranchAddress("EventNumber",&EventNumber_beam);
@@ -160,15 +162,25 @@ int main(int argc, char *argv[]){
   
   anatrB->SetBranchAddress("zetBR",&zetBR);
   anatrB->SetBranchAddress("aoqBR",&aoqBR);
+
+  anatrB->SetBranchAddress("BG_flag",&BG_flag_beam);
   
   //===== AddFriend =====
   caltr->AddFriend(anatrDC);
   caltr->AddFriend(anatrB);
 
+  //===== Load cut files =====
+  TFile *cutfilesbt1 = new TFile("/home/koiwai/analysis/cutfiles/cutsbt1.root");
+  TCutG *csbt1 = (TCutG*)cutfilesbt1->Get("sbt1");
+
+
+
+  
   //===== Load .dat files =====
   TEnv *env = new TEnv("/home/koiwai/analysis/db/geometry_psp.dat");
   TEnv *env_hodot = new TEnv("/home/koiwai/analysis/db/hodo_toff.dat");
   TEnv *env_hodoq = new TEnv("/home/koiwai/analysis/db/hodo_qcor.dat");
+  TEnv *env_hodoq2z = new TEnv("/home/koiwai/analysis/db/hodo_q2z.dat");
   
   //===== Create output file/tree =====
   TString ofname = Form("/home/koiwai/analysis/rootfiles/ana/smri/ana_smri%04d.root",FileNum);
@@ -216,19 +228,29 @@ int main(int argc, char *argv[]){
   Int_t Dist_SBTTarget = env->GetValue("Dist_SBT_Target",2795.);
   Int_t Width_BDC1 = env->GetValue("BDC1_Width",68.);
   Int_t Width_FDC1 = env->GetValue("FDC1_Width",180.);
-  Int_t toff_hodo = env->GetValue("toff_hodo",250.);
+  //Double_t toff_hodo = env->GetValue("toff_hodo",250.);
+  Double_t toff_hodo = 227.;
   Double_t clight = 299.79258; //[mm/nsec]
   Double_t mu = 931.49432; //[MeV]
 
   
   //===== Declare anatree const.s =====
   Double_t hodo_toff[24], hodo_qcor[24];
+  Double_t hodo_t2q0[24], hodo_t2q1[24];
+  Double_t hodo_zraw2z0[24], hodo_zraw2z1[24], hodo_zraw2z2[24];
   for(Int_t id=0;id<24;id++){
     hodo_toff[id] = env_hodot->GetValue(Form("hodo_toff_%02d",id+1),0.0);
     hodo_qcor[id] = env_hodoq->GetValue(Form("hodo_qcor_%02d",id+1),0.0);
+    hodo_t2q0[id] = env_hodoq2z->GetValue(Form("hodo%02dt2q0",id+1),0.0);
+    hodo_t2q1[id] = env_hodoq2z->GetValue(Form("hodo%02dt2q1",id+1),0.0);
+    hodo_zraw2z0[id] = env_hodoq2z->GetValue(Form("hodo%02dzraw2z0",id+1),0.0);
+    hodo_zraw2z1[id] = env_hodoq2z->GetValue(Form("hodo%02dzraw2z1",id+1),0.0);
+    hodo_zraw2z2[id] = env_hodoq2z->GetValue(Form("hodo%02dzraw2z2",id+1),0.0);
   }
-  
+    
   //===== Declare valables for calc. =====
+
+
   
   //===== Declare anatree variables =====
   Int_t RunNum, EventNum;
@@ -242,6 +264,8 @@ int main(int argc, char *argv[]){
 
   
   Double_t brhoSA, lengSA;
+
+  Double_t zraw;
   
   Double_t aoqSA, zetSA;
 
@@ -266,34 +290,39 @@ int main(int argc, char *argv[]){
 
   anatrS->Branch("aoqSA",&aoqSA);
   anatrS->Branch("zetSA",&zetSA);
+
+  anatrS->Branch("zraw",&zraw);
   
   anatrS->Branch("brhoSA",&brhoSA);
   anatrS->Branch("lengSA",&lengSA);
 
   anatrS->Branch("BG_flag",&BG_flag);
+  anatrS->Branch("BG_flag_beam",&BG_flag_beam);
 
   
   
   //===== Begin LOOP =====
   int nEntry = caltr->GetEntries();
   for(int iEntry=0;iEntry<nEntry;++iEntry){
-    //  for(int iEntry=0;iEntry<5;++iEntry){
+    //for(int iEntry=0;iEntry<5;++iEntry){
   
-    
     if(iEntry%100 == 0){
       clog<< iEntry/1000 << "k events treated..." << "\r";
     }
 
+    caltr->GetEntry(iEntry);
+
     RunNum = RunNumber_all;
     EventNum = EventNumber_all;
     
-    caltr->GetEntry(iEntry);
  
     //@@@ Brho Length Function @@@
     //=== Initialize ===
     brhoSA = Sqrt(-1);
     lengSA = Sqrt(-1);
 
+    BG_flag = 0;
+    
     Double_t x[6];
 
     x[0] = FDC1_X;
@@ -316,6 +345,10 @@ int main(int argc, char *argv[]){
     hodo_t = Sqrt(-1);
     hodo_id = 0;
     hodo_multi = 0;
+
+    aoqSA = Sqrt(-1);
+    zetSA = Sqrt(-1);
+    zraw  = Sqrt(-1);
 
     Double_t allHodo_Q[24];
     Double_t allHodo_T[24];
@@ -345,11 +378,23 @@ int main(int argc, char *argv[]){
     
     aoqSA = brhoSA/beta_minoshodo/gamma_minoshodo*clight/mu;
     
+        
+    zraw = hodo_q - (hodo_t2q0[hodo_id+1] + hodo_t2q1[hodo_id+1]*t_minoshodo);
+    zetSA = hodo_zraw2z0[hodo_id+1] + hodo_zraw2z1[hodo_id+1]*zraw + hodo_zraw2z2[hodo_id+1]*zraw*zraw;
 
-
-
-
+    //cout << "z " << zetSA <<endl;
     
+
+
+
+    //===== BG cut =====
+    //=== cut by CUTG ===
+    if(!csbt1->IsInside(SBT1_TR-SBT1_TL,log(SBT1_QL/SBT1_QR))) BG_flag = 1;
+
+    //=== cut by Hodo Time ===
+    for(Int_t i=0;i<24;i++){
+      if(Hodoi_TURaw[i]==-1000||Hodoi_TDRaw[i]==-1000) BG_flag = 1;
+    }
     anatrS->Fill();
   }//for LOOP
   anafile_smri->cd();
