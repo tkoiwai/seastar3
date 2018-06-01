@@ -232,6 +232,8 @@ int main(int argc, char *argv[]){
   Double_t toff_hodo = 227.;
   Double_t clight = 299.79258; //[mm/nsec]
   Double_t mu = 931.49432; //[MeV]
+  Double_t me = 511.; //[keV]
+  Double_t ionpair = 4.866; //[keV
 
   
   //===== Declare anatree const.s =====
@@ -249,7 +251,7 @@ int main(int argc, char *argv[]){
   }
     
   //===== Declare valables for calc. =====
-
+  Double_t dev;
 
   
   //===== Declare anatree variables =====
@@ -349,6 +351,7 @@ int main(int argc, char *argv[]){
     aoqSA = Sqrt(-1);
     zetSA = Sqrt(-1);
     zraw  = Sqrt(-1);
+    dev   = Sqrt(-1);
 
     Double_t allHodo_Q[24];
     Double_t allHodo_T[24];
@@ -375,12 +378,16 @@ int main(int argc, char *argv[]){
     v_minoshodo = lengSA/t_minoshodo;
     beta_minoshodo = v_minoshodo/clight;
     gamma_minoshodo = 1/Sqrt(1-beta_minoshodo*beta_minoshodo);
+
+    dev = Log(2*me*beta_minoshodo*beta_minoshodo/ionpair) - Log(1 - beta_minoshodo*beta_minoshodo) - beta_minoshodo*beta_minoshodo; 
+    
+    zraw = v_minoshodo*Sqrt(hodo_q/dev);
     
     aoqSA = brhoSA/beta_minoshodo/gamma_minoshodo*clight/mu;
     
         
-    zraw = hodo_q - (hodo_t2q0[hodo_id+1] + hodo_t2q1[hodo_id+1]*t_minoshodo);
-    zetSA = hodo_zraw2z0[hodo_id+1] + hodo_zraw2z1[hodo_id+1]*zraw + hodo_zraw2z2[hodo_id+1]*zraw*zraw;
+    //zraw = hodo_q - (hodo_t2q0[hodo_id+1] + hodo_t2q1[hodo_id+1]*t_minoshodo);
+    //zetSA = hodo_zraw2z0[hodo_id+1] + hodo_zraw2z1[hodo_id+1]*zraw + hodo_zraw2z2[hodo_id+1]*zraw*zraw;
 
     //cout << "z " << zetSA <<endl;
     
