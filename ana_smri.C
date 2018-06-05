@@ -158,7 +158,7 @@ int main(int argc, char *argv[]){
   anatrB->SetBranchAddress("EventNumber",&EventNumber_beam);
   anatrB->SetBranchAddress("RunNumber",&RunNumber_beam);
 
-  anatrB->SetBranchAddress("betaF7F13",&betaF7F13);
+  anatrB->SetBranchAddress("betaF7F13",&betaF7F13); // 
   
   anatrB->SetBranchAddress("zetBR",&zetBR);
   anatrB->SetBranchAddress("aoqBR",&aoqBR);
@@ -177,10 +177,11 @@ int main(int argc, char *argv[]){
 
   
   //===== Load .dat files =====
-  TEnv *env = new TEnv("/home/koiwai/analysis/db/geometry_psp.dat");
-  TEnv *env_hodot = new TEnv("/home/koiwai/analysis/db/hodo_toff.dat");
-  TEnv *env_hodoq = new TEnv("/home/koiwai/analysis/db/hodo_qcor.dat");
-  TEnv *env_hodoq2z = new TEnv("/home/koiwai/analysis/db/hodo_q2z.dat");
+  TEnv *env            = new TEnv("/home/koiwai/analysis/db/geometry_psp.dat");
+  TEnv *env_hodot      = new TEnv("/home/koiwai/analysis/db/hodo_toff.dat");
+  TEnv *env_hodoq      = new TEnv("/home/koiwai/analysis/db/hodo_qcor.dat");
+  TEnv *env_hodoq2z    = new TEnv("/home/koiwai/analysis/db/hodo_q2z.dat");
+  TEnv *env_hodozraw2z = new TEnv("/home/koiwai/analysis/db/hodo_zraw2z.dat");
   
   //===== Create output file/tree =====
   TString ofname = Form("/home/koiwai/analysis/rootfiles/ana/smri/ana_smri%04d.root",FileNum);
@@ -238,17 +239,26 @@ int main(int argc, char *argv[]){
   
   //===== Declare anatree const.s =====
   Double_t hodo_toff[24], hodo_qcor[24];
-  Double_t hodo_t2q0[24], hodo_t2q1[24];
-  Double_t hodo_zraw2z0[24], hodo_zraw2z1[24], hodo_zraw2z2[24];
+  //Double_t hodo_t2q0[24], hodo_t2q1[24];
+  //Double_t hodo_zraw2z0[24], hodo_zraw2z1[24], hodo_zraw2z2[24];
+  Double_t hodo_235T_zraw2z_p0[24], hodo_235T_zraw2z_p1[24];
+  Double_t hodo_270T_zraw2z_p0[24], hodo_270T_zraw2z_p1[24];
+  Double_t hodo_zraw2z[2];
   for(Int_t id=0;id<24;id++){
     hodo_toff[id] = env_hodot->GetValue(Form("hodo_toff_%02d",id+1),0.0);
     hodo_qcor[id] = env_hodoq->GetValue(Form("hodo_qcor_%02d",id+1),0.0);
-    hodo_t2q0[id] = env_hodoq2z->GetValue(Form("hodo%02dt2q0",id+1),0.0);
-    hodo_t2q1[id] = env_hodoq2z->GetValue(Form("hodo%02dt2q1",id+1),0.0);
-    hodo_zraw2z0[id] = env_hodoq2z->GetValue(Form("hodo%02dzraw2z0",id+1),0.0);
-    hodo_zraw2z1[id] = env_hodoq2z->GetValue(Form("hodo%02dzraw2z1",id+1),0.0);
-    hodo_zraw2z2[id] = env_hodoq2z->GetValue(Form("hodo%02dzraw2z2",id+1),0.0);
+    //hodo_t2q0[id] = env_hodoq2z->GetValue(Form("hodo%02dt2q0",id+1),0.0);
+    //hodo_t2q1[id] = env_hodoq2z->GetValue(Form("hodo%02dt2q1",id+1),0.0);
+    //hodo_zraw2z0[id] = env_hodoq2z->GetValue(Form("hodo%02dzraw2z0",id+1),0.0);
+    //hodo_zraw2z1[id] = env_hodoq2z->GetValue(Form("hodo%02dzraw2z1",id+1),0.0);
+    //hodo_zraw2z2[id] = env_hodoq2z->GetValue(Form("hodo%02dzraw2z2",id+1),0.0);
+    hodo_235T_zraw2z_p0[id] = env_hodozraw2z->GetValue(Form("235T_%02d_p0",id+1),0.0);
+    hodo_235T_zraw2z_p1[id] = env_hodozraw2z->GetValue(Form("235T_%02d_p1",id+1),0.0);
+    hodo_270T_zraw2z_p0[id] = env_hodozraw2z->GetValue(Form("270T_%02d_p0",id+1),0.0);
+    hodo_270T_zraw2z_p1[id] = env_hodozraw2z->GetValue(Form("270T_%02d_p1",id+1),0.0);
   }
+  hodo_zraw2z[0] = env_hodozraw2z->GetValue("zraw2z_p0",0.0);
+  hodo_zraw2z[1] = env_hodozraw2z->GetValue("zraw2z_p1",0.0);
     
   //===== Declare valables for calc. =====
   Double_t dev;
@@ -268,6 +278,8 @@ int main(int argc, char *argv[]){
   Double_t brhoSA, lengSA;
 
   Double_t zraw;
+
+  Double_t zetSA235, zetSA270;
   
   Double_t aoqSA, zetSA;
 
@@ -292,6 +304,9 @@ int main(int argc, char *argv[]){
 
   anatrS->Branch("aoqSA",&aoqSA);
   anatrS->Branch("zetSA",&zetSA);
+
+  anatrS->Branch("zetSA235",&zetSA235);
+  anatrS->Branch("zetSA270",&zetSA270);
 
   anatrS->Branch("zraw",&zraw);
   
@@ -339,19 +354,22 @@ int main(int argc, char *argv[]){
     
     //@@@ HODO @@@
     //=== Initialize ===
-    t_minoshodo = Sqrt(-1);
-    v_minoshodo = Sqrt(-1);
-    beta_minoshodo = Sqrt(-1);
+    t_minoshodo     = Sqrt(-1);
+    v_minoshodo     = Sqrt(-1);
+    beta_minoshodo  = Sqrt(-1);
     gamma_minoshodo = Sqrt(-1);
-    hodo_q = 0.;
-    hodo_t = Sqrt(-1);
-    hodo_id = 0;
+
+    hodo_q     = 0.;
+    hodo_t     = Sqrt(-1);
+    hodo_id    = 0;
     hodo_multi = 0;
 
-    aoqSA = Sqrt(-1);
-    zetSA = Sqrt(-1);
-    zraw  = Sqrt(-1);
-    dev   = Sqrt(-1);
+    aoqSA    = Sqrt(-1);
+    zetSA    = Sqrt(-1);
+    zetSA235 = Sqrt(-1);
+    zetSA270 = Sqrt(-1);
+    zraw     = Sqrt(-1);
+    dev      = Sqrt(-1);
 
     Double_t allHodo_Q[24];
     Double_t allHodo_T[24];
@@ -365,8 +383,8 @@ int main(int argc, char *argv[]){
       allHodo_Q[i] = Hodoi_QCal[i]*hodo_qcor[i];
       allHodo_T[i] = Hodoi_TCal[i]+hodo_toff[i];
       if(allHodo_Q[i]>hodo_q){
-	hodo_q = allHodo_Q[i];
-	hodo_t = allHodo_T[i];
+	hodo_q  = allHodo_Q[i];
+	hodo_t  = allHodo_T[i];
 	hodo_id = i+1;
       }
     }
@@ -376,12 +394,21 @@ int main(int argc, char *argv[]){
     
     t_minoshodo = hodo_t - SBT1_Time - (Dist_SBTTarget/betaF7F13/clight) + toff_hodo;
     v_minoshodo = lengSA/t_minoshodo;
-    beta_minoshodo = v_minoshodo/clight;
+    beta_minoshodo  = v_minoshodo/clight;
     gamma_minoshodo = 1/Sqrt(1-beta_minoshodo*beta_minoshodo);
 
     dev = Log(2*me*beta_minoshodo*beta_minoshodo/ionpair) - Log(1 - beta_minoshodo*beta_minoshodo) - beta_minoshodo*beta_minoshodo; 
     
     zraw = v_minoshodo*Sqrt(hodo_q/dev);
+    
+    //zetSA235 = hodo_235T_zraw2z_p0[hodo_id-1] + hodo_235T_zraw2z_p1[hodo_id-1]*zraw;
+    //zetSA270 = hodo_270T_zraw2z_p0[hodo_id-1] + hodo_270T_zraw2z_p1[hodo_id-1]*zraw;
+    if(hodo_id==3||hodo_id==4||hodo_id==5)
+      zetSA = hodo_235T_zraw2z_p0[hodo_id-1] + hodo_235T_zraw2z_p1[hodo_id-1]*zraw;
+    else
+      zetSA = hodo_270T_zraw2z_p0[hodo_id-1] + hodo_270T_zraw2z_p1[hodo_id-1]*zraw;
+
+    zetSA = hodo_zraw2z[0] + hodo_zraw2z[1]*zetSA;
     
     aoqSA = brhoSA/beta_minoshodo/gamma_minoshodo*clight/mu;
     
