@@ -152,6 +152,7 @@ int main(int argc, char *argv[]){
   Double_t zetBR, aoqBR;
 
   Int_t BG_flag_beam;
+  Int_t BR56Sc;
 
   
   //===== Beam SetBranchAddress =====
@@ -164,6 +165,8 @@ int main(int argc, char *argv[]){
   anatrB->SetBranchAddress("aoqBR",&aoqBR);
 
   anatrB->SetBranchAddress("BG_flag",&BG_flag_beam);
+  anatrB->SetBranchAddress("BR56Sc",&BR56Sc);
+  
   
   //===== AddFriend =====
   caltr->AddFriend(anatrDC);
@@ -323,8 +326,7 @@ int main(int argc, char *argv[]){
   anatrS->Branch("BG_flag",&BG_flag);
   anatrS->Branch("BG_flag_beam",&BG_flag_beam);
 
-  
-  
+  anatrS->Branch("BR56Sc",&BR56Sc);  
   //===== Begin LOOP =====
   int nEntry = caltr->GetEntries();
   for(int iEntry=0;iEntry<nEntry;++iEntry){
