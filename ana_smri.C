@@ -276,7 +276,10 @@ int main(int argc, char *argv[]){
 
   
   Double_t brhoSA, lengSA;
+  //Double_t brhoSA_tan, lengSA_tan;
+  Double_t brhoSA_rad, lengSA_rad;
 
+  
   Double_t zraw;
 
   Double_t zetSA235, zetSA270;
@@ -312,6 +315,10 @@ int main(int argc, char *argv[]){
   
   anatrS->Branch("brhoSA",&brhoSA);
   anatrS->Branch("lengSA",&lengSA);
+  //anatrS->Branch("brhoSA_tan",&brhoSA_tan);
+  //anatrS->Branch("lengSA_tan",&lengSA_tan);
+  anatrS->Branch("brhoSA_rad",&brhoSA_rad);
+  anatrS->Branch("lengSA_rad",&lengSA_rad);
 
   anatrS->Branch("BG_flag",&BG_flag);
   anatrS->Branch("BG_flag_beam",&BG_flag_beam);
@@ -337,6 +344,10 @@ int main(int argc, char *argv[]){
     //=== Initialize ===
     brhoSA = Sqrt(-1);
     lengSA = Sqrt(-1);
+    //brhoSA_tan = Sqrt(-1);
+    //lengSA_tan = Sqrt(-1);
+    brhoSA_rad = Sqrt(-1);
+    lengSA_rad = Sqrt(-1);
 
     BG_flag = 0;
     
@@ -349,8 +360,35 @@ int main(int argc, char *argv[]){
     x[4] = FDC2_X;
     x[5] = FDC2_A;
 
+    /*
+    Double_t tan[6];
+
+    tan[0] = FDC1_X;
+    tan[1] = Tan(FDC1_A)*1000;
+    tan[2] = FDC1_Y;
+    tan[3] = Tan(FDC1_B)*1000;
+    tan[4] = FDC2_X;
+    tan[5] = Tan(FDC2_A)*1000;
+    */
+    
+    Double_t rad[6];
+
+    rad[0] = FDC1_X;
+    rad[1] = FDC1_A*1000;
+    rad[2] = FDC1_Y;
+    rad[3] = FDC1_B*1000;
+    rad[4] = FDC2_X;
+    rad[5] = FDC2_A*1000;
+
     brhoSA = MDF_Brho_A56Z20(x);
     lengSA = MDF_Len_A56Z20(x);
+
+    //brhoSA_tan = MDF_Brho_A56Z20(tan);
+    //lengSA_tan = MDF_Len_A56Z20(tan);
+
+    brhoSA_rad = MDF_Brho_A56Z20(rad);
+    lengSA_rad = MDF_Len_A56Z20(rad);
+    
     
     //@@@ HODO @@@
     //=== Initialize ===
@@ -393,7 +431,7 @@ int main(int argc, char *argv[]){
     //@@@ HODO end @@@
     
     t_minoshodo = hodo_t - SBT1_Time - (Dist_SBTTarget/betaF7F13/clight) + toff_hodo;
-    v_minoshodo = lengSA/t_minoshodo;
+    v_minoshodo = lengSA_rad/t_minoshodo;
     beta_minoshodo  = v_minoshodo/clight;
     gamma_minoshodo = 1/Sqrt(1-beta_minoshodo*beta_minoshodo);
 
@@ -410,7 +448,8 @@ int main(int argc, char *argv[]){
 
     zetSA = hodo_zraw2z[0] + hodo_zraw2z[1]*zetSA;
     
-    aoqSA = brhoSA/beta_minoshodo/gamma_minoshodo*clight/mu;
+    aoqSA = brhoSA_rad/beta_minoshodo/gamma_minoshodo*clight/mu;
+    aoqSA = 0.545 + 0.7551*aoqSA;
     
         
     //zraw = hodo_q - (hodo_t2q0[hodo_id+1] + hodo_t2q1[hodo_id+1]*t_minoshodo);
