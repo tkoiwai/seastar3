@@ -227,6 +227,7 @@ int main(int argc, char *argv[]){
   TCutG *cBR56Ca = (TCutG*)BRpid->Get("BR56Ca");
   TCutG *cBR53Ca = (TCutG*)BRpid->Get("BR53Ca");
   TCutG *cBR51K  = (TCutG*)BRpid->Get("BR51K");
+  TCutG *cBR56Sc = (TCutG*)BRpid->Get("BR56Sc");
   
   //===== Load .dat files =====
   
@@ -338,7 +339,7 @@ int main(int argc, char *argv[]){
   
   Int_t BG_flag; //flag for background
   Int_t f71flag, f72flag;
-  Int_t BR56Ca,BR53Ca,BR51K;
+  Int_t BR56Ca,BR53Ca,BR51K,BR56Sc;
 
 
   //======
@@ -407,6 +408,7 @@ int main(int argc, char *argv[]){
   anatrB->Branch("BR56Ca",&BR56Ca);
   anatrB->Branch("BR53Ca",&BR53Ca);
   anatrB->Branch("BR51K",&BR51K);
+  anatrB->Branch("BR56Sc",&BR56Sc);
   
   infile->cd();
 
@@ -431,6 +433,7 @@ int main(int argc, char *argv[]){
     BR56Ca = 0;
     BR53Ca = 0;
     BR51K  = 0;
+    BR56Sc = 0;
     tofF3F7 = TMath::Sqrt(-1);
     tofF3F5 = TMath::Sqrt(-1);
     tofF5F7 = TMath::Sqrt(-1);
@@ -730,6 +733,7 @@ int main(int argc, char *argv[]){
     if(cBR56Ca->IsInside(aoqBR,zetBR)) BR56Ca = 1;
     if(cBR53Ca->IsInside(aoqBR,zetBR)) BR53Ca = 1;
     if(cBR51K->IsInside(aoqBR,zetBR))  BR51K  = 1;
+    if(cBR56Sc->IsInside(aoqBR,zetBR)) BR56Sc = 1;
   
     anatrB->Fill();
   }
