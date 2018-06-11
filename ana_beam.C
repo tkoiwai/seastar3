@@ -222,6 +222,7 @@ int main(int argc, char *argv[]){
     fin >> cPPAC_Tsum_low[cPPAC_index] >> cPPAC_Tsum_up[cPPAC_index];
   }
 
+  /*
   //=== 56Ca gate ===
   TFile *BRpid = new TFile("/home/koiwai/analysis/cutfiles/BRpid.root");
   TCutG *cbr49ar = (TCutG*)BRpid->Get("br49ar");
@@ -251,6 +252,7 @@ int main(int argc, char *argv[]){
   TCutG *cbr62v  = (TCutG*)BRpid->Get("br62v");
   TCutG *cbr63v  = (TCutG*)BRpid->Get("br63v");
   TCutG *cbr64v  = (TCutG*)BRpid->Get("br64v");
+  */
   
   //===== Load .dat files =====
   
@@ -362,8 +364,6 @@ int main(int argc, char *argv[]){
   
   Int_t BG_flag; //flag for background
   Int_t f71flag, f72flag;
-  Int_t br
-
 
   //======
   anatrB->Branch("EventNumber",&EventNum);
@@ -428,11 +428,12 @@ int main(int argc, char *argv[]){
   anatrB->Branch("BG_flag",&BG_flag);
   anatrB->Branch("f71flag",&f71flag);
   anatrB->Branch("f72flag",&f72flag);
+  /*
   anatrB->Branch("BR56Ca",&BR56Ca);
   anatrB->Branch("BR53Ca",&BR53Ca);
   anatrB->Branch("BR51K",&BR51K);
   anatrB->Branch("BR56Sc",&BR56Sc);
-  
+  */
   infile->cd();
 
 
@@ -453,10 +454,10 @@ int main(int argc, char *argv[]){
     BG_flag = 0;
     f71flag = 0;
     f72flag = 0;
-    BR56Ca = 0;
-    BR53Ca = 0;
-    BR51K  = 0;
-    BR56Sc = 0;
+    //BR56Ca = 0;
+    //BR53Ca = 0;
+    //BR51K  = 0;
+    //BR56Sc = 0;
     tofF3F7 = TMath::Sqrt(-1);
     tofF3F5 = TMath::Sqrt(-1);
     tofF5F7 = TMath::Sqrt(-1);
@@ -753,10 +754,10 @@ int main(int argc, char *argv[]){
     if(!cF5pla->IsInside(F5_TR-F5_TL,log(F5_QL/F5_QR))) BG_flag = 1;
     if(!cF7pla->IsInside(F7_TR-F7_TL,log(F7_QL/F7_QR))) BG_flag = 1;
     //if(!cF5Qchange->IsInside(aoqF3F5/aoqF5F7,zetBR)) BG_flag = 4; after finalizing the PID
-    if(cBR56Ca->IsInside(aoqBR,zetBR)) BR56Ca = 1;
-    if(cBR53Ca->IsInside(aoqBR,zetBR)) BR53Ca = 1;
-    if(cBR51K->IsInside(aoqBR,zetBR))  BR51K  = 1;
-    if(cBR56Sc->IsInside(aoqBR,zetBR)) BR56Sc = 1;
+    //if(cBR56Ca->IsInside(aoqBR,zetBR)) BR56Ca = 1;
+    //if(cBR53Ca->IsInside(aoqBR,zetBR)) BR53Ca = 1;
+    //if(cBR51K->IsInside(aoqBR,zetBR))  BR51K  = 1;
+    //if(cBR56Sc->IsInside(aoqBR,zetBR)) BR56Sc = 1;
   
     anatrB->Fill();
   }
