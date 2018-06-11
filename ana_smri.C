@@ -176,7 +176,8 @@ int main(int argc, char *argv[]){
   TFile *cutfilesbt1 = new TFile("/home/koiwai/analysis/cutfiles/cutsbt1.root");
   TCutG *csbt1 = (TCutG*)cutfilesbt1->Get("sbt1");
 
-
+  TFile *SApid_temp = new TFile("/home/koiwai/analysis/macros/SApid_temp.root");
+  TCutG *cSA56Sc_temp = (TCutG*)SApid_temp->Get("SA56Sc_temp");
 
   
   //===== Load .dat files =====
@@ -290,6 +291,8 @@ int main(int argc, char *argv[]){
   Double_t aoqSA, zetSA;
 
   Int_t BG_flag;
+
+  Int_t SA56Sc_temp;
   
   //===== Create anatree Branch =====
   anatrS->Branch("RunNum",&RunNum);
@@ -326,7 +329,9 @@ int main(int argc, char *argv[]){
   anatrS->Branch("BG_flag",&BG_flag);
   anatrS->Branch("BG_flag_beam",&BG_flag_beam);
 
-  anatrS->Branch("BR56Sc",&BR56Sc);  
+  anatrS->Branch("BR56Sc",&BR56Sc);
+  anatrS->Branch("SA56Sc_temp",&SA56Sc_temp);
+  
   //===== Begin LOOP =====
   int nEntry = caltr->GetEntries();
   for(int iEntry=0;iEntry<nEntry;++iEntry){
@@ -352,6 +357,7 @@ int main(int argc, char *argv[]){
     lengSA_rad = Sqrt(-1);
 
     BG_flag = 0;
+    SA56Sc_temp = 0;
     
     Double_t x[6];
 
@@ -465,7 +471,8 @@ int main(int argc, char *argv[]){
     //===== BG cut =====
     //=== cut by CUTG ===
     if(!csbt1->IsInside(SBT1_TR-SBT1_TL,log(SBT1_QL/SBT1_QR))) BG_flag = 1;
-
+    if(cSA56Sc_temp->IsInside(aoqSA,zetSA)) SA56Sc_temp = 1;
+    
     //=== cut by Hodo Time ===
     for(Int_t i=0;i<24;i++){
       if(Hodoi_TURaw[i]==-1000||Hodoi_TDRaw[i]==-1000) BG_flag = 1;
