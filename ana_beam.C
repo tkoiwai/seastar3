@@ -224,10 +224,33 @@ int main(int argc, char *argv[]){
 
   //=== 56Ca gate ===
   TFile *BRpid = new TFile("/home/koiwai/analysis/cutfiles/BRpid.root");
-  TCutG *cBR56Ca = (TCutG*)BRpid->Get("BR56Ca");
-  TCutG *cBR53Ca = (TCutG*)BRpid->Get("BR53Ca");
-  TCutG *cBR51K  = (TCutG*)BRpid->Get("BR51K");
-  TCutG *cBR56Sc = (TCutG*)BRpid->Get("BR56Sc");
+  TCutG *cbr49ar = (TCutG*)BRpid->Get("br49ar");
+  TCutG *cbr50ar = (TCutG*)BRpid->Get("br50ar");
+  TCutG *cbr50k  = (TCutG*)BRpid->Get("br50k");
+  TCutG *cbr51k  = (TCutG*)BRpid->Get("br51k");
+  TCutG *cbr52k  = (TCutG*)BRpid->Get("br52k");
+  TCutG *cbr53k  = (TCutG*)BRpid->Get("br53k");
+  TCutG *cbr52ca = (TCutG*)BRpid->Get("br52ca");
+  TCutG *cbr53ca = (TCutG*)BRpid->Get("br53ca");
+  TCutG *cbr54ca = (TCutG*)BRpid->Get("br54ca");
+  TCutG *cbr55ca = (TCutG*)BRpid->Get("br55ca");
+  TCutG *cbr56ca = (TCutG*)BRpid->Get("br56ca");
+  TCutG *cbr54sc = (TCutG*)BRpid->Get("br54sc");
+  TCutG *cbr55sc = (TCutG*)BRpid->Get("br55sc");
+  TCutG *cbr56sc = (TCutG*)BRpid->Get("br56sc");
+  TCutG *cbr57sc = (TCutG*)BRpid->Get("br57sc");
+  TCutG *cbr58sc = (TCutG*)BRpid->Get("br58sc");
+  TCutG *cbr59sc = (TCutG*)BRpid->Get("br59sc");
+  TCutG *cbr57ti = (TCutG*)BRpid->Get("br57ti");
+  TCutG *cbr58ti = (TCutG*)BRpid->Get("br58ti");
+  TCutG *cbr59ti = (TCutG*)BRpid->Get("br59ti");
+  TCutG *cbr60ti = (TCutG*)BRpid->Get("br60ti");
+  TCutG *cbr61ti = (TCutG*)BRpid->Get("br61ti");
+  TCutG *cbr60v  = (TCutG*)BRpid->Get("br60v");
+  TCutG *cbr61v  = (TCutG*)BRpid->Get("br61v");
+  TCutG *cbr62v  = (TCutG*)BRpid->Get("br62v");
+  TCutG *cbr63v  = (TCutG*)BRpid->Get("br63v");
+  TCutG *cbr64v  = (TCutG*)BRpid->Get("br64v");
   
   //===== Load .dat files =====
   
@@ -339,7 +362,7 @@ int main(int argc, char *argv[]){
   
   Int_t BG_flag; //flag for background
   Int_t f71flag, f72flag;
-  Int_t BR56Ca,BR53Ca,BR51K,BR56Sc;
+  Int_t br
 
 
   //======
