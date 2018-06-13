@@ -181,11 +181,12 @@ int main(int argc, char *argv[]){
 
   
   //===== Load .dat files =====
-  TEnv *env            = new TEnv("/home/koiwai/analysis/db/geometry_psp.dat");
-  TEnv *env_hodot      = new TEnv("/home/koiwai/analysis/db/hodo_toff.dat");
-  TEnv *env_hodoq      = new TEnv("/home/koiwai/analysis/db/hodo_qcor.dat");
-  TEnv *env_hodoq2z    = new TEnv("/home/koiwai/analysis/db/hodo_q2z.dat");
-  TEnv *env_hodozraw2z = new TEnv("/home/koiwai/analysis/db/hodo_zraw2z.dat");
+  TEnv *env              = new TEnv("/home/koiwai/analysis/db/geometry_psp.dat");
+  TEnv *env_hodot        = new TEnv("/home/koiwai/analysis/db/hodo_toff.dat");
+  TEnv *env_hodoq        = new TEnv("/home/koiwai/analysis/db/hodo_qcor.dat");
+  TEnv *env_hodoq2z      = new TEnv("/home/koiwai/analysis/db/hodo_q2z.dat");
+  TEnv *env_hodozraw2z   = new TEnv("/home/koiwai/analysis/db/hodo_zraw2z.dat");
+  TEnv *env_hodo12tofcor = new TEnv("/home/koiwai/analysis/db/hodo12_tofcor.dat");
   
   //===== Create output file/tree =====
   TString ofname = Form("/home/koiwai/analysis/rootfiles/ana/smri/ana_smri%04d.root",FileNum);
@@ -263,6 +264,11 @@ int main(int argc, char *argv[]){
   }
   hodo_zraw2z[0] = env_hodozraw2z->GetValue("zraw2z_p0",0.0);
   hodo_zraw2z[1] = env_hodozraw2z->GetValue("zraw2z_p1",0.0);
+  Double_t hodo12_tofcor[231];
+  for(Int_t runnum=0;runnum<231;runnum++){
+    const char *n = Form("%d",FileNum);
+    hodo12_tofcor[runnum] = env_hodo12tofcor->GetValue(n,0.0);
+  }
     
   //===== Declare valables for calc. =====
   Double_t dev;
@@ -302,9 +308,6 @@ int main(int argc, char *argv[]){
   anatrS->Branch("v_minoshodo",&v_minoshodo);
   anatrS->Branch("beta_minoshodo",&beta_minoshodo);
   anatrS->Branch("gamma_minoshodo",&gamma_minoshodo);
-
-
-  
 
   anatrS->Branch("hodo_id",&hodo_id);
   anatrS->Branch("hodo_multi",&hodo_multi);
@@ -439,6 +442,9 @@ int main(int argc, char *argv[]){
     //@@@ HODO end @@@
     
     t_minoshodo = hodo_t - SBT1_Time - (Dist_SBTTarget/betaF7F13/clight) + toff_hodo;
+
+    if(hodo_id==12) t_minoshodo = t_minoshodo + hodo12_tofcor[RunNum];
+    
     v_minoshodo = lengSA_rad/t_minoshodo;
     beta_minoshodo  = v_minoshodo/clight;
     gamma_minoshodo = 1/Sqrt(1-beta_minoshodo*beta_minoshodo);
