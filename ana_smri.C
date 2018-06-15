@@ -427,7 +427,7 @@ int main(int argc, char *argv[]){
   Int_t hodo_id, hodo_multi;
   Double_t hodo_q, hodo_t;
 
-  Double_t t_minoshodo, v_minoshodo, beta_minoshodo, gamma_minoshodo;
+  Double_t t_minoshodo_notcor, t_minoshodo, v_minoshodo, beta_minoshodo, gamma_minoshodo;
 
 
   
@@ -450,6 +450,7 @@ int main(int argc, char *argv[]){
   anatrS->Branch("RunNum",&RunNum);
   anatrS->Branch("EventNum",&EventNum);
 
+  anatrS->Branch("t_minoshodo_notcor",&t_minoshodo_notcor);
   anatrS->Branch("t_minoshodo",&t_minoshodo);
   anatrS->Branch("v_minoshodo",&v_minoshodo);
   anatrS->Branch("beta_minoshodo",&beta_minoshodo);
@@ -549,6 +550,7 @@ int main(int argc, char *argv[]){
     
     //@@@ HODO @@@
     //=== Initialize ===
+    t_minoshodo_notcor = Sqrt(-1);
     t_minoshodo     = Sqrt(-1);
     v_minoshodo     = Sqrt(-1);
     beta_minoshodo  = Sqrt(-1);
@@ -587,32 +589,32 @@ int main(int argc, char *argv[]){
 
     //@@@ HODO end @@@
     
-    t_minoshodo = hodo_t - SBT1_Time - (Dist_SBTTarget/betaF7F13/clight) + toff_hodo;
+    t_minoshodo_notcor = hodo_t - SBT1_Time - (Dist_SBTTarget/betaF7F13/clight) + toff_hodo;
 
     switch(hodo_id){
-    case  2: t_minoshodo = t_minoshodo + hodo02_tofcor[RunNum]; break;
-    case  3: t_minoshodo = t_minoshodo + hodo03_tofcor[RunNum]; break;
-    case  4: t_minoshodo = t_minoshodo + hodo04_tofcor[RunNum]; break;
-    case  5: t_minoshodo = t_minoshodo + hodo05_tofcor[RunNum]; break;
-    case  6: t_minoshodo = t_minoshodo + hodo06_tofcor[RunNum]; break;
-    case  7: t_minoshodo = t_minoshodo + hodo07_tofcor[RunNum]; break;
-    case  8: t_minoshodo = t_minoshodo + hodo08_tofcor[RunNum]; break;
-    case  9: t_minoshodo = t_minoshodo + hodo09_tofcor[RunNum]; break;
-    case 10: t_minoshodo = t_minoshodo + hodo10_tofcor[RunNum]; break;
-    case 11: t_minoshodo = t_minoshodo + hodo11_tofcor[RunNum]; break;
-    case 12: t_minoshodo = t_minoshodo + hodo12_tofcor[RunNum]; break;
-    case 13: t_minoshodo = t_minoshodo + hodo13_tofcor[RunNum]; break;
-    case 14: t_minoshodo = t_minoshodo + hodo14_tofcor[RunNum]; break;
-    case 15: t_minoshodo = t_minoshodo + hodo15_tofcor[RunNum]; break;
-    case 16: t_minoshodo = t_minoshodo + hodo16_tofcor[RunNum]; break;
-    case 17: t_minoshodo = t_minoshodo + hodo17_tofcor[RunNum]; break;
-    case 18: t_minoshodo = t_minoshodo + hodo18_tofcor[RunNum]; break;
-    case 19: t_minoshodo = t_minoshodo + hodo19_tofcor[RunNum]; break;
-    case 20: t_minoshodo = t_minoshodo + hodo20_tofcor[RunNum]; break;
-    case 21: t_minoshodo = t_minoshodo + hodo21_tofcor[RunNum]; break;
-    case 22: t_minoshodo = t_minoshodo + hodo22_tofcor[RunNum]; break;
-    case 23: t_minoshodo = t_minoshodo + hodo23_tofcor[RunNum]; break;
-    case 24: t_minoshodo = t_minoshodo + hodo24_tofcor[RunNum]; break;					 
+    case  2: t_minoshodo = t_minoshodo_notcor + hodo02_tofcor[RunNum]; break;
+    case  3: t_minoshodo = t_minoshodo_notcor + hodo03_tofcor[RunNum]; break;
+    case  4: t_minoshodo = t_minoshodo_notcor + hodo04_tofcor[RunNum]; break;
+    case  5: t_minoshodo = t_minoshodo_notcor + hodo05_tofcor[RunNum]; break;
+    case  6: t_minoshodo = t_minoshodo_notcor + hodo06_tofcor[RunNum]; break;
+    case  7: t_minoshodo = t_minoshodo_notcor + hodo07_tofcor[RunNum]; break;
+    case  8: t_minoshodo = t_minoshodo_notcor + hodo08_tofcor[RunNum]; break;
+    case  9: t_minoshodo = t_minoshodo_notcor + hodo09_tofcor[RunNum]; break;
+    case 10: t_minoshodo = t_minoshodo_notcor + hodo10_tofcor[RunNum]; break;
+    case 11: t_minoshodo = t_minoshodo_notcor + hodo11_tofcor[RunNum]; break;
+    case 12: t_minoshodo = t_minoshodo_notcor + hodo12_tofcor[RunNum]; break;
+    case 13: t_minoshodo = t_minoshodo_notcor + hodo13_tofcor[RunNum]; break;
+    case 14: t_minoshodo = t_minoshodo_notcor + hodo14_tofcor[RunNum]; break;
+    case 15: t_minoshodo = t_minoshodo_notcor + hodo15_tofcor[RunNum]; break;
+    case 16: t_minoshodo = t_minoshodo_notcor + hodo16_tofcor[RunNum]; break;
+    case 17: t_minoshodo = t_minoshodo_notcor + hodo17_tofcor[RunNum]; break;
+    case 18: t_minoshodo = t_minoshodo_notcor + hodo18_tofcor[RunNum]; break;
+    case 19: t_minoshodo = t_minoshodo_notcor + hodo19_tofcor[RunNum]; break;
+    case 20: t_minoshodo = t_minoshodo_notcor + hodo20_tofcor[RunNum]; break;
+    case 21: t_minoshodo = t_minoshodo_notcor + hodo21_tofcor[RunNum]; break;
+    case 22: t_minoshodo = t_minoshodo_notcor + hodo22_tofcor[RunNum]; break;
+    case 23: t_minoshodo = t_minoshodo_notcor + hodo23_tofcor[RunNum]; break;
+    case 24: t_minoshodo = t_minoshodo_notcor + hodo24_tofcor[RunNum]; break;					 
     }
     
     v_minoshodo = lengSA_rad/t_minoshodo;
