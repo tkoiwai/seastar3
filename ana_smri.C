@@ -186,8 +186,29 @@ int main(int argc, char *argv[]){
   TEnv *env_hodoq        = new TEnv("/home/koiwai/analysis/db/hodo_qcor.dat");
   TEnv *env_hodoq2z      = new TEnv("/home/koiwai/analysis/db/hodo_q2z.dat");
   TEnv *env_hodozraw2z   = new TEnv("/home/koiwai/analysis/db/hodo_zraw2z.dat");
+  TEnv *env_hodo02tofcor = new TEnv("/home/koiwai/analysis/db/hodo02_tofcor.dat");
+  TEnv *env_hodo03tofcor = new TEnv("/home/koiwai/analysis/db/hodo03_tofcor.dat");
+  TEnv *env_hodo04tofcor = new TEnv("/home/koiwai/analysis/db/hodo04_tofcor.dat");
+  TEnv *env_hodo05tofcor = new TEnv("/home/koiwai/analysis/db/hodo05_tofcor.dat");
+  TEnv *env_hodo06tofcor = new TEnv("/home/koiwai/analysis/db/hodo06_tofcor.dat");
+  TEnv *env_hodo07tofcor = new TEnv("/home/koiwai/analysis/db/hodo07_tofcor.dat");
+  TEnv *env_hodo08tofcor = new TEnv("/home/koiwai/analysis/db/hodo08_tofcor.dat");
+  TEnv *env_hodo09tofcor = new TEnv("/home/koiwai/analysis/db/hodo09_tofcor.dat");
+  TEnv *env_hodo10tofcor = new TEnv("/home/koiwai/analysis/db/hodo10_tofcor.dat");
+  TEnv *env_hodo11tofcor = new TEnv("/home/koiwai/analysis/db/hodo11_tofcor.dat");
   TEnv *env_hodo12tofcor = new TEnv("/home/koiwai/analysis/db/hodo12_tofcor.dat");
   TEnv *env_hodo13tofcor = new TEnv("/home/koiwai/analysis/db/hodo13_tofcor.dat");
+  TEnv *env_hodo14tofcor = new TEnv("/home/koiwai/analysis/db/hodo14_tofcor.dat");
+  TEnv *env_hodo15tofcor = new TEnv("/home/koiwai/analysis/db/hodo15_tofcor.dat");
+  TEnv *env_hodo16tofcor = new TEnv("/home/koiwai/analysis/db/hodo16_tofcor.dat");
+  TEnv *env_hodo17tofcor = new TEnv("/home/koiwai/analysis/db/hodo17_tofcor.dat");
+  TEnv *env_hodo18tofcor = new TEnv("/home/koiwai/analysis/db/hodo18_tofcor.dat");
+  TEnv *env_hodo19tofcor = new TEnv("/home/koiwai/analysis/db/hodo19_tofcor.dat");
+  TEnv *env_hodo20tofcor = new TEnv("/home/koiwai/analysis/db/hodo20_tofcor.dat");
+  TEnv *env_hodo21tofcor = new TEnv("/home/koiwai/analysis/db/hodo21_tofcor.dat");
+  TEnv *env_hodo22tofcor = new TEnv("/home/koiwai/analysis/db/hodo22_tofcor.dat");
+  TEnv *env_hodo23tofcor = new TEnv("/home/koiwai/analysis/db/hodo23_tofcor.dat");
+  TEnv *env_hodo24tofcor = new TEnv("/home/koiwai/analysis/db/hodo24_tofcor.dat");
   
   //===== Create output file/tree =====
   TString ofname = Form("/home/koiwai/analysis/rootfiles/ana/smri/ana_smri%04d.root",FileNum);
@@ -266,6 +287,56 @@ int main(int argc, char *argv[]){
   hodo_zraw2z[0] = env_hodozraw2z->GetValue("zraw2z_p0",0.0);
   hodo_zraw2z[1] = env_hodozraw2z->GetValue("zraw2z_p1",0.0);
 
+  Double_t hodo02_tofcor[231];
+  for(Int_t i=0;i<231;i++){
+    const char *n = Form("%d",FileNum);
+    hodo02_tofcor[i] = env_hodo02tofcor->GetValue(n,0.0);
+  }
+  Double_t hodo03_tofcor[231];
+  for(Int_t i=0;i<231;i++){
+    const char *n = Form("%d",FileNum);
+    hodo03_tofcor[i] = env_hodo03tofcor->GetValue(n,0.0);
+  }
+  Double_t hodo04_tofcor[231];
+  for(Int_t i=0;i<231;i++){
+    const char *n = Form("%d",FileNum);
+    hodo04_tofcor[i] = env_hodo04tofcor->GetValue(n,0.0);
+  }
+  Double_t hodo05_tofcor[231];
+  for(Int_t i=0;i<231;i++){
+    const char *n = Form("%d",FileNum);
+    hodo05_tofcor[i] = env_hodo05tofcor->GetValue(n,0.0);
+  }
+  Double_t hodo06_tofcor[231];
+  for(Int_t i=0;i<231;i++){
+    const char *n = Form("%d",FileNum);
+    hodo06_tofcor[i] = env_hodo06tofcor->GetValue(n,0.0);
+  }
+  Double_t hodo07_tofcor[231];
+  for(Int_t i=0;i<231;i++){
+    const char *n = Form("%d",FileNum);
+    hodo07_tofcor[i] = env_hodo07tofcor->GetValue(n,0.0);
+  }
+  Double_t hodo08_tofcor[231];
+  for(Int_t i=0;i<231;i++){
+    const char *n = Form("%d",FileNum);
+    hodo08_tofcor[i] = env_hodo08tofcor->GetValue(n,0.0);
+  }
+  Double_t hodo09_tofcor[231];
+  for(Int_t i=0;i<231;i++){
+    const char *n = Form("%d",FileNum);
+    hodo09_tofcor[i] = env_hodo09tofcor->GetValue(n,0.0);
+  }
+  Double_t hodo10_tofcor[231];
+  for(Int_t i=0;i<231;i++){
+    const char *n = Form("%d",FileNum);
+    hodo10_tofcor[i] = env_hodo10tofcor->GetValue(n,0.0);
+  }
+  Double_t hodo11_tofcor[231];
+  for(Int_t i=0;i<231;i++){
+    const char *n = Form("%d",FileNum);
+    hodo11_tofcor[i] = env_hodo11tofcor->GetValue(n,0.0);
+  }
   Double_t hodo12_tofcor[231];
   for(Int_t i=0;i<231;i++){
     const char *n = Form("%d",FileNum);
@@ -275,6 +346,61 @@ int main(int argc, char *argv[]){
   for(Int_t i=0;i<231;i++){
     const char *n = Form("%d",FileNum);
     hodo13_tofcor[i] = env_hodo13tofcor->GetValue(n,0.0);
+  }
+  Double_t hodo14_tofcor[231];
+  for(Int_t i=0;i<231;i++){
+    const char *n = Form("%d",FileNum);
+    hodo14_tofcor[i] = env_hodo14tofcor->GetValue(n,0.0);
+  }
+  Double_t hodo15_tofcor[231];
+  for(Int_t i=0;i<231;i++){
+    const char *n = Form("%d",FileNum);
+    hodo15_tofcor[i] = env_hodo15tofcor->GetValue(n,0.0);
+  }
+  Double_t hodo16_tofcor[231];
+  for(Int_t i=0;i<231;i++){
+    const char *n = Form("%d",FileNum);
+    hodo16_tofcor[i] = env_hodo16tofcor->GetValue(n,0.0);
+  }
+  Double_t hodo17_tofcor[231];
+  for(Int_t i=0;i<231;i++){
+    const char *n = Form("%d",FileNum);
+    hodo17_tofcor[i] = env_hodo17tofcor->GetValue(n,0.0);
+  }
+  Double_t hodo18_tofcor[231];
+  for(Int_t i=0;i<231;i++){
+    const char *n = Form("%d",FileNum);
+    hodo18_tofcor[i] = env_hodo18tofcor->GetValue(n,0.0);
+  }
+  Double_t hodo19_tofcor[231];
+  for(Int_t i=0;i<231;i++){
+    const char *n = Form("%d",FileNum);
+    hodo19_tofcor[i] = env_hodo19tofcor->GetValue(n,0.0);
+  }
+  Double_t hodo20_tofcor[231];
+  for(Int_t i=0;i<231;i++){
+    const char *n = Form("%d",FileNum);
+    hodo20_tofcor[i] = env_hodo20tofcor->GetValue(n,0.0);
+  }
+  Double_t hodo21_tofcor[231];
+  for(Int_t i=0;i<231;i++){
+    const char *n = Form("%d",FileNum);
+    hodo21_tofcor[i] = env_hodo21tofcor->GetValue(n,0.0);
+  }
+  Double_t hodo22_tofcor[231];
+  for(Int_t i=0;i<231;i++){
+    const char *n = Form("%d",FileNum);
+    hodo22_tofcor[i] = env_hodo22tofcor->GetValue(n,0.0);
+  }
+  Double_t hodo23_tofcor[231];
+  for(Int_t i=0;i<231;i++){
+    const char *n = Form("%d",FileNum);
+    hodo23_tofcor[i] = env_hodo23tofcor->GetValue(n,0.0);
+  }
+  Double_t hodo24_tofcor[231];
+  for(Int_t i=0;i<231;i++){
+    const char *n = Form("%d",FileNum);
+    hodo24_tofcor[i] = env_hodo24tofcor->GetValue(n,0.0);
   }
 
   /* //try some day...
@@ -463,8 +589,31 @@ int main(int argc, char *argv[]){
     
     t_minoshodo = hodo_t - SBT1_Time - (Dist_SBTTarget/betaF7F13/clight) + toff_hodo;
 
-    if(hodo_id==12) t_minoshodo = t_minoshodo + hodo12_tofcor[RunNum];
-    if(hodo_id==13) t_minoshodo = t_minoshodo + hodo13_tofcor[RunNum];
+    switch(hodo_id){
+    case  2: t_minoshodo = t_minoshodo + hodo02_tofcor[RunNum]; break;
+    case  3: t_minoshodo = t_minoshodo + hodo03_tofcor[RunNum]; break;
+    case  4: t_minoshodo = t_minoshodo + hodo04_tofcor[RunNum]; break;
+    case  5: t_minoshodo = t_minoshodo + hodo05_tofcor[RunNum]; break;
+    case  6: t_minoshodo = t_minoshodo + hodo06_tofcor[RunNum]; break;
+    case  7: t_minoshodo = t_minoshodo + hodo07_tofcor[RunNum]; break;
+    case  8: t_minoshodo = t_minoshodo + hodo08_tofcor[RunNum]; break;
+    case  9: t_minoshodo = t_minoshodo + hodo09_tofcor[RunNum]; break;
+    case 10: t_minoshodo = t_minoshodo + hodo10_tofcor[RunNum]; break;
+    case 11: t_minoshodo = t_minoshodo + hodo11_tofcor[RunNum]; break;
+    case 12: t_minoshodo = t_minoshodo + hodo12_tofcor[RunNum]; break;
+    case 13: t_minoshodo = t_minoshodo + hodo13_tofcor[RunNum]; break;
+    case 14: t_minoshodo = t_minoshodo + hodo14_tofcor[RunNum]; break;
+    case 15: t_minoshodo = t_minoshodo + hodo15_tofcor[RunNum]; break;
+    case 16: t_minoshodo = t_minoshodo + hodo16_tofcor[RunNum]; break;
+    case 17: t_minoshodo = t_minoshodo + hodo17_tofcor[RunNum]; break;
+    case 18: t_minoshodo = t_minoshodo + hodo18_tofcor[RunNum]; break;
+    case 19: t_minoshodo = t_minoshodo + hodo19_tofcor[RunNum]; break;
+    case 20: t_minoshodo = t_minoshodo + hodo20_tofcor[RunNum]; break;
+    case 21: t_minoshodo = t_minoshodo + hodo21_tofcor[RunNum]; break;
+    case 22: t_minoshodo = t_minoshodo + hodo22_tofcor[RunNum]; break;
+    case 23: t_minoshodo = t_minoshodo + hodo23_tofcor[RunNum]; break;
+    case 24: t_minoshodo = t_minoshodo + hodo24_tofcor[RunNum]; break;					 
+    }
     
     v_minoshodo = lengSA_rad/t_minoshodo;
     beta_minoshodo  = v_minoshodo/clight;
