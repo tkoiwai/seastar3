@@ -209,6 +209,7 @@ int main(int argc, char *argv[]){
   TEnv *env_hodo22tofcor = new TEnv("/home/koiwai/analysis/db/hodo22_tofcor.dat");
   TEnv *env_hodo23tofcor = new TEnv("/home/koiwai/analysis/db/hodo23_tofcor.dat");
   TEnv *env_hodo24tofcor = new TEnv("/home/koiwai/analysis/db/hodo24_tofcor.dat");
+  TEnv *env_hodoaoqcor   = new TEnv("/home/koiwai/analysis/db/hodo_aoqcor.dat");
   
   //===== Create output file/tree =====
   TString ofname = Form("/home/koiwai/analysis/rootfiles/ana/smri/ana_smri%04d.root",FileNum);
@@ -286,6 +287,12 @@ int main(int argc, char *argv[]){
   }
   hodo_zraw2z[0] = env_hodozraw2z->GetValue("zraw2z_p0",0.0);
   hodo_zraw2z[1] = env_hodozraw2z->GetValue("zraw2z_p1",0.0);
+
+  Double_t hodo_aoqcor[24][2];
+  for(Int_t i=0;i<24;i++){
+    hodo_aoqcor[i][0] = env_hodoaoqcor->GetValue(Form("%02dp0",i+1),0.0);
+    hodo_aoqcor[i][1] = env_hodoaoqcor->GetValue(Form("%02dp1",i+1),1.0);
+  }
 
   Double_t hodo02_tofcor[231];
   for(Int_t i=0;i<231;i++){
@@ -442,6 +449,8 @@ int main(int argc, char *argv[]){
   
   Double_t aoqSA, zetSA;
 
+  Double_t aoqSA_notcor, aoqSA_tmpcor;
+  
   Int_t BG_flag;
 
   Int_t SA56Sc_temp;
@@ -462,6 +471,8 @@ int main(int argc, char *argv[]){
   anatrS->Branch("hodo_t",&hodo_t);
 
   anatrS->Branch("aoqSA",&aoqSA);
+  anatrS->Branch("aoqSA_notcor",&aoqSA_notcor);
+  anatrS->Branch("aoqSA_tmpcor",&aoqSA_tmpcor);
   anatrS->Branch("zetSA",&zetSA);
 
   anatrS->Branch("zetSA235",&zetSA235);
@@ -561,7 +572,10 @@ int main(int argc, char *argv[]){
     hodo_id    = 0;
     hodo_multi = 0;
 
-    aoqSA    = Sqrt(-1);
+    aoqSA        = Sqrt(-1);
+    aoqSA_notcor = Sqrt(-1);
+    aoqSA_tmpcor = Sqrt(-1);
+
     zetSA    = Sqrt(-1);
     zetSA235 = Sqrt(-1);
     zetSA270 = Sqrt(-1);
@@ -634,9 +648,9 @@ int main(int argc, char *argv[]){
 
     zetSA = hodo_zraw2z[0] + hodo_zraw2z[1]*zetSA;
     
-    aoqSA = brhoSA_rad/beta_minoshodo/gamma_minoshodo*clight/mu;
-    aoqSA = 0.545 + 0.7551*aoqSA;
-    
+    aoqSA_notcor = brhoSA_rad/beta_minoshodo/gamma_minoshodo*clight/mu;
+    aoqSA_tmpcor = 0.545 + 0.7551*aoqSA_notcor;
+    aoqSA = hodo_aoqcor[hodo_id-1][0] + hodo_aoqcor[hodo_id-1][1]*aoqSA_tmpcor;
         
     //zraw = hodo_q - (hodo_t2q0[hodo_id+1] + hodo_t2q1[hodo_id+1]*t_minoshodo);
     //zetSA = hodo_zraw2z0[hodo_id+1] + hodo_zraw2z1[hodo_id+1]*zraw + hodo_zraw2z2[hodo_id+1]*zraw*zraw;
