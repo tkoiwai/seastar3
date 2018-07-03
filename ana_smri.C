@@ -292,8 +292,9 @@ int main(int argc, char *argv[]){
   for(Int_t i=0;i<24;i++){
     hodo_aoqcor[i][0] = env_hodoaoqcor->GetValue(Form("%02dp0",i+1),0.0);
     hodo_aoqcor[i][1] = env_hodoaoqcor->GetValue(Form("%02dp1",i+1),1.0);
+    //cout << hodo_aoqcor[i][0] << endl;
   }
-
+  
   Double_t hodo02_tofcor[231];
   for(Int_t i=0;i<231;i++){
     const char *n = Form("%d",FileNum);
@@ -650,7 +651,8 @@ int main(int argc, char *argv[]){
     
     aoqSA_notcor = brhoSA_rad/beta_minoshodo/gamma_minoshodo*clight/mu;
     aoqSA_tmpcor = 0.545 + 0.7551*aoqSA_notcor;
-    aoqSA = hodo_aoqcor[hodo_id-1][0] + hodo_aoqcor[hodo_id-1][1]*aoqSA_tmpcor;
+    //aoqSA = hodo_aoqcor[hodo_id-1][0] + hodo_aoqcor[hodo_id-1][1]*aoqSA_tmpcor;
+    aoqSA = hodo_aoqcor[hodo_id-1][0] + hodo_aoqcor[hodo_id-1][1]*aoqSA_notcor;
         
     //zraw = hodo_q - (hodo_t2q0[hodo_id+1] + hodo_t2q1[hodo_id+1]*t_minoshodo);
     //zetSA = hodo_zraw2z0[hodo_id+1] + hodo_zraw2z1[hodo_id+1]*zraw + hodo_zraw2z2[hodo_id+1]*zraw*zraw;
