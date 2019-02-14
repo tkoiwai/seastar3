@@ -17,6 +17,8 @@
 
 #include"/home/koiwai/analysis/brho_func/Brho_A56Z20_br56Ca_sa56Ca.C"
 #include"/home/koiwai/analysis/brho_func/Len_A56Z20_br56Ca_sa56Ca.C"
+#include"/home/koiwai/analysis/brho_func/Brho_A54Z20_br54Ca_sa54Ca.C"
+#include"/home/koiwai/analysis/brho_func/Len_A54Z20_br54Ca_sa54Ca.C"
 
 using namespace std;
 using namespace TMath;
@@ -147,7 +149,7 @@ int main(int argc, char *argv[]){
   //===== Declare Beam Variable =====
   Int_t EventNumber_beam, RunNumber_beam;
 
-  Double_t betaF7F13;
+  Double_t betaF7F13, betaF3F13;
 
   Double_t zetBR, aoqBR;
 
@@ -159,7 +161,8 @@ int main(int argc, char *argv[]){
   anatrB->SetBranchAddress("EventNumber",&EventNumber_beam);
   anatrB->SetBranchAddress("RunNumber",&RunNumber_beam);
 
-  anatrB->SetBranchAddress("betaF7F13",&betaF7F13); // 
+  anatrB->SetBranchAddress("betaF7F13",&betaF7F13); //
+  anatrB->SetBranchAddress("betaF3F13",&betaF3F13); // 
   
   anatrB->SetBranchAddress("zetBR",&zetBR);
   anatrB->SetBranchAddress("aoqBR",&aoqBR);
@@ -455,6 +458,8 @@ int main(int argc, char *argv[]){
   Int_t BG_flag;
 
   Int_t SA56Sc_temp;
+
+  double sbt_t;
   
   //===== Create anatree Branch =====
   anatrS->Branch("RunNum",&RunNum);
@@ -493,6 +498,8 @@ int main(int argc, char *argv[]){
 
   anatrS->Branch("BR56Sc",&BR56Sc);
   anatrS->Branch("SA56Sc_temp",&SA56Sc_temp);
+
+  anatrS->Branch("sbt_t",&sbt_t);
   
   //===== Begin LOOP =====
   int nEntry = caltr->GetEntries();
@@ -550,14 +557,18 @@ int main(int argc, char *argv[]){
     rad[4] = FDC2_X;
     rad[5] = FDC2_A*1000;
 
-    brhoSA = MDF_Brho_A56Z20(x);
-    lengSA = MDF_Len_A56Z20(x);
+    //brhoSA = MDF_Brho_A56Z20(x);
+    //lengSA = MDF_Len_A56Z20(x);
+    brhoSA = MDF_Brho_A54Z20(x);
+    lengSA = MDF_Len_A54Z20(x);
 
     //brhoSA_tan = MDF_Brho_A56Z20(tan);
     //lengSA_tan = MDF_Len_A56Z20(tan);
 
-    brhoSA_rad = MDF_Brho_A56Z20(rad);
-    lengSA_rad = MDF_Len_A56Z20(rad);
+    //brhoSA_rad = MDF_Brho_A56Z20(rad);
+    //lengSA_rad = MDF_Len_A56Z20(rad);
+    brhoSA_rad = MDF_Brho_A54Z20(rad);
+    lengSA_rad = MDF_Len_A54Z20(rad);
     
     
     //@@@ HODO @@@
@@ -603,8 +614,16 @@ int main(int argc, char *argv[]){
     hodo_multi = Hodo_Multiplicity;
 
     //@@@ HODO end @@@
+
+    //@@@ SBT1 slew correction @@@
+
+    SBT1_Time += -35./sqrt(SBT1_QL)+1.095 -25./sqrt(SBT1_QR)+1.179;
+    SBT2_Time += -28./sqrt(SBT2_QL)+1.230 -40./sqrt(SBT2_QR)+2.118;
+
+    sbt_t = SBT1_Time;
     
-    t_minoshodo_notcor = hodo_t - SBT1_Time - (Dist_SBTTarget/betaF7F13/clight) + toff_hodo;
+    //t_minoshodo_notcor = hodo_t - SBT1_Time - (Dist_SBTTarget/betaF7F13/clight) + toff_hodo;
+    t_minoshodo_notcor = hodo_t - SBT1_Time - (Dist_SBTTarget/betaF3F13/clight) + toff_hodo;
 
     switch(hodo_id){
     case  2: t_minoshodo = t_minoshodo_notcor + hodo02_tofcor[RunNum]; break;
@@ -634,7 +653,7 @@ int main(int argc, char *argv[]){
     
     v_minoshodo = lengSA_rad/t_minoshodo;
     beta_minoshodo  = v_minoshodo/clight;
-    gamma_minoshodo = 1/Sqrt(1-beta_minoshodo*beta_minoshodo);
+    gamma_minoshodo = 1./Sqrt(1.-beta_minoshodo*beta_minoshodo);
 
     dev = Log(2*me*beta_minoshodo*beta_minoshodo/ionpair) - Log(1 - beta_minoshodo*beta_minoshodo) - beta_minoshodo*beta_minoshodo; 
     
@@ -676,4 +695,5 @@ int main(int argc, char *argv[]){
   anafile_smri->cd();
   anatrS->Write();
   anafile_smri->Close();
+  cout << "Conversion finished!" << endl;
 }//main()
