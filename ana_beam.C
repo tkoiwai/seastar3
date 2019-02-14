@@ -26,11 +26,14 @@ using namespace TMath;
 
 int main(int argc, char *argv[]){
 
+  time_t start, stop;
+  time(&start);
+
   Int_t FileNumber = TString(argv[1]).Atoi();
 
   //===== Load input file =================================================
 
-  TString FileName = Form("/home/koiwai/analysis/rootfiles/all/run%04d_ALL.root",FileNumber);
+  TString FileName = Form("/home/koiwai/analysis/rootfiles/unpacked/run%04d.root",FileNumber);
   TFile *infile = TFile::Open(FileName);
   
   TTree *caltr;
@@ -43,147 +46,179 @@ int main(int argc, char *argv[]){
   Int_t CoincidenceTrigger;
 
   //=== Plastic ===
-  Double_t F3_Charge, F5_Charge, F7_Charge;
-  Double_t F3_Time, F5_Time, F7_Time;
-  Double_t F3_TimeDiff, F5_TimeDiff, F7_TimeDiff;
+  Double_t plaF3_Q, plaF5_Q, plaF7_Q;
+  Double_t plaF3_T, plaF5_T, plaF7_T;
+  Double_t plaF3_dT, plaF5_dT, plaF7_dT;
 
-  Double_t F3_QL, F3_QR, F5_QL, F5_QR, F7_QL, F7_QR;
-  Double_t F3_TL, F3_TR, F5_TL, F5_TR, F7_TL, F7_TR;
+  Double_t plaF3_QL, plaF3_QR, plaF5_QL, plaF5_QR, plaF7_QL, plaF7_QR; //newly added.
+  Double_t plaF3_TL, plaF3_TR, plaF5_TL, plaF5_TR, plaF7_TL, plaF7_TR; //newly added.
+
+  Int_t    plaF3_NhitL, plaF5_NhitL, plaF7_NhitL;
+  Int_t    plaF3_NhitR, plaF5_NhitR, plaF7_NhitR;
+  Double_t plaF3_TslewL, plaF5_TslewL, plaF7_TslewL;
+  Double_t plaF3_TslewR, plaF5_TslewR, plaF7_TslewR;
+  Double_t plaF3_Tslew, plaF5_Tslew, plaF7_Tslew;
+  Double_t plaF3_dTslew, plaF5_dTslew, plaF7_dTslew;
 
   //=== PPAC ===
-  Double_t F31A_X, F31A_Y, F31B_X, F31B_Y, F32A_X, F32A_Y, F32B_X, F32B_Y;
-  Double_t F51A_X, F51A_Y, F51B_X, F51B_Y, F52A_X, F52A_Y, F52B_X, F52B_Y;
-  Double_t F71A_X, F71A_Y, F71B_X, F71B_Y, F72A_X, F72A_Y, F72B_X, F72B_Y;
+  Double_t ppacF31A_X, ppacF31A_Y, ppacF31B_X, ppacF31B_Y, ppacF32A_X, ppacF32A_Y, ppacF32B_X, ppacF32B_Y;
+  Double_t ppacF51A_X, ppacF51A_Y, ppacF51B_X, ppacF51B_Y, ppacF52A_X, ppacF52A_Y, ppacF52B_X, ppacF52B_Y;
+  Double_t ppacF71A_X, ppacF71A_Y, ppacF71B_X, ppacF71B_Y, ppacF72A_X, ppacF72A_Y, ppacF72B_X, ppacF72B_Y;
   
-  Int_t F31A_X_T1, F31A_X_T2, F31A_Y_T1, F31A_Y_T2;
-  Int_t F31B_X_T1, F31B_X_T2, F31B_Y_T1, F31B_Y_T2;
-  Int_t F32A_X_T1, F32A_X_T2, F32A_Y_T1, F32A_Y_T2;
-  Int_t F32B_X_T1, F32B_X_T2, F32B_Y_T1, F32B_Y_T2;
-  Int_t F51A_X_T1, F51A_X_T2, F51A_Y_T1, F51A_Y_T2;
-  Int_t F51B_X_T1, F51B_X_T2, F51B_Y_T1, F51B_Y_T2;
-  Int_t F52A_X_T1, F52A_X_T2, F52A_Y_T1, F52A_Y_T2;
-  Int_t F52B_X_T1, F52B_X_T2, F52B_Y_T1, F52B_Y_T2;
-  Int_t F71A_X_T1, F71A_X_T2, F71A_Y_T1, F71A_Y_T2;
-  Int_t F71B_X_T1, F71B_X_T2, F71B_Y_T1, F71B_Y_T2;
-  Int_t F72A_X_T1, F72A_X_T2, F72A_Y_T1, F72A_Y_T2;
-  Int_t F72B_X_T1, F72B_X_T2, F72B_Y_T1, F72B_Y_T2;
+  Int_t ppacF31A_X_T1, ppacF31A_X_T2, ppacF31A_Y_T1, ppacF31A_Y_T2;
+  Int_t ppacF31B_X_T1, ppacF31B_X_T2, ppacF31B_Y_T1, ppacF31B_Y_T2;
+  Int_t ppacF32A_X_T1, ppacF32A_X_T2, ppacF32A_Y_T1, ppacF32A_Y_T2;
+  Int_t ppacF32B_X_T1, ppacF32B_X_T2, ppacF32B_Y_T1, ppacF32B_Y_T2;
+  Int_t ppacF51A_X_T1, ppacF51A_X_T2, ppacF51A_Y_T1, ppacF51A_Y_T2;
+  Int_t ppacF51B_X_T1, ppacF51B_X_T2, ppacF51B_Y_T1, ppacF51B_Y_T2;
+  Int_t ppacF52A_X_T1, ppacF52A_X_T2, ppacF52A_Y_T1, ppacF52A_Y_T2;
+  Int_t ppacF52B_X_T1, ppacF52B_X_T2, ppacF52B_Y_T1, ppacF52B_Y_T2;
+  Int_t ppacF71A_X_T1, ppacF71A_X_T2, ppacF71A_Y_T1, ppacF71A_Y_T2;
+  Int_t ppacF71B_X_T1, ppacF71B_X_T2, ppacF71B_Y_T1, ppacF71B_Y_T2;
+  Int_t ppacF72A_X_T1, ppacF72A_X_T2, ppacF72A_Y_T1, ppacF72A_Y_T2;
+  Int_t ppacF72B_X_T1, ppacF72B_X_T2, ppacF72B_Y_T1, ppacF72B_Y_T2;
 
   //=== F7IC === 
-  Double_t F7IC_E;
+  Double_t icF7_E;
   
-  Int_t F7IC_raw[6];
+  Int_t icF7_raw[6];
 
   //=== SBT ===
-  Double_t SBT1_Charge, SBT2_Charge;
-  Double_t SBT1_Time, SBT2_Time;
-  Double_t SBT1_TimeDiff, SBT2_TimeDiff;
+  Double_t sbt1_Q, sbt2_Q, sbt1_T, sbt2_T, sbt1_dT, sbt2_dT;
+  Double_t sbt1_QL, sbt1_QR, sbt1_TL, sbt1_TR;
+  Double_t sbt2_QL, sbt2_QR, sbt2_TL, sbt2_TR;
+
+  Int_t sbt1_NhitL, sbt1_NhitR, sbt2_NhitL, sbt2_NhitR;
+  Double_t sbt1_TslewL, sbt2_TslewL;
+  Double_t sbt1_TslewR, sbt2_TslewR;
+  Double_t sbt1_Tslew,  sbt2_Tslew;
+  Double_t sbt1_dTslew, sbt2_dTslew;
   
   //=== Set value ===
   caltr->SetBranchAddress("RunNumber",&RunNumber);
   caltr->SetBranchAddress("EventNumber",&EventNumber);
   
-  caltr->SetBranchAddress("F3_Charge",&F3_Charge);
-  caltr->SetBranchAddress("F5_Charge",&F5_Charge);
-  caltr->SetBranchAddress("F7_Charge",&F7_Charge);
-  caltr->SetBranchAddress("F3_Time",&F3_Time);
-  caltr->SetBranchAddress("F5_Time",&F5_Time);
-  caltr->SetBranchAddress("F7_Time",&F7_Time);
-  caltr->SetBranchAddress("F3_TimeDiff",&F3_TimeDiff);
-  caltr->SetBranchAddress("F5_TimeDiff",&F5_TimeDiff);
-  caltr->SetBranchAddress("F7_TimeDiff",&F7_TimeDiff);
+  caltr->SetBranchAddress("plaF3_Q",&plaF3_Q);
+  caltr->SetBranchAddress("plaF5_Q",&plaF5_Q);
+  caltr->SetBranchAddress("plaF7_Q",&plaF7_Q);
+  caltr->SetBranchAddress("plaF3_T",&plaF3_T);
+  caltr->SetBranchAddress("plaF5_T",&plaF5_T);
+  caltr->SetBranchAddress("plaF7_T",&plaF7_T);
+  caltr->SetBranchAddress("plaF3_dT",&plaF3_dT);
+  caltr->SetBranchAddress("plaF5_dT",&plaF5_dT);
+  caltr->SetBranchAddress("plaF7_dT",&plaF7_dT);
   
-  caltr->SetBranchAddress("F3_QL",&F3_QL);
-  caltr->SetBranchAddress("F3_QR",&F3_QR);
-  caltr->SetBranchAddress("F5_QL",&F5_QL);
-  caltr->SetBranchAddress("F5_QR",&F5_QR);
-  caltr->SetBranchAddress("F7_QL",&F7_QL);
-  caltr->SetBranchAddress("F7_QR",&F7_QR);
+  caltr->SetBranchAddress("plaF3_QL",&plaF3_QL);
+  caltr->SetBranchAddress("plaF3_QR",&plaF3_QR);
+  caltr->SetBranchAddress("plaF5_QL",&plaF5_QL);
+  caltr->SetBranchAddress("plaF5_QR",&plaF5_QR);
+  caltr->SetBranchAddress("plaF7_QL",&plaF7_QL);
+  caltr->SetBranchAddress("plaF7_QR",&plaF7_QR);
   
-  caltr->SetBranchAddress("F3_TL",&F3_TL);
-  caltr->SetBranchAddress("F3_TR",&F3_TR);
-  caltr->SetBranchAddress("F5_TL",&F5_TL);
-  caltr->SetBranchAddress("F5_TR",&F5_TR);
-  caltr->SetBranchAddress("F7_TL",&F7_TL);
-  caltr->SetBranchAddress("F7_TR",&F7_TR);
+  caltr->SetBranchAddress("plaF3_TL",&plaF3_TL);
+  caltr->SetBranchAddress("plaF3_TR",&plaF3_TR);
+  caltr->SetBranchAddress("plaF5_TL",&plaF5_TL);
+  caltr->SetBranchAddress("plaF5_TR",&plaF5_TR);
+  caltr->SetBranchAddress("plaF7_TL",&plaF7_TL);
+  caltr->SetBranchAddress("plaF7_TR",&plaF7_TR);
+
+  caltr->SetBranchAddress("plaF3_NhitL",&plaF3_NhitL);
+  caltr->SetBranchAddress("plaF5_NhitL",&plaF5_NhitL);
+  caltr->SetBranchAddress("plaF7_NhitL",&plaF7_NhitL);
+  caltr->SetBranchAddress("plaF3_NhitR",&plaF3_NhitR);
+  caltr->SetBranchAddress("plaF5_NhitR",&plaF5_NhitR);
+  caltr->SetBranchAddress("plaF7_NhitR",&plaF7_NhitR);
+  caltr->SetBranchAddress("plaF3_TslewL",&plaF3_TslewL);
+  caltr->SetBranchAddress("plaF5_TslewL",&plaF5_TslewL);
+  caltr->SetBranchAddress("plaF7_TslewL",&plaF7_TslewL);
+  caltr->SetBranchAddress("plaF3_TslewR",&plaF3_TslewR);
+  caltr->SetBranchAddress("plaF5_TslewR",&plaF5_TslewR);
+  caltr->SetBranchAddress("plaF7_TslewR",&plaF7_TslewR);
+  caltr->SetBranchAddress("plaF3_Tslew",&plaF3_Tslew);
+  caltr->SetBranchAddress("plaF5_Tslew",&plaF5_Tslew);
+  caltr->SetBranchAddress("plaF7_Tslew",&plaF7_Tslew);
+  caltr->SetBranchAddress("plaF3_dTslew",&plaF3_dTslew);
+  caltr->SetBranchAddress("plaF5_dTslew",&plaF5_dTslew);
+  caltr->SetBranchAddress("plaF7_dTslew",&plaF7_dTslew);
   
-  caltr->SetBranchAddress("F31A_X",&F31A_X);
-  caltr->SetBranchAddress("F31A_Y",&F31A_Y);
-  caltr->SetBranchAddress("F31B_X",&F31B_X);
-  caltr->SetBranchAddress("F31B_Y",&F31B_Y);
-  caltr->SetBranchAddress("F32A_X",&F32A_X);
-  caltr->SetBranchAddress("F32A_Y",&F32A_Y);
-  caltr->SetBranchAddress("F32B_X",&F32B_X);
-  caltr->SetBranchAddress("F32B_Y",&F32B_Y);
+  caltr->SetBranchAddress("ppacF31A_X",&ppacF31A_X);
+  caltr->SetBranchAddress("ppacF31A_Y",&ppacF31A_Y);
+  caltr->SetBranchAddress("ppacF31B_X",&ppacF31B_X);
+  caltr->SetBranchAddress("ppacF31B_Y",&ppacF31B_Y);
+  caltr->SetBranchAddress("ppacF32A_X",&ppacF32A_X);
+  caltr->SetBranchAddress("ppacF32A_Y",&ppacF32A_Y);
+  caltr->SetBranchAddress("ppacF32B_X",&ppacF32B_X);
+  caltr->SetBranchAddress("ppacF32B_Y",&ppacF32B_Y);
   
-  caltr->SetBranchAddress("F51A_X",&F51A_X);
-  caltr->SetBranchAddress("F51A_Y",&F51A_Y);
-  caltr->SetBranchAddress("F51B_X",&F51B_X);
-  caltr->SetBranchAddress("F51B_Y",&F51B_Y);
-  caltr->SetBranchAddress("F52A_X",&F52A_X);
-  caltr->SetBranchAddress("F52A_Y",&F52A_Y);
-  caltr->SetBranchAddress("F52B_X",&F52B_X);
-  caltr->SetBranchAddress("F52B_Y",&F52B_Y);
+  caltr->SetBranchAddress("ppacF51A_X",&ppacF51A_X);
+  caltr->SetBranchAddress("ppacF51A_Y",&ppacF51A_Y);
+  caltr->SetBranchAddress("ppacF51B_X",&ppacF51B_X);
+  caltr->SetBranchAddress("ppacF51B_Y",&ppacF51B_Y);
+  caltr->SetBranchAddress("ppacF52A_X",&ppacF52A_X);
+  caltr->SetBranchAddress("ppacF52A_Y",&ppacF52A_Y);
+  caltr->SetBranchAddress("ppacF52B_X",&ppacF52B_X);
+  caltr->SetBranchAddress("ppacF52B_Y",&ppacF52B_Y);
   
-  caltr->SetBranchAddress("F71A_X",&F71A_X);
-  caltr->SetBranchAddress("F71A_Y",&F71A_Y);
-  caltr->SetBranchAddress("F71B_X",&F71B_X);
-  caltr->SetBranchAddress("F71B_Y",&F71B_Y);
-  caltr->SetBranchAddress("F72A_X",&F72A_X);
-  caltr->SetBranchAddress("F72A_Y",&F72A_Y);
-  caltr->SetBranchAddress("F72B_X",&F72B_X);
-  caltr->SetBranchAddress("F72B_Y",&F72B_Y);
+  caltr->SetBranchAddress("ppacF71A_X",&ppacF71A_X);
+  caltr->SetBranchAddress("ppacF71A_Y",&ppacF71A_Y);
+  caltr->SetBranchAddress("ppacF71B_X",&ppacF71B_X);
+  caltr->SetBranchAddress("ppacF71B_Y",&ppacF71B_Y);
+  caltr->SetBranchAddress("ppacF72A_X",&ppacF72A_X);
+  caltr->SetBranchAddress("ppacF72A_Y",&ppacF72A_Y);
+  caltr->SetBranchAddress("ppacF72B_X",&ppacF72B_X);
+  caltr->SetBranchAddress("ppacF72B_Y",&ppacF72B_Y);
   
-  caltr->SetBranchAddress("F31A_X_T1",&F31A_X_T1);
-  caltr->SetBranchAddress("F31A_X_T2",&F31A_X_T2);
-  caltr->SetBranchAddress("F31A_Y_T1",&F31A_Y_T1);
-  caltr->SetBranchAddress("F31A_Y_T2",&F31A_Y_T2);
-  caltr->SetBranchAddress("F31B_X_T1",&F31B_X_T1);
-  caltr->SetBranchAddress("F31B_X_T2",&F31B_X_T2);
-  caltr->SetBranchAddress("F31B_Y_T1",&F31B_Y_T1);
-  caltr->SetBranchAddress("F31B_Y_T2",&F31B_Y_T2);
-  caltr->SetBranchAddress("F32A_X_T1",&F32A_X_T1);
-  caltr->SetBranchAddress("F32A_X_T2",&F32A_X_T2);
-  caltr->SetBranchAddress("F32A_Y_T1",&F32A_Y_T1);
-  caltr->SetBranchAddress("F32A_Y_T2",&F32A_Y_T2);
-  caltr->SetBranchAddress("F32B_X_T1",&F32B_X_T1);
-  caltr->SetBranchAddress("F32B_X_T2",&F32B_X_T2);
-  caltr->SetBranchAddress("F32B_Y_T1",&F32B_Y_T1);
-  caltr->SetBranchAddress("F32B_Y_T2",&F32B_Y_T2);
-  caltr->SetBranchAddress("F51A_X_T1",&F51A_X_T1);
-  caltr->SetBranchAddress("F51A_X_T2",&F51A_X_T2);
-  caltr->SetBranchAddress("F51A_Y_T1",&F51A_Y_T1);
-  caltr->SetBranchAddress("F51A_Y_T2",&F51A_Y_T2);
-  caltr->SetBranchAddress("F51B_X_T1",&F51B_X_T1);
-  caltr->SetBranchAddress("F51B_X_T2",&F51B_X_T2);
-  caltr->SetBranchAddress("F51B_Y_T1",&F51B_Y_T1);
-  caltr->SetBranchAddress("F51B_Y_T2",&F51B_Y_T2);
-  caltr->SetBranchAddress("F52A_X_T1",&F52A_X_T1);
-  caltr->SetBranchAddress("F52A_X_T2",&F52A_X_T2);
-  caltr->SetBranchAddress("F52A_Y_T1",&F52A_Y_T1);
-  caltr->SetBranchAddress("F52A_Y_T2",&F52A_Y_T2);
-  caltr->SetBranchAddress("F52B_X_T1",&F52B_X_T1);
-  caltr->SetBranchAddress("F52B_X_T2",&F52B_X_T2);
-  caltr->SetBranchAddress("F52B_Y_T1",&F52B_Y_T1);
-  caltr->SetBranchAddress("F52B_Y_T2",&F52B_Y_T2);
-  caltr->SetBranchAddress("F71A_X_T1",&F71A_X_T1);
-  caltr->SetBranchAddress("F71A_X_T2",&F71A_X_T2);
-  caltr->SetBranchAddress("F71A_Y_T1",&F71A_Y_T1);
-  caltr->SetBranchAddress("F71A_Y_T2",&F71A_Y_T2);
-  caltr->SetBranchAddress("F71B_X_T1",&F71B_X_T1);
-  caltr->SetBranchAddress("F71B_X_T2",&F71B_X_T2);
-  caltr->SetBranchAddress("F71B_Y_T1",&F71B_Y_T1);
-  caltr->SetBranchAddress("F71B_Y_T2",&F71B_Y_T2);
-  caltr->SetBranchAddress("F72A_X_T1",&F72A_X_T1);
-  caltr->SetBranchAddress("F72A_X_T2",&F72A_X_T2);
-  caltr->SetBranchAddress("F72A_Y_T1",&F72A_Y_T1);
-  caltr->SetBranchAddress("F72A_Y_T2",&F72A_Y_T2);
-  caltr->SetBranchAddress("F72B_X_T1",&F72B_X_T1);
-  caltr->SetBranchAddress("F72B_X_T2",&F72B_X_T2);
-  caltr->SetBranchAddress("F72B_Y_T1",&F72B_Y_T1);
-  caltr->SetBranchAddress("F72B_Y_T2",&F72B_Y_T2);
+  caltr->SetBranchAddress("ppacF31A_X_T1",&ppacF31A_X_T1);
+  caltr->SetBranchAddress("ppacF31A_X_T2",&ppacF31A_X_T2);
+  caltr->SetBranchAddress("ppacF31A_Y_T1",&ppacF31A_Y_T1);
+  caltr->SetBranchAddress("ppacF31A_Y_T2",&ppacF31A_Y_T2);
+  caltr->SetBranchAddress("ppacF31B_X_T1",&ppacF31B_X_T1);
+  caltr->SetBranchAddress("ppacF31B_X_T2",&ppacF31B_X_T2);
+  caltr->SetBranchAddress("ppacF31B_Y_T1",&ppacF31B_Y_T1);
+  caltr->SetBranchAddress("ppacF31B_Y_T2",&ppacF31B_Y_T2);
+  caltr->SetBranchAddress("ppacF32A_X_T1",&ppacF32A_X_T1);
+  caltr->SetBranchAddress("ppacF32A_X_T2",&ppacF32A_X_T2);
+  caltr->SetBranchAddress("ppacF32A_Y_T1",&ppacF32A_Y_T1);
+  caltr->SetBranchAddress("ppacF32A_Y_T2",&ppacF32A_Y_T2);
+  caltr->SetBranchAddress("ppacF32B_X_T1",&ppacF32B_X_T1);
+  caltr->SetBranchAddress("ppacF32B_X_T2",&ppacF32B_X_T2);
+  caltr->SetBranchAddress("ppacF32B_Y_T1",&ppacF32B_Y_T1);
+  caltr->SetBranchAddress("ppacF32B_Y_T2",&ppacF32B_Y_T2);
+  caltr->SetBranchAddress("ppacF51A_X_T1",&ppacF51A_X_T1);
+  caltr->SetBranchAddress("ppacF51A_X_T2",&ppacF51A_X_T2);
+  caltr->SetBranchAddress("ppacF51A_Y_T1",&ppacF51A_Y_T1);
+  caltr->SetBranchAddress("ppacF51A_Y_T2",&ppacF51A_Y_T2);
+  caltr->SetBranchAddress("ppacF51B_X_T1",&ppacF51B_X_T1);
+  caltr->SetBranchAddress("ppacF51B_X_T2",&ppacF51B_X_T2);
+  caltr->SetBranchAddress("ppacF51B_Y_T1",&ppacF51B_Y_T1);
+  caltr->SetBranchAddress("ppacF51B_Y_T2",&ppacF51B_Y_T2);
+  caltr->SetBranchAddress("ppacF52A_X_T1",&ppacF52A_X_T1);
+  caltr->SetBranchAddress("ppacF52A_X_T2",&ppacF52A_X_T2);
+  caltr->SetBranchAddress("ppacF52A_Y_T1",&ppacF52A_Y_T1);
+  caltr->SetBranchAddress("ppacF52A_Y_T2",&ppacF52A_Y_T2);
+  caltr->SetBranchAddress("ppacF52B_X_T1",&ppacF52B_X_T1);
+  caltr->SetBranchAddress("ppacF52B_X_T2",&ppacF52B_X_T2);
+  caltr->SetBranchAddress("ppacF52B_Y_T1",&ppacF52B_Y_T1);
+  caltr->SetBranchAddress("ppacF52B_Y_T2",&ppacF52B_Y_T2);
+  caltr->SetBranchAddress("ppacF71A_X_T1",&ppacF71A_X_T1);
+  caltr->SetBranchAddress("ppacF71A_X_T2",&ppacF71A_X_T2);
+  caltr->SetBranchAddress("ppacF71A_Y_T1",&ppacF71A_Y_T1);
+  caltr->SetBranchAddress("ppacF71A_Y_T2",&ppacF71A_Y_T2);
+  caltr->SetBranchAddress("ppacF71B_X_T1",&ppacF71B_X_T1);
+  caltr->SetBranchAddress("ppacF71B_X_T2",&ppacF71B_X_T2);
+  caltr->SetBranchAddress("ppacF71B_Y_T1",&ppacF71B_Y_T1);
+  caltr->SetBranchAddress("ppacF71B_Y_T2",&ppacF71B_Y_T2);
+  caltr->SetBranchAddress("ppacF72A_X_T1",&ppacF72A_X_T1);
+  caltr->SetBranchAddress("ppacF72A_X_T2",&ppacF72A_X_T2);
+  caltr->SetBranchAddress("ppacF72A_Y_T1",&ppacF72A_Y_T1);
+  caltr->SetBranchAddress("ppacF72A_Y_T2",&ppacF72A_Y_T2);
+  caltr->SetBranchAddress("ppacF72B_X_T1",&ppacF72B_X_T1);
+  caltr->SetBranchAddress("ppacF72B_X_T2",&ppacF72B_X_T2);
+  caltr->SetBranchAddress("ppacF72B_Y_T1",&ppacF72B_Y_T1);
+  caltr->SetBranchAddress("ppacF72B_Y_T2",&ppacF72B_Y_T2);
   
-  caltr->SetBranchAddress("F7IC_E",&F7IC_E);
-  caltr->SetBranchAddress("F7IC_raw",F7IC_raw);
+  caltr->SetBranchAddress("icF7_E",&icF7_E);
+  caltr->SetBranchAddress("icF7_raw",icF7_raw);
 
   caltr->SetBranchAddress("SBT1_Charge",&SBT1_Charge);
   caltr->SetBranchAddress("SBT2_Charge",&SBT2_Charge);
@@ -192,6 +227,33 @@ int main(int argc, char *argv[]){
   caltr->SetBranchAddress("SBT1_TimeDiff",&SBT1_TimeDiff);
   caltr->SetBranchAddress("SBT2_TimeDiff",&SBT2_TimeDiff);
 
+  caltr->SetBranchAddress("sbt1_Q",&sbt1_Q);
+  caltr->SetBranchAddress("sbt1_T",&sbt1_T);
+  caltr->SetBranchAddress("sbt1_dT",&sbt1_dT);
+  caltr->SetBranchAddress("sbt2_Q",&sbt2_Q);
+  caltr->SetBranchAddress("sbt2_T",&sbt2_T);
+  caltr->SetBranchAddress("sbt2_dT",&sbt2_dT);
+  caltr->SetBranchAddress("sbt1_QL",&sbt1_QL);
+  caltr->SetBranchAddress("sbt1_QR",&sbt1_QR);
+  caltr->SetBranchAddress("sbt1_TL",&sbt1_TL);
+  caltr->SetBranchAddress("sbt1_TR",&sbt1_TR);
+  caltr->SetBranchAddress("sbt2_QL",&sbt2_QL);
+  caltr->SetBranchAddress("sbt2_QR",&sbt2_QR);
+  caltr->SetBranchAddress("sbt2_TL",&sbt2_TL);
+  caltr->SetBranchAddress("sbt2_TR",&sbt2_TR);
+
+  caltr->SetBranchAddress("sbt1_NhitL",&sbt1_NhitL);
+  caltr->SetBranchAddress("sbt2_NhitL",&sbt2_NhitL);
+  caltr->SetBranchAddress("sbt1_NhitR",&sbt1_NhitR);
+  caltr->SetBranchAddress("sbt2_NhitR",&sbt2_NhitR);
+  caltr->SetBranchAddress("sbt1_TslewL",&sbt1_TslewL);
+  caltr->SetBranchAddress("sbt2_TslewL",&sbt2_TslewL);    
+  caltr->SetBranchAddress("sbt1_TslewR",&sbt1_TslewR);
+  caltr->SetBranchAddress("sbt2_TslewR",&sbt2_TslewR);    
+  caltr->SetBranchAddress("sbt1_Tslew",&sbt1_Tslew);
+  caltr->SetBranchAddress("sbt2_Tslew",&sbt2_Tslew);    
+  caltr->SetBranchAddress("sbt1_dTslew",&sbt1_dTslew);
+  caltr->SetBranchAddress("sbt2_dTslew",&sbt2_dTslew);
   
   //===== Load CUT files ==================================================
   //=== Plastic (graphical cut)===
@@ -222,37 +284,6 @@ int main(int argc, char *argv[]){
     fin >> cPPAC_Tsum_low[cPPAC_index] >> cPPAC_Tsum_up[cPPAC_index];
   }
 
-  /*
-  //=== 56Ca gate ===
-  TFile *BRpid = new TFile("/home/koiwai/analysis/cutfiles/BRpid.root");
-  TCutG *cbr49ar = (TCutG*)BRpid->Get("br49ar");
-  TCutG *cbr50ar = (TCutG*)BRpid->Get("br50ar");
-  TCutG *cbr50k  = (TCutG*)BRpid->Get("br50k");
-  TCutG *cbr51k  = (TCutG*)BRpid->Get("br51k");
-  TCutG *cbr52k  = (TCutG*)BRpid->Get("br52k");
-  TCutG *cbr53k  = (TCutG*)BRpid->Get("br53k");
-  TCutG *cbr52ca = (TCutG*)BRpid->Get("br52ca");
-  TCutG *cbr53ca = (TCutG*)BRpid->Get("br53ca");
-  TCutG *cbr54ca = (TCutG*)BRpid->Get("br54ca");
-  TCutG *cbr55ca = (TCutG*)BRpid->Get("br55ca");
-  TCutG *cbr56ca = (TCutG*)BRpid->Get("br56ca");
-  TCutG *cbr54sc = (TCutG*)BRpid->Get("br54sc");
-  TCutG *cbr55sc = (TCutG*)BRpid->Get("br55sc");
-  TCutG *cbr56sc = (TCutG*)BRpid->Get("br56sc");
-  TCutG *cbr57sc = (TCutG*)BRpid->Get("br57sc");
-  TCutG *cbr58sc = (TCutG*)BRpid->Get("br58sc");
-  TCutG *cbr59sc = (TCutG*)BRpid->Get("br59sc");
-  TCutG *cbr57ti = (TCutG*)BRpid->Get("br57ti");
-  TCutG *cbr58ti = (TCutG*)BRpid->Get("br58ti");
-  TCutG *cbr59ti = (TCutG*)BRpid->Get("br59ti");
-  TCutG *cbr60ti = (TCutG*)BRpid->Get("br60ti");
-  TCutG *cbr61ti = (TCutG*)BRpid->Get("br61ti");
-  TCutG *cbr60v  = (TCutG*)BRpid->Get("br60v");
-  TCutG *cbr61v  = (TCutG*)BRpid->Get("br61v");
-  TCutG *cbr62v  = (TCutG*)BRpid->Get("br62v");
-  TCutG *cbr63v  = (TCutG*)BRpid->Get("br63v");
-  TCutG *cbr64v  = (TCutG*)BRpid->Get("br64v");
-  */
   
   //===== Load .dat files =====
   
@@ -428,12 +459,7 @@ int main(int argc, char *argv[]){
   anatrB->Branch("BG_flag",&BG_flag);
   anatrB->Branch("f71flag",&f71flag);
   anatrB->Branch("f72flag",&f72flag);
-  /*
-  anatrB->Branch("BR56Ca",&BR56Ca);
-  anatrB->Branch("BR53Ca",&BR53Ca);
-  anatrB->Branch("BR51K",&BR51K);
-  anatrB->Branch("BR56Sc",&BR56Sc);
-  */
+ 
   infile->cd();
 
 
@@ -765,5 +791,8 @@ int main(int argc, char *argv[]){
   anatrB->Write();
   anafile->Close();
 
+  time(&stop);
+  printf("Elapsed time: %.1f seconds\n",difftime(stop,start));
+  
   return 0;
 }
