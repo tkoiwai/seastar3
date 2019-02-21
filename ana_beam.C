@@ -53,13 +53,6 @@ int main(int argc, char *argv[]){
   Double_t plaF3_QL, plaF3_QR, plaF5_QL, plaF5_QR, plaF7_QL, plaF7_QR; //newly added.
   Double_t plaF3_TL, plaF3_TR, plaF5_TL, plaF5_TR, plaF7_TL, plaF7_TR; //newly added.
 
-  Int_t    plaF3_NhitL, plaF5_NhitL, plaF7_NhitL;
-  Int_t    plaF3_NhitR, plaF5_NhitR, plaF7_NhitR;
-  Double_t plaF3_TslewL, plaF5_TslewL, plaF7_TslewL;
-  Double_t plaF3_TslewR, plaF5_TslewR, plaF7_TslewR;
-  Double_t plaF3_Tslew, plaF5_Tslew, plaF7_Tslew;
-  Double_t plaF3_dTslew, plaF5_dTslew, plaF7_dTslew;
-
   //=== PPAC ===
   Double_t ppacF31A_X, ppacF31A_Y, ppacF31B_X, ppacF31B_Y, ppacF32A_X, ppacF32A_Y, ppacF32B_X, ppacF32B_Y;
   Double_t ppacF51A_X, ppacF51A_Y, ppacF51B_X, ppacF51B_Y, ppacF52A_X, ppacF52A_Y, ppacF52B_X, ppacF52B_Y;
@@ -88,9 +81,6 @@ int main(int argc, char *argv[]){
   Double_t sbt1_QL, sbt1_QR, sbt1_TL, sbt1_TR;
   Double_t sbt2_QL, sbt2_QR, sbt2_TL, sbt2_TR;
 
-  Int_t sbt1_NhitL, sbt1_NhitR, sbt2_NhitL, sbt2_NhitR;
-  Double_t sbt1_TslewL, sbt2_TslewL;
-  Double_t sbt1_TslewR, sbt2_TslewR;
   Double_t sbt1_Tslew,  sbt2_Tslew;
   Double_t sbt1_dTslew, sbt2_dTslew;
   
@@ -121,25 +111,6 @@ int main(int argc, char *argv[]){
   caltr->SetBranchAddress("plaF5_TR",&plaF5_TR);
   caltr->SetBranchAddress("plaF7_TL",&plaF7_TL);
   caltr->SetBranchAddress("plaF7_TR",&plaF7_TR);
-
-  //caltr->SetBranchAddress("plaF3_NhitL",&plaF3_NhitL);
-  //caltr->SetBranchAddress("plaF5_NhitL",&plaF5_NhitL);
-  //caltr->SetBranchAddress("plaF7_NhitL",&plaF7_NhitL);
-  //caltr->SetBranchAddress("plaF3_NhitR",&plaF3_NhitR);
-  //caltr->SetBranchAddress("plaF5_NhitR",&plaF5_NhitR);
-  //caltr->SetBranchAddress("plaF7_NhitR",&plaF7_NhitR);
-  //caltr->SetBranchAddress("plaF3_TslewL",&plaF3_TslewL);
-  //caltr->SetBranchAddress("plaF5_TslewL",&plaF5_TslewL);
-  //caltr->SetBranchAddress("plaF7_TslewL",&plaF7_TslewL);
-  //caltr->SetBranchAddress("plaF3_TslewR",&plaF3_TslewR);
-  //caltr->SetBranchAddress("plaF5_TslewR",&plaF5_TslewR);
-  //caltr->SetBranchAddress("plaF7_TslewR",&plaF7_TslewR);
-  //caltr->SetBranchAddress("plaF3_Tslew",&plaF3_Tslew);
-  //caltr->SetBranchAddress("plaF5_Tslew",&plaF5_Tslew);
-  //caltr->SetBranchAddress("plaF7_Tslew",&plaF7_Tslew);
-  //caltr->SetBranchAddress("plaF3_dTslew",&plaF3_dTslew);
-  //caltr->SetBranchAddress("plaF5_dTslew",&plaF5_dTslew);
-  //caltr->SetBranchAddress("plaF7_dTslew",&plaF7_dTslew);
   
   caltr->SetBranchAddress("ppacF31A_X",&ppacF31A_X);
   caltr->SetBranchAddress("ppacF31A_Y",&ppacF31A_Y);
@@ -242,18 +213,10 @@ int main(int argc, char *argv[]){
   caltr->SetBranchAddress("sbt2_TL",&sbt2_TL);
   caltr->SetBranchAddress("sbt2_TR",&sbt2_TR);
 
-  //caltr->SetBranchAddress("sbt1_NhitL",&sbt1_NhitL);
-  //caltr->SetBranchAddress("sbt2_NhitL",&sbt2_NhitL);
-  //caltr->SetBranchAddress("sbt1_NhitR",&sbt1_NhitR);
-  //caltr->SetBranchAddress("sbt2_NhitR",&sbt2_NhitR);
-  //caltr->SetBranchAddress("sbt1_TslewL",&sbt1_TslewL);
-  //caltr->SetBranchAddress("sbt2_TslewL",&sbt2_TslewL);    
-  //caltr->SetBranchAddress("sbt1_TslewR",&sbt1_TslewR);
-  //caltr->SetBranchAddress("sbt2_TslewR",&sbt2_TslewR);    
-  //caltr->SetBranchAddress("sbt1_Tslew",&sbt1_Tslew);
-  //caltr->SetBranchAddress("sbt2_Tslew",&sbt2_Tslew);    
-  //caltr->SetBranchAddress("sbt1_dTslew",&sbt1_dTslew);
-  //caltr->SetBranchAddress("sbt2_dTslew",&sbt2_dTslew);
+  caltr->SetBranchAddress("sbt1_Tslew",&sbt1_Tslew);
+  caltr->SetBranchAddress("sbt2_Tslew",&sbt2_Tslew);    
+  caltr->SetBranchAddress("sbt1_dTslew",&sbt1_dTslew);
+  caltr->SetBranchAddress("sbt2_dTslew",&sbt2_dTslew);
   
   //===== Load CUT files ==================================================
   //=== Plastic (graphical cut)===
