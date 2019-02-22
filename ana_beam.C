@@ -2,6 +2,7 @@
 #include<iostream>
 #include<fstream>
 #include<math.h>
+#include<bitset>
 
 #include <TSystem.h>
 #include <string>
@@ -220,12 +221,10 @@ int main(int argc, char *argv[]){
   
   //===== Load CUT files ==================================================
   //=== Plastic (graphical cut)===
-  TFile *cutfileF3pla = new TFile("/home/koiwai/analysis/cutfiles/cutf3pla.root");
-  TCutG *cF3pla = (TCutG*)cutfileF3pla->Get("f3pla");
-  TFile *cutfileF5pla = new TFile("/home/koiwai/analysis/cutfiles/cutf5pla.root");
-  TCutG *cF5pla = (TCutG*)cutfileF5pla->Get("f5pla");
-  TFile *cutfileF7pla = new TFile("/home/koiwai/analysis/cutfiles/cutf7pla.root");
-  TCutG *cF7pla = (TCutG*)cutfileF7pla->Get("f7pla");
+  TFile *fcutpla = TFile::Open("/home/koiwai/analysis/cutfiles/placuts.root");
+  TCutG *cplaF3 = (TCutG*)fcutpla->Get("CPLAF3");
+  TCutG *cplaF5 = (TCutG*)fcutpla->Get("CPLAF5");
+  TCutG *cplaF7 = (TCutG*)fcutpla->Get("CPLAF7");
 
   /*
   //=== Chrage change @ F5 (graphical cut) ===
@@ -235,16 +234,32 @@ int main(int argc, char *argv[]){
   
   //=== PPAC Tsum gate ===
   ifstream fin;
-  fin.open("/home/koiwai/analysis/cutfiles/cut_PPAC_Tsum.dat");
+  fin.open("/home/koiwai/analysis/cutfiles/ppaccuts.dat");
   if(fin.fail()){
     cout << "Error: file is not found." << endl;
     return 1;
   }
-  
-  Int_t cPPAC_Tsum_low[24], cPPAC_Tsum_up[24];
+
+  string dummy[24];
+  Int_t cppac_low[24], cppac_up[24];
   
   for(Int_t cPPAC_index = 0;cPPAC_index<24;++cPPAC_index){
-    fin >> cPPAC_Tsum_low[cPPAC_index] >> cPPAC_Tsum_up[cPPAC_index];
+    fin >> dummy[cPPAC_index] >> cppac_low[cPPAC_index] >> cppac_up[cPPAC_index];
+  }
+
+  //=== IC gate ===
+  ifstream finic;
+  finic.open("/home/koiwai/analysis/cutfiles/ppaccuts.dat");
+  if(finic.fail()){
+    cout << "Error: file is not found." << endl;
+    return 1;
+  }
+
+  string dummyic[5];
+  Int_t cIC_low[5], cIC_up[5];
+  
+  for(Int_t cIC_index = 0;cIC_index<5;++cIC_index){
+    fin >>  cIC_low[cIC_index] >> cIC_up[cIC_index];
   }
 
   
@@ -335,6 +350,15 @@ int main(int argc, char *argv[]){
   Double_t gammaF3F7, gammaF3F5, gammaF5F7, gammaF7F13, gammaF3F13;
   Double_t zetBRraw;
   Double_t zetBR, zetBR313;
+
+  Int_t tsum_f31ax, tsum_f31bx, tsum_f32ax, tsum_f32bx;
+  Int_t tsum_f31ay, tsum_f31by, tsum_f32ay, tsum_f32by;
+  Int_t tsum_f51ax, tsum_f51bx, tsum_f52ax, tsum_f52bx;
+  Int_t tsum_f51ay, tsum_f51by, tsum_f52ay, tsum_f52by;
+  Int_t tsum_f71ax, tsum_f71bx, tsum_f72ax, tsum_f72bx;
+  Int_t tsum_f71ay, tsum_f71by, tsum_f72ay, tsum_f72by;
+  
+  
 
   //=== for A/Q ===
   Double_t F3X, F3Y, F3A, F3B; //X, Y:[mm]
@@ -472,6 +496,31 @@ int main(int argc, char *argv[]){
     zetBRraw= TMath::Sqrt(-1);
     zetBR = TMath::Sqrt(-1);
     zetBR313 = TMath::Sqrt(-1);
+
+    tsum_f31ax = TMath::Sqrt(-1);
+    tsum_f31bx = TMath::Sqrt(-1);
+    tsum_f32ax = TMath::Sqrt(-1);
+    tsum_f32bx = TMath::Sqrt(-1);
+    tsum_f31ay = TMath::Sqrt(-1);
+    tsum_f31by = TMath::Sqrt(-1);
+    tsum_f32ay = TMath::Sqrt(-1);
+    tsum_f32by = TMath::Sqrt(-1);
+    tsum_f51ax = TMath::Sqrt(-1);
+    tsum_f51bx = TMath::Sqrt(-1);
+    tsum_f52ax = TMath::Sqrt(-1);
+    tsum_f52bx = TMath::Sqrt(-1);
+    tsum_f51ay = TMath::Sqrt(-1);
+    tsum_f51by = TMath::Sqrt(-1);
+    tsum_f52ay = TMath::Sqrt(-1);
+    tsum_f52by = TMath::Sqrt(-1);
+    tsum_f71ax = TMath::Sqrt(-1);
+    tsum_f71bx = TMath::Sqrt(-1);
+    tsum_f72ax = TMath::Sqrt(-1);
+    tsum_f72bx = TMath::Sqrt(-1);
+    tsum_f71ay = TMath::Sqrt(-1);
+    tsum_f71by = TMath::Sqrt(-1);
+    tsum_f72ay = TMath::Sqrt(-1);
+    tsum_f72by = TMath::Sqrt(-1);
     
     F3X = TMath::Sqrt(-1);
     F3Y = TMath::Sqrt(-1);
@@ -565,6 +614,63 @@ int main(int argc, char *argv[]){
     
     zetplaic = vF3F7 * TMath::Sqrt(de/(TMath::Log(2*m_e*vF3F7*vF3F7/Ionpair)-TMath::Log(1-betaF3F7*betaF3F7)-betaF3F7*betaF3F7));
     */
+
+    // ===== TSum gate =====
+    tsum_f31ax = F31A_X_T1 + F31A_X_T2;
+    tsum_f31bx = F31B_X_T1 + F31B_X_T2;
+    tsum_f32ax = F32A_X_T1 + F32A_X_T2;
+    tsum_f32bx = F32B_X_T1 + F32B_X_T2;
+    tsum_f31ay = F31A_Y_T1 + F31A_Y_T2;
+    tsum_f31by = F31B_Y_T1 + F31B_Y_T2;
+    tsum_f32ay = F32A_Y_T1 + F32A_Y_T2;
+    tsum_f32by = F32B_Y_T1 + F32B_Y_T2;
+    tsum_f51ax = F51A_X_T1 + F51A_X_T2;
+    tsum_f51bx = F51B_X_T1 + F51B_X_T2;
+    tsum_f52ax = F52A_X_T1 + F52A_X_T2;
+    tsum_f52bx = F52B_X_T1 + F52B_X_T2;
+    tsum_f51ay = F51A_Y_T1 + F51A_Y_T2;
+    tsum_f51by = F51B_Y_T1 + F51B_Y_T2;
+    tsum_f52ay = F52A_Y_T1 + F52A_Y_T2;
+    tsum_f52by = F52B_Y_T1 + F52B_Y_T2;
+    tsum_f71ax = F71A_X_T1 + F71A_X_T2;
+    tsum_f71bx = F71B_X_T1 + F71B_X_T2;
+    tsum_f72ax = F72A_X_T1 + F72A_X_T2;
+    tsum_f72bx = F72B_X_T1 + F72B_X_T2;
+    tsum_f71ay = F71A_Y_T1 + F71A_Y_T2;
+    tsum_f71by = F71B_Y_T1 + F71B_Y_T2;
+    tsum_f72ay = F72A_Y_T1 + F72A_Y_T2;
+    tsum_f72by = F72B_Y_T1 + F72B_Y_T2;
+    
+    bitset<4> f3x(0), f3y(0), f5x(0), f5y(0), f7x(0), f7y(0); // bit[2B 2A 1B 1A];
+    if(cppac_low[0]  < tsum_f31ax && tsum_f31ax < cppac_up[0])  f3x.set(0);
+    if(cppac_low[1]  < tsum_f31bx && tsum_f31bx < cppac_up[1])  f3x.set(1);
+    if(cppac_low[2]  < tsum_f32ax && tsum_f32ax < cppac_up[2])  f3x.set(2);
+    if(cppac_low[3]  < tsum_f32bx && tsum_f32bx < cppac_up[3])  f3x.set(3);
+    if(cppac_low[4]  < tsum_f31ay && tsum_f31ay < cppac_up[4])  f3y.set(0);
+    if(cppac_low[5]  < tsum_f31by && tsum_f31by < cppac_up[5])  f3y.set(1);
+    if(cppac_low[6]  < tsum_f32ay && tsum_f32ay < cppac_up[6])  f3y.set(2);
+    if(cppac_low[7]  < tsum_f32by && tsum_f32by < cppac_up[7])  f3y.set(3);
+    if(cppac_low[8]  < tsum_f51ax && tsum_f51ax < cppac_up[8])  f5x.set(0);
+    if(cppac_low[9]  < tsum_f51bx && tsum_f51bx < cppac_up[9])  f5x.set(1);
+    if(cppac_low[10] < tsum_f52ax && tsum_f52ax < cppac_up[10]) f5x.set(2);
+    if(cppac_low[11] < tsum_f52bx && tsum_f52bx < cppac_up[11]) f5x.set(3);
+    if(cppac_low[12] < tsum_f51ay && tsum_f51ay < cppac_up[12]) f5y.set(0);
+    if(cppac_low[13] < tsum_f51by && tsum_f51by < cppac_up[13]) f5y.set(1);
+    if(cppac_low[14] < tsum_f52ay && tsum_f52ay < cppac_up[14]) f5y.set(2);
+    if(cppac_low[15] < tsum_f52by && tsum_f52by < cppac_up[15]) f5y.set(3);
+    if(cppac_low[16] < tsum_f71ax && tsum_f71ax < cppac_up[16]) f7x.set(0);
+    if(cppac_low[17] < tsum_f71bx && tsum_f71bx < cppac_up[17]) f7x.set(1);
+    if(cppac_low[18] < tsum_f72ax && tsum_f72ax < cppac_up[18]) f7x.set(2);
+    if(cppac_low[19] < tsum_f72bx && tsum_f72bx < cppac_up[19]) f7x.set(3);
+    if(cppac_low[20] < tsum_f71ay && tsum_f71ay < cppac_up[20]) f7y.set(0);
+    if(cppac_low[21] < tsum_f71by && tsum_f71by < cppac_up[21]) f7y.set(1);
+    if(cppac_low[22] < tsum_f72ay && tsum_f72ay < cppac_up[22]) f7y.set(2);
+    if(cppac_low[23] < tsum_f72by && tsum_f72by < cppac_up[23]) f7y.set(3);
+
+    
+
+
+    
     
     //=== F3 Tsum gate ===
     if((cPPAC_Tsum_low[0]<F31A_X_T1+F31A_X_T2&&F31A_X_T1+F31A_X_T2<cPPAC_Tsum_up[0])&&(cPPAC_Tsum_low[1]<F31B_X_T1+F31B_X_T2&&F31B_X_T1+F31B_X_T2<cPPAC_Tsum_up[1])){
