@@ -21,6 +21,7 @@
 #include"TMath.h"
 #include"TString.h"
 #include"TEnv.h"
+#include"TBits.h"
 
 using namespace std;
 using namespace TMath;
@@ -209,8 +210,8 @@ int main(int argc, char *argv[]){
 
   caltr->SetBranchAddress("sbt1_Tslew",&sbt1_Tslew);
   caltr->SetBranchAddress("sbt2_Tslew",&sbt2_Tslew);    
-  caltr->SetBranchAddress("sbt1_dTslew",&sbt1_dTslew);
-  caltr->SetBranchAddress("sbt2_dTslew",&sbt2_dTslew);
+  //caltr->SetBranchAddress("sbt1_dTslew",&sbt1_dTslew);
+  //caltr->SetBranchAddress("sbt2_dTslew",&sbt2_dTslew);
   
   //===== Load CUT files ==================================================
   //=== Plastic (graphical cut)===
@@ -227,18 +228,22 @@ int main(int argc, char *argv[]){
   
   //=== PPAC Tsum gate ===
   ifstream fin;
-  fin.open("/home/koiwai/analysis/cutfiles/ppaccuts.dat");
+  //fin.open("/home/koiwai/analysis/cutfiles/ppaccuts.dat");
+  fin.open("/home/koiwai/analysis/cutfiles/cut_PPAC_Tsum.dat");
   if(fin.fail()){
     cout << "Error: file is not found." << endl;
     return 1;
   }
 
   string dummy[24];
-  Int_t cppac_low[24], cppac_up[24];
+  Double_t cppac_low[24], cppac_up[24];
   
   for(Int_t cPPAC_index = 0;cPPAC_index<24;++cPPAC_index){
-    fin >> dummy[cPPAC_index] >> cppac_low[cPPAC_index] >> cppac_up[cPPAC_index];
+    //fin >> dummy[cPPAC_index] >> cppac_low[cPPAC_index] >> cppac_up[cPPAC_index];
+    fin >> cppac_low[cPPAC_index] >> cppac_up[cPPAC_index];
   }
+
+
 
   //=== IC gate ===
   ifstream finic;
@@ -376,6 +381,9 @@ int main(int argc, char *argv[]){
   Int_t BG_flag; //flag for background
   Int_t f71flag, f72flag;
 
+  bitset<4> f3x(0), f3y(0), f5x(0), f5y(0), f7x(0), f7y(0); // bit[2B 2A 1B 1A];
+
+  
   //======
   anatrB->Branch("EventNumber",&EventNum);
   anatrB->Branch("RunNumber",&RunNum);
@@ -439,14 +447,14 @@ int main(int argc, char *argv[]){
   anatrB->Branch("BG_flag",&BG_flag);
   anatrB->Branch("f71flag",&f71flag);
   anatrB->Branch("f72flag",&f72flag);
- 
+
   infile->cd();
 
 
  //===== Begin LOOP ======================================================
   int nEntry = caltr->GetEntries();
   for(int iEntry=0;iEntry<nEntry;++iEntry){
-    //for(int iEntry=0;iEntry<10;++iEntry){
+    //for(int iEntry=0;iEntry<20;++iEntry){
     caltr->GetEntry(iEntry);
 
     if(iEntry%100 == 0){
@@ -567,11 +575,16 @@ int main(int argc, char *argv[]){
     reco2brhoF5F7 = TMath::Sqrt(-1);
 
     //=== Calculation ===
-    tofF3F7 = F7_Time - F3_Time + OffsetF3F7;
-    tofF3F5 = F5_Time - F3_Time + OffsetF3F5;
-    tofF5F7 = F7_Time - F5_Time + OffsetF5F7;
-    tofF7F13 = SBT1_Time - F7_Time + OffsetF7F13;
-    tofF3F13 = SBT1_Time - F3_Time + OffsetF3F13;
+    //tofF3F7 = F7_Time - F3_Time + OffsetF3F7;
+    //tofF3F5 = F5_Time - F3_Time + OffsetF3F5;
+    //tofF5F7 = F7_Time - F5_Time + OffsetF5F7;
+    //tofF7F13 = SBT1_Time - F7_Time + OffsetF7F13;
+    //tofF3F13 = SBT1_Time - F3_Time + OffsetF3F13;
+    tofF3F7 = plaF7_T - plaF3_T + OffsetF3F7;    
+    tofF3F5 = plaF5_T - plaF3_T + OffsetF3F5;    
+    tofF5F7 = plaF7_T - plaF5_T + OffsetF5F7;    
+    tofF7F13 = sbt1_T - plaF7_T + OffsetF7F13;
+    tofF3F13 = sbt1_T - plaF3_T + OffsetF3F13;
     vF3F7 = DistF3F7/tofF3F7;
     vF3F5 = DistF3F5/tofF3F5;
     vF5F7 = DistF5F7/tofF5F7;
@@ -589,9 +602,9 @@ int main(int argc, char *argv[]){
     gammaF7F13 = 1/TMath::Sqrt(1.-betaF7F13*betaF7F13);
     gammaF3F13 = 1/TMath::Sqrt(1.-betaF3F13*betaF3F13);
 
-    zetBRraw = vF7F13 * TMath::Sqrt(F7IC_E/(TMath::Log(2*m_e*vF7F13*vF7F13/Ionpair)-TMath::Log(1-betaF7F13*betaF7F13)-betaF7F13*betaF7F13));
+    zetBRraw = vF7F13 * TMath::Sqrt(icF7_E/(TMath::Log(2*m_e*vF7F13*vF7F13/Ionpair)-TMath::Log(1-betaF7F13*betaF7F13)-betaF7F13*betaF7F13));
 
-    zetBR313 = vF3F13 * TMath::Sqrt(F7IC_E/(TMath::Log(2*m_e*vF3F13*vF3F13/Ionpair)-TMath::Log(1-betaF3F13*betaF3F13)-betaF3F13*betaF3F13));
+    zetBR313 = vF3F13 * TMath::Sqrt(icF7_E/(TMath::Log(2*m_e*vF3F13*vF3F13/Ionpair)-TMath::Log(1-betaF3F13*betaF3F13)-betaF3F13*betaF3F13));
     
     zetBR = zetBR_c1 * zetBRraw + zetBR_c0;
 
@@ -608,8 +621,9 @@ int main(int argc, char *argv[]){
     zetplaic = vF3F7 * TMath::Sqrt(de/(TMath::Log(2*m_e*vF3F7*vF3F7/Ionpair)-TMath::Log(1-betaF3F7*betaF3F7)-betaF3F7*betaF3F7));
     */
 
+
     // ===== TSum gate =====
-    tsum_f31ax = ppacF31A_X_T1 + ppacF31A_X_T2;
+    tsum_f31ax = ppacF31A_X_T1 + ppacF31A_X_T2;  
     tsum_f31bx = ppacF31B_X_T1 + ppacF31B_X_T2;
     tsum_f32ax = ppacF32A_X_T1 + ppacF32A_X_T2;
     tsum_f32bx = ppacF32B_X_T1 + ppacF32B_X_T2;
@@ -634,8 +648,10 @@ int main(int argc, char *argv[]){
     tsum_f72ay = ppacF72A_Y_T1 + ppacF72A_Y_T2;
     tsum_f72by = ppacF72B_Y_T1 + ppacF72B_Y_T2;
     
-    bitset<4> f3x(0), f3y(0), f5x(0), f5y(0), f7x(0), f7y(0); // bit[2B 2A 1B 1A];
-    if(cppac_low[0]  < tsum_f31ax && tsum_f31ax < cppac_up[0])  f3x.set(0);
+    //    bitset<4> f3x(0), f3y(0), f5x(0), f5y(0), f7x(0), f7y(0); // bit[2B 2A 1B 1A];
+    if(cppac_low[0]  < tsum_f31ax && tsum_f31ax < cppac_up[0]){
+      f3x.set(0);
+    }
     if(cppac_low[1]  < tsum_f31bx && tsum_f31bx < cppac_up[1])  f3x.set(1);
     if(cppac_low[2]  < tsum_f32ax && tsum_f32ax < cppac_up[2])  f3x.set(2);
     if(cppac_low[3]  < tsum_f32bx && tsum_f32bx < cppac_up[3])  f3x.set(3);
@@ -660,21 +676,23 @@ int main(int argc, char *argv[]){
     if(cppac_low[22] < tsum_f72ay && tsum_f72ay < cppac_up[22]) f7y.set(2);
     if(cppac_low[23] < tsum_f72by && tsum_f72by < cppac_up[23]) f7y.set(3);
 
+
+
     //=== F31 X ===
     if(f3x[0]&f3x[1]) F31_X = (ppacF31A_X + ppacF31B_X)/2.;
     else if(f3x[0])   F31_X = ppacF31A_X;
     else if(f3x[1])   F31_X = ppacF31B_X;
-    else{             F31_X = pla3pos[1]*plaF3_dT + pla3pos[0];
+    //else{             //F31_X = pla3pos[1]*plaF3_dT + pla3pos[0];
       //BG_flag;
-    }
+    //}
 
     //=== F32 X ===
     if(f3x[2]&f3x[3]) F32_X = (ppacF32A_X + ppacF32B_X)/2.;
     else if(f3x[2])   F32_X = ppacF32A_X;
     else if(f3x[3])   F32_X = ppacF32B_X;
-    else{             F32_X = pla3pos[1]*plaF3_dT + pla3pos[0];
-      //BG_flag;
-    }
+    //else{             F32_X = pla3pos[1]*plaF3_dT + pla3pos[0];
+        //BG_flag;
+    //}
 
     //=== F3 X ===
     F3X = (F31_X + F32_X)/2.;
@@ -683,17 +701,17 @@ int main(int argc, char *argv[]){
     if(f3y[0]&f3y[1]) F31_Y = (ppacF31A_Y + ppacF31B_Y)/2.;
     else if(f3y[0])   F31_Y = ppacF31A_Y;
     else if(f3y[1])   F31_Y = ppacF31B_Y;
-    else{             
+    //else{             
       //BG_flag;
-    }
+    //}
 
     //=== F32 Y ===
     if(f3y[2]&f3y[3]) F32_Y = (ppacF32A_Y + ppacF32B_Y)/2.;
     else if(f3y[2])   F32_Y = ppacF32A_Y;
     else if(f3y[3])   F32_Y = ppacF32B_Y;
-    else{             F32_Y = pla3pos[1]*plaF3_dT + pla3pos[0];
+    //else{             //F32_Y = pla3pos[1]*plaF3_dT + pla3pos[0];
       //BG_flag;
-    }
+    //}
 
     //=== F3 Y ===
     F3Y = (F31_Y + F32_Y)/2.;
@@ -702,17 +720,17 @@ int main(int argc, char *argv[]){
     if(f5x[0]&f5x[1]) F51_X = (ppacF51A_X + ppacF51B_X)/2.;
     else if(f5x[0])   F51_X = ppacF51A_X;
     else if(f5x[1])   F51_X = ppacF51B_X;
-    else{             F51_X = pla5pos[1]*plaF5_dT + pla5pos[0];
+    //else{             
       //BG_flag;
-    }
+    //}
 
     //=== F52 X ===
     if(f5x[2]&f5x[3]) F52_X = (ppacF52A_X + ppacF52B_X)/2.;
     else if(f5x[2])   F52_X = ppacF52A_X;
     else if(f5x[3])   F52_X = ppacF52B_X;
-    else{             
+    //else{             
       //BG_flag;
-    }
+    //}
 
     //=== F5 X ===
     F5X = (F51_X + F52_X)/2.;
@@ -721,17 +739,17 @@ int main(int argc, char *argv[]){
     if(f5y[0]&f5y[1]) F51_Y = (ppacF51A_Y + ppacF51B_Y)/2.;
     else if(f5y[0])   F51_Y = ppacF51A_Y;
     else if(f5y[1])   F51_Y = ppacF51B_Y;
-    else{             
+    //else{             
       //BG_flag;
-    }
+    //}
 
     //=== F52 Y ===
     if(f5y[2]&f5y[3]) F52_Y = (ppacF52A_Y + ppacF52B_Y)/2.;
     else if(f5y[2])   F52_Y = ppacF52A_Y;
     else if(f5y[3])   F52_Y = ppacF52B_Y;
-    else{             
+    //else{             
       //BG_flag;
-    }
+    //}
 
     //=== F5 Y ===
     F5Y = (F51_Y + F52_Y)/2.;
@@ -740,7 +758,7 @@ int main(int argc, char *argv[]){
     if(f7x[0]&f7x[1]) F71_X = (ppacF71A_X + ppacF71B_X)/2.;
     else if(f7x[0])   F71_X = ppacF71A_X;
     else if(f7x[1])   F71_X = ppacF71B_X;
-    else{             F71_X = pla7pos[1]*plaF7_dT + pla7pos[0];
+    else{             //F71_X = pla7pos[1]*plaF7_dT + pla7pos[0];
       //BG_flag;
     }
 
@@ -748,7 +766,7 @@ int main(int argc, char *argv[]){
     if(f7x[2]&f7x[3]) F72_X = (ppacF72A_X + ppacF72B_X)/2.;
     else if(f7x[2])   F72_X = ppacF72A_X;
     else if(f7x[3])   F72_X = ppacF72B_X;
-    else{             
+    else{             //F71_X = pla7pos[1]*plaF7_dT + pla7pos[0];
       //BG_flag;
     }
 
@@ -759,23 +777,23 @@ int main(int argc, char *argv[]){
     if(f7y[0]&f7y[1]) F71_Y = (ppacF71A_Y + ppacF71B_Y)/2.;
     else if(f7y[0])   F71_Y = ppacF71A_Y;
     else if(f7y[1])   F71_Y = ppacF71B_Y;
-    else{             
+    //else{             
       //BG_flag;
-    }
+    //}
 
     //=== F72 Y ===
     if(f7y[2]&f7y[3]) F72_Y = (ppacF72A_Y + ppacF72B_Y)/2.;
     else if(f7y[2])   F72_Y = ppacF72A_Y;
     else if(f7y[3])   F72_Y = ppacF72B_Y;
-    else{             
+    //else{             
       //BG_flag;
-    }
+    //}
 
     //=== F7 Y ===
     F7Y = (F71_Y + F72_Y)/2.;
     
 
-    if(F31_X!=F32_X) F3A = 1000.*TMath::ATan((F31_X-F32_X)/DistF3PPAC);
+    if((f3x[0]|f3x[1])&(f3x[2]|f3x[3])) F3A = 1000.*TMath::ATan((F31_X-F32_X)/DistF3PPAC);
     F3B = 1000.*TMath::ATan((F31_Y-F32_Y)/DistF3PPAC);
    
     F5A = 1000.*TMath::ATan((F51_X-F52_X)/DistF5PPAC);
@@ -784,8 +802,8 @@ int main(int argc, char *argv[]){
     F7A = 1000.*TMath::ATan((F71_X-F72_X)/DistF7PPAC);
     F7B = 1000.*TMath::ATan((F71_Y-F72_Y)/DistF7PPAC);
 
-    reco1f7x = F7_TimeDiff*22.1925 + 22.1925*2.60488;
-    reco2f7x = F7_TimeDiff*10.05 + 10.05*2.60488;
+    //reco1f7x = F7_TimeDiff*22.1925 + 22.1925*2.60488;
+    //reco2f7x = F7_TimeDiff*10.05 + 10.05*2.60488;
 
     recoF3A = (ADF3F5*F5X - XDF3F5*F5A - (ADF3F5*XXF3F5 - XDF3F5*AXF3F5)*F3X)/(ADF3F5*XAF3F5 - XDF3F5*AAF3F5);
     
