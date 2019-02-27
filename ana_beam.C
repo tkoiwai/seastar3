@@ -192,13 +192,6 @@ int main(int argc, char *argv[]){
   caltr->SetBranchAddress("icF7_E",&icF7_E);
   caltr->SetBranchAddress("icF7_raw",icF7_raw);
 
-  caltr->SetBranchAddress("SBT1_Charge",&SBT1_Charge);
-  caltr->SetBranchAddress("SBT2_Charge",&SBT2_Charge);
-  caltr->SetBranchAddress("SBT1_Time",&SBT1_Time);
-  caltr->SetBranchAddress("SBT2_Time",&SBT2_Time);
-  caltr->SetBranchAddress("SBT1_TimeDiff",&SBT1_TimeDiff);
-  caltr->SetBranchAddress("SBT2_TimeDiff",&SBT2_TimeDiff);
-
   caltr->SetBranchAddress("sbt1_Q",&sbt1_Q);
   caltr->SetBranchAddress("sbt1_T",&sbt1_T);
   caltr->SetBranchAddress("sbt1_dT",&sbt1_dT);
@@ -782,144 +775,12 @@ int main(int argc, char *argv[]){
     F7Y = (F71_Y + F72_Y)/2.;
     
 
-
-    
-    
-    //=== F3 Tsum gate ===
-    if((cPPAC_Tsum_low[0]<F31A_X_T1+F31A_X_T2&&F31A_X_T1+F31A_X_T2<cPPAC_Tsum_up[0])&&(cPPAC_Tsum_low[1]<F31B_X_T1+F31B_X_T2&&F31B_X_T1+F31B_X_T2<cPPAC_Tsum_up[1])){
-      F31_X = (F31A_X + F31B_X)/2.;
-    }else if((cPPAC_Tsum_low[0]<F31A_X_T1+F31A_X_T2&&F31A_X_T1+F31A_X_T2<cPPAC_Tsum_up[0])&&!(cPPAC_Tsum_low[1]<F31B_X_T1+F31B_X_T2&&F31B_X_T1+F31B_X_T2<cPPAC_Tsum_up[1])){
-      F31_X = F31A_X;
-    }else if(!(cPPAC_Tsum_low[0]<F31A_X_T1+F31A_X_T2&&F31A_X_T1+F31A_X_T2<cPPAC_Tsum_up[0])&&(cPPAC_Tsum_low[1]<F31B_X_T1+F31B_X_T2&&F31B_X_T1+F31B_X_T2<cPPAC_Tsum_up[1])){
-      F31_X = F31B_X;
-    }else{
-      F31_X = pla3pos[1]*F3_TimeDiff + pla3pos[0];
-      //BG_flag = 2;
-    }
-    if((cPPAC_Tsum_low[2]<F32A_X_T1+F32A_X_T2&&F32A_X_T1+F32A_X_T2<cPPAC_Tsum_up[2])&&(cPPAC_Tsum_low[3]<F32B_X_T1+F32B_X_T2&&F32B_X_T1+F32B_X_T2<cPPAC_Tsum_up[3])){
-      F32_X = (F32A_X + F32B_X)/2.;
-    }else if((cPPAC_Tsum_low[2]<F32A_X_T1+F32A_X_T2&&F32A_X_T1+F32A_X_T2<cPPAC_Tsum_up[2])&&!(cPPAC_Tsum_low[3]<F32B_X_T1+F32B_X_T2&&F32B_X_T1+F32B_X_T2<cPPAC_Tsum_up[3])){
-      F32_X = F32A_X;
-    }else if(!(cPPAC_Tsum_low[2]<F32A_X_T1+F32A_X_T2&&F32A_X_T1+F32A_X_T2<cPPAC_Tsum_up[2])&&(cPPAC_Tsum_low[3]<F32B_X_T1+F32B_X_T2&&F32B_X_T1+F32B_X_T2<cPPAC_Tsum_up[3])){
-      F32_X = F32B_X;
-    }else{
-      F32_X = pla3pos[1]*F3_TimeDiff + pla3pos[0];
-      //BG_flag = 2;
-    }
-     if((cPPAC_Tsum_low[4]<F31A_Y_T1+F31A_Y_T2&&F31A_Y_T1+F31A_Y_T2<cPPAC_Tsum_up[4])&&(cPPAC_Tsum_low[5]<F31B_Y_T1+F31B_Y_T2&&F31B_Y_T1+F31B_Y_T2<cPPAC_Tsum_up[5])){
-      F31_Y = (F31A_Y + F31B_Y)/2.;
-    }else if((cPPAC_Tsum_low[4]<F31A_Y_T1+F31A_Y_T2&&F31A_Y_T1+F31A_Y_T2<cPPAC_Tsum_up[4])&&!(cPPAC_Tsum_low[5]<F31B_Y_T1+F31B_Y_T2&&F31B_Y_T1+F31B_Y_T2<cPPAC_Tsum_up[5])){
-      F31_Y = F31A_Y;
-    }else if(!(cPPAC_Tsum_low[4]<F31A_Y_T1+F31A_Y_T2&&F31A_Y_T1+F31A_Y_T2<cPPAC_Tsum_up[4])&&(cPPAC_Tsum_low[5]<F31B_Y_T1+F31B_Y_T2&&F31B_Y_T1+F31B_Y_T2<cPPAC_Tsum_up[5])){
-      F31_Y = F31B_Y;
-    }else{
-       //BG_flag = 2;
-    }
-    if((cPPAC_Tsum_low[6]<F32A_Y_T1+F32A_Y_T2&&F32A_Y_T1+F32A_Y_T2<cPPAC_Tsum_up[6])&&(cPPAC_Tsum_low[7]<F32B_Y_T1+F32B_Y_T2&&F32B_Y_T1+F32B_Y_T2<cPPAC_Tsum_up[7])){
-      F32_Y = (F32A_Y + F32B_Y)/2.;
-    }else if((cPPAC_Tsum_low[6]<F32A_Y_T1+F32A_Y_T2&&F32A_Y_T1+F32A_Y_T2<cPPAC_Tsum_up[6])&&!(cPPAC_Tsum_low[7]<F32B_Y_T1+F32B_Y_T2&&F32B_Y_T1+F32B_Y_T2<cPPAC_Tsum_up[7])){
-      F32_Y = F32A_Y;
-    }else if(!(cPPAC_Tsum_low[6]<F32A_Y_T1+F32A_Y_T2&&F32A_Y_T1+F32A_Y_T2<cPPAC_Tsum_up[6])&&(cPPAC_Tsum_low[7]<F32B_Y_T1+F32B_Y_T2&&F32B_Y_T1+F32B_Y_T2<cPPAC_Tsum_up[7])){
-      F32_Y = F32B_Y;
-    }else{
-      //BG_flag = 2;
-    }
-    //=== F5 ===
-     if((cPPAC_Tsum_low[8]<F51A_X_T1+F51A_X_T2&&F51A_X_T1+F51A_X_T2<cPPAC_Tsum_up[8])&&(cPPAC_Tsum_low[9]<F51B_X_T1+F51B_X_T2&&F51B_X_T1+F51B_X_T2<cPPAC_Tsum_up[9])){
-      F51_X = (F51A_X + F51B_X)/2.;
-    }else if((cPPAC_Tsum_low[8]<F51A_X_T1+F51A_X_T2&&F51A_X_T1+F51A_X_T2<cPPAC_Tsum_up[8])&&!(cPPAC_Tsum_low[9]<F51B_X_T1+F51B_X_T2&&F51B_X_T1+F51B_X_T2<cPPAC_Tsum_up[9])){
-      F51_X = F51A_X;
-    }else if(!(cPPAC_Tsum_low[8]<F51A_X_T1+F51A_X_T2&&F51A_X_T1+F51A_X_T2<cPPAC_Tsum_up[8])&&(cPPAC_Tsum_low[9]<F51B_X_T1+F51B_X_T2&&F51B_X_T1+F51B_X_T2<cPPAC_Tsum_up[9])){
-      F51_X = F51B_X;
-    }else{
-      BG_flag = 2;
-    }
-    if((cPPAC_Tsum_low[10]<F52A_X_T1+F52A_X_T2&&F52A_X_T1+F52A_X_T2<cPPAC_Tsum_up[10])&&(cPPAC_Tsum_low[11]<F52B_X_T1+F52B_X_T2&&F52B_X_T1+F52B_X_T2<cPPAC_Tsum_up[11])){
-      F52_X = (F52A_X + F52B_X)/2.;
-    }else if((cPPAC_Tsum_low[10]<F52A_X_T1+F52A_X_T2&&F52A_X_T1+F52A_X_T2<cPPAC_Tsum_up[10])&&!(cPPAC_Tsum_low[11]<F52B_X_T1+F52B_X_T2&&F52B_X_T1+F52B_X_T2<cPPAC_Tsum_up[11])){
-      F52_X = F52A_X;
-    }else if(!(cPPAC_Tsum_low[10]<F52A_X_T1+F52A_X_T2&&F52A_X_T1+F52A_X_T2<cPPAC_Tsum_up[10])&&(cPPAC_Tsum_low[11]<F52B_X_T1+F52B_X_T2&&F52B_X_T1+F52B_X_T2<cPPAC_Tsum_up[11])){
-      F52_X = F52B_X;
-    }else{
-      BG_flag = 2;
-    }
-    if((cPPAC_Tsum_low[12]<F51A_Y_T1+F51A_Y_T2&&F51A_Y_T1+F51A_Y_T2<cPPAC_Tsum_up[12])&&(cPPAC_Tsum_low[13]<F51B_Y_T1+F51B_Y_T2&&F51B_Y_T1+F51B_Y_T2<cPPAC_Tsum_up[13])){
-      F51_Y = (F51A_Y + F51B_Y)/2.;
-    }else if((cPPAC_Tsum_low[12]<F51A_Y_T1+F51A_Y_T2&&F51A_Y_T1+F51A_Y_T2<cPPAC_Tsum_up[12])&&!(cPPAC_Tsum_low[13]<F51B_Y_T1+F51B_Y_T2&&F51B_Y_T1+F51B_Y_T2<cPPAC_Tsum_up[13])){
-      F51_Y = F51A_Y;
-    }else if(!(cPPAC_Tsum_low[12]<F51A_Y_T1+F51A_Y_T2&&F51A_Y_T1+F51A_Y_T2<cPPAC_Tsum_up[12])&&(cPPAC_Tsum_low[13]<F51B_Y_T1+F51B_Y_T2&&F51B_Y_T1+F51B_Y_T2<cPPAC_Tsum_up[13])){
-      F51_Y = F51B_Y;
-    }else{
-      //BG_flag = 2;
-    }
-    if((cPPAC_Tsum_low[14]<F52A_Y_T1+F52A_Y_T2&&F52A_Y_T1+F52A_Y_T2<cPPAC_Tsum_up[14])&&(cPPAC_Tsum_low[15]<F52B_Y_T1+F52B_Y_T2&&F52B_Y_T1+F52B_Y_T2<cPPAC_Tsum_up[15])){
-      F52_Y = (F52A_Y + F52B_Y)/2.;
-    }else if((cPPAC_Tsum_low[14]<F52A_Y_T1+F52A_Y_T2&&F52A_Y_T1+F52A_Y_T2<cPPAC_Tsum_up[14])&&!(cPPAC_Tsum_low[15]<F52B_Y_T1+F52B_Y_T2&&F52B_Y_T1+F52B_Y_T2<cPPAC_Tsum_up[15])){
-      F52_Y = F52A_Y;
-    }else if(!(cPPAC_Tsum_low[14]<F52A_Y_T1+F52A_Y_T2&&F52A_Y_T1+F52A_Y_T2<cPPAC_Tsum_up[14])&&(cPPAC_Tsum_low[15]<F52B_Y_T1+F52B_Y_T2&&F52B_Y_T1+F52B_Y_T2<cPPAC_Tsum_up[15])){
-      F52_Y = F52B_Y;
-    }else{
-      //BG_flag = 2;
-    }
-    //=== F7 ===
-     if((cPPAC_Tsum_low[16]<F71A_X_T1+F71A_X_T2&&F71A_X_T1+F71A_X_T2<cPPAC_Tsum_up[16])&&(cPPAC_Tsum_low[17]<F71B_X_T1+F71B_X_T2&&F71B_X_T1+F71B_X_T2<cPPAC_Tsum_up[17])){
-      F71_X = (F71A_X + F71B_X)/2.;
-      f71flag = 12;
-    }else if((cPPAC_Tsum_low[16]<F71A_X_T1+F71A_X_T2&&F71A_X_T1+F71A_X_T2<cPPAC_Tsum_up[16])&&!(cPPAC_Tsum_low[17]<F71B_X_T1+F71B_X_T2&&F71B_X_T1+F71B_X_T2<cPPAC_Tsum_up[17])){
-      F71_X = F71A_X;
-      f71flag = 1;
-    }else if(!(cPPAC_Tsum_low[16]<F71A_X_T1+F71A_X_T2&&F71A_X_T1+F71A_X_T2<cPPAC_Tsum_up[16])&&(cPPAC_Tsum_low[17]<F71B_X_T1+F71B_X_T2&&F71B_X_T1+F71B_X_T2<cPPAC_Tsum_up[17])){
-      F71_X = F71B_X;
-      f71flag =2;
-    }else{
-       F71_X = pla7pos[1] * F7_TimeDiff + pla7pos[0];
-       f71flag = 3;
-    }
-    if((cPPAC_Tsum_low[18]<F72A_X_T1+F72A_X_T2&&F72A_X_T1+F72A_X_T2<cPPAC_Tsum_up[18])&&(cPPAC_Tsum_low[19]<F72B_X_T1+F72B_X_T2&&F72B_X_T1+F72B_X_T2<cPPAC_Tsum_up[19])){
-      F72_X = (F72A_X + F72B_X)/2.;
-      f72flag = 12;
-    }else if((cPPAC_Tsum_low[18]<F72A_X_T1+F72A_X_T2&&F72A_X_T1+F72A_X_T2<cPPAC_Tsum_up[18])&&!(cPPAC_Tsum_low[19]<F72B_X_T1+F72B_X_T2&&F72B_X_T1+F72B_X_T2<cPPAC_Tsum_up[19])){
-      F72_X = F72A_X;
-      f72flag = 1;
-    }else if(!(cPPAC_Tsum_low[18]<F72A_X_T1+F72A_X_T2&&F72A_X_T1+F72A_X_T2<cPPAC_Tsum_up[18])&&(cPPAC_Tsum_low[19]<F72B_X_T1+F72B_X_T2&&F72B_X_T1+F72B_X_T2<cPPAC_Tsum_up[19])){
-      F72_X = F72B_X;
-      f72flag = 2;
-    }else{
-      F72_X = pla7pos[1] * F7_TimeDiff + pla7pos[0];
-      f72flag = 3;
-    }
-     if((cPPAC_Tsum_low[20]<F71A_Y_T1+F71A_Y_T2&&F71A_Y_T1+F71A_Y_T2<cPPAC_Tsum_up[20])&&(cPPAC_Tsum_low[21]<F71B_Y_T1+F71B_Y_T2&&F71B_Y_T1+F71B_Y_T2<cPPAC_Tsum_up[21])){
-      F71_Y = (F71A_Y + F71B_Y)/2.;
-    }else if((cPPAC_Tsum_low[20]<F71A_Y_T1+F71A_Y_T2&&F71A_Y_T1+F71A_Y_T2<cPPAC_Tsum_up[20])&&!(cPPAC_Tsum_low[21]<F71B_Y_T1+F71B_Y_T2&&F71B_Y_T1+F71B_Y_T2<cPPAC_Tsum_up[21])){
-      F71_Y = F71A_Y;
-    }else if(!(cPPAC_Tsum_low[20]<F71A_Y_T1+F71A_Y_T2&&F71A_Y_T1+F71A_Y_T2<cPPAC_Tsum_up[20])&&(cPPAC_Tsum_low[21]<F71B_Y_T1+F71B_Y_T2&&F71B_Y_T1+F71B_Y_T2<cPPAC_Tsum_up[21])){
-      F71_Y = F71B_Y;
-    }else{
-       //BG_flag = 2;
-    }
-    if((cPPAC_Tsum_low[22]<F72A_Y_T1+F72A_Y_T2&&F72A_Y_T1+F72A_Y_T2<cPPAC_Tsum_up[22])&&(cPPAC_Tsum_low[23]<F72B_Y_T1+F72B_Y_T2&&F72B_Y_T1+F72B_Y_T2<cPPAC_Tsum_up[23])){
-      F72_Y = (F72A_Y + F72B_Y)/2.;
-    }else if((cPPAC_Tsum_low[22]<F72A_Y_T1+F72A_Y_T2&&F72A_Y_T1+F72A_Y_T2<cPPAC_Tsum_up[22])&&!(cPPAC_Tsum_low[23]<F72B_Y_T1+F72B_Y_T2&&F72B_Y_T1+F72B_Y_T2<cPPAC_Tsum_up[23])){
-      F72_Y = F72A_Y;
-    }else if(!(cPPAC_Tsum_low[22]<F72A_Y_T1+F72A_Y_T2&&F72A_Y_T1+F72A_Y_T2<cPPAC_Tsum_up[22])&&(cPPAC_Tsum_low[23]<F72B_Y_T1+F72B_Y_T2&&F72B_Y_T1+F72B_Y_T2<cPPAC_Tsum_up[23])){
-      F72_Y = F72B_Y;
-    }else{
-      //BG_flag = 2;
-    }
-    
-    
-    F3X = (F31_X + F32_X)/2.;
-    F3Y = (F31_Y + F32_Y)/2.;
     if(F31_X!=F32_X) F3A = 1000.*TMath::ATan((F31_X-F32_X)/DistF3PPAC);
     F3B = 1000.*TMath::ATan((F31_Y-F32_Y)/DistF3PPAC);
    
-    F5X = (F51_X + F52_X)/2.;
-    F5Y = (F51_Y + F52_Y)/2.;
     F5A = 1000.*TMath::ATan((F51_X-F52_X)/DistF5PPAC);
     F5B = 1000.*TMath::ATan((F51_Y-F52_Y)/DistF5PPAC);
     
-    F7X = (F71_X + F72_X)/2.;
-    F7Y = (F71_Y + F72_Y)/2.;
     F7A = 1000.*TMath::ATan((F71_X-F72_X)/DistF7PPAC);
     F7B = 1000.*TMath::ATan((F71_Y-F72_Y)/DistF7PPAC);
 
@@ -958,9 +819,9 @@ int main(int argc, char *argv[]){
     aoqBR = reco2aoq57 + 0.0000001*F5X*F5X -0.00001*F5X;
 
     //===== Cut by graphical cut ==========================================================
-    if(!cF3pla->IsInside(F3_TR-F3_TL,log(F3_QL/F3_QR))) BG_flag = 1;
-    if(!cF5pla->IsInside(F5_TR-F5_TL,log(F5_QL/F5_QR))) BG_flag = 1;
-    if(!cF7pla->IsInside(F7_TR-F7_TL,log(F7_QL/F7_QR))) BG_flag = 1;
+    //if(!cF3pla->IsInside(F3_TR-F3_TL,log(F3_QL/F3_QR))) BG_flag = 1;
+    //if(!cF5pla->IsInside(F5_TR-F5_TL,log(F5_QL/F5_QR))) BG_flag = 1;
+    //if(!cF7pla->IsInside(F7_TR-F7_TL,log(F7_QL/F7_QR))) BG_flag = 1;
     //if(!cF5Qchange->IsInside(aoqF3F5/aoqF5F7,zetBR)) BG_flag = 4; after finalizing the PID
     //if(cBR56Ca->IsInside(aoqBR,zetBR)) BR56Ca = 1;
     //if(cBR53Ca->IsInside(aoqBR,zetBR)) BR53Ca = 1;
