@@ -616,30 +616,30 @@ int main(int argc, char *argv[]){
     */
 
     // ===== TSum gate =====
-    tsum_f31ax = F31A_X_T1 + F31A_X_T2;
-    tsum_f31bx = F31B_X_T1 + F31B_X_T2;
-    tsum_f32ax = F32A_X_T1 + F32A_X_T2;
-    tsum_f32bx = F32B_X_T1 + F32B_X_T2;
-    tsum_f31ay = F31A_Y_T1 + F31A_Y_T2;
-    tsum_f31by = F31B_Y_T1 + F31B_Y_T2;
-    tsum_f32ay = F32A_Y_T1 + F32A_Y_T2;
-    tsum_f32by = F32B_Y_T1 + F32B_Y_T2;
-    tsum_f51ax = F51A_X_T1 + F51A_X_T2;
-    tsum_f51bx = F51B_X_T1 + F51B_X_T2;
-    tsum_f52ax = F52A_X_T1 + F52A_X_T2;
-    tsum_f52bx = F52B_X_T1 + F52B_X_T2;
-    tsum_f51ay = F51A_Y_T1 + F51A_Y_T2;
-    tsum_f51by = F51B_Y_T1 + F51B_Y_T2;
-    tsum_f52ay = F52A_Y_T1 + F52A_Y_T2;
-    tsum_f52by = F52B_Y_T1 + F52B_Y_T2;
-    tsum_f71ax = F71A_X_T1 + F71A_X_T2;
-    tsum_f71bx = F71B_X_T1 + F71B_X_T2;
-    tsum_f72ax = F72A_X_T1 + F72A_X_T2;
-    tsum_f72bx = F72B_X_T1 + F72B_X_T2;
-    tsum_f71ay = F71A_Y_T1 + F71A_Y_T2;
-    tsum_f71by = F71B_Y_T1 + F71B_Y_T2;
-    tsum_f72ay = F72A_Y_T1 + F72A_Y_T2;
-    tsum_f72by = F72B_Y_T1 + F72B_Y_T2;
+    tsum_f31ax = ppacF31A_X_T1 + ppacF31A_X_T2;
+    tsum_f31bx = ppacF31B_X_T1 + ppacF31B_X_T2;
+    tsum_f32ax = ppacF32A_X_T1 + ppacF32A_X_T2;
+    tsum_f32bx = ppacF32B_X_T1 + ppacF32B_X_T2;
+    tsum_f31ay = ppacF31A_Y_T1 + ppacF31A_Y_T2;
+    tsum_f31by = ppacF31B_Y_T1 + ppacF31B_Y_T2;
+    tsum_f32ay = ppacF32A_Y_T1 + ppacF32A_Y_T2;
+    tsum_f32by = ppacF32B_Y_T1 + ppacF32B_Y_T2;
+    tsum_f51ax = ppacF51A_X_T1 + ppacF51A_X_T2;
+    tsum_f51bx = ppacF51B_X_T1 + ppacF51B_X_T2;
+    tsum_f52ax = ppacF52A_X_T1 + ppacF52A_X_T2;
+    tsum_f52bx = ppacF52B_X_T1 + ppacF52B_X_T2;
+    tsum_f51ay = ppacF51A_Y_T1 + ppacF51A_Y_T2;
+    tsum_f51by = ppacF51B_Y_T1 + ppacF51B_Y_T2;
+    tsum_f52ay = ppacF52A_Y_T1 + ppacF52A_Y_T2;
+    tsum_f52by = ppacF52B_Y_T1 + ppacF52B_Y_T2;
+    tsum_f71ax = ppacF71A_X_T1 + ppacF71A_X_T2;
+    tsum_f71bx = ppacF71B_X_T1 + ppacF71B_X_T2;
+    tsum_f72ax = ppacF72A_X_T1 + ppacF72A_X_T2;
+    tsum_f72bx = ppacF72B_X_T1 + ppacF72B_X_T2;
+    tsum_f71ay = ppacF71A_Y_T1 + ppacF71A_Y_T2;
+    tsum_f71by = ppacF71B_Y_T1 + ppacF71B_Y_T2;
+    tsum_f72ay = ppacF72A_Y_T1 + ppacF72A_Y_T2;
+    tsum_f72by = ppacF72B_Y_T1 + ppacF72B_Y_T2;
     
     bitset<4> f3x(0), f3y(0), f5x(0), f5y(0), f7x(0), f7y(0); // bit[2B 2A 1B 1A];
     if(cppac_low[0]  < tsum_f31ax && tsum_f31ax < cppac_up[0])  f3x.set(0);
@@ -667,6 +667,119 @@ int main(int argc, char *argv[]){
     if(cppac_low[22] < tsum_f72ay && tsum_f72ay < cppac_up[22]) f7y.set(2);
     if(cppac_low[23] < tsum_f72by && tsum_f72by < cppac_up[23]) f7y.set(3);
 
+    //=== F31 X ===
+    if(f3x[0]&f3x[1]) F31_X = (ppacF31A_X + ppacF31B_X)/2.;
+    else if(f3x[0])   F31_X = ppacF31A_X;
+    else if(f3x[1])   F31_X = ppacF31B_X;
+    else{             F31_X = pla3pos[1]*plaF3_dT + pla3pos[0];
+      //BG_flag;
+    }
+
+    //=== F32 X ===
+    if(f3x[2]&f3x[3]) F32_X = (ppacF32A_X + ppacF32B_X)/2.;
+    else if(f3x[2])   F32_X = ppacF32A_X;
+    else if(f3x[3])   F32_X = ppacF32B_X;
+    else{             F32_X = pla3pos[1]*plaF3_dT + pla3pos[0];
+      //BG_flag;
+    }
+
+    //=== F3 X ===
+    F3X = (F31_X + F32_X)/2.;
+
+    //=== F31 Y ===
+    if(f3y[0]&f3y[1]) F31_Y = (ppacF31A_Y + ppacF31B_Y)/2.;
+    else if(f3y[0])   F31_Y = ppacF31A_Y;
+    else if(f3y[1])   F31_Y = ppacF31B_Y;
+    else{             
+      //BG_flag;
+    }
+
+    //=== F32 Y ===
+    if(f3y[2]&f3y[3]) F32_Y = (ppacF32A_Y + ppacF32B_Y)/2.;
+    else if(f3y[2])   F32_Y = ppacF32A_Y;
+    else if(f3y[3])   F32_Y = ppacF32B_Y;
+    else{             F32_Y = pla3pos[1]*plaF3_dT + pla3pos[0];
+      //BG_flag;
+    }
+
+    //=== F3 Y ===
+    F3Y = (F31_Y + F32_Y)/2.;
+
+    //=== F51 X ===
+    if(f5x[0]&f5x[1]) F51_X = (ppacF51A_X + ppacF51B_X)/2.;
+    else if(f5x[0])   F51_X = ppacF51A_X;
+    else if(f5x[1])   F51_X = ppacF51B_X;
+    else{             F51_X = pla5pos[1]*plaF5_dT + pla5pos[0];
+      //BG_flag;
+    }
+
+    //=== F52 X ===
+    if(f5x[2]&f5x[3]) F52_X = (ppacF52A_X + ppacF52B_X)/2.;
+    else if(f5x[2])   F52_X = ppacF52A_X;
+    else if(f5x[3])   F52_X = ppacF52B_X;
+    else{             
+      //BG_flag;
+    }
+
+    //=== F5 X ===
+    F5X = (F51_X + F52_X)/2.;
+
+    //=== F51 Y ===
+    if(f5y[0]&f5y[1]) F51_Y = (ppacF51A_Y + ppacF51B_Y)/2.;
+    else if(f5y[0])   F51_Y = ppacF51A_Y;
+    else if(f5y[1])   F51_Y = ppacF51B_Y;
+    else{             
+      //BG_flag;
+    }
+
+    //=== F52 Y ===
+    if(f5y[2]&f5y[3]) F52_Y = (ppacF52A_Y + ppacF52B_Y)/2.;
+    else if(f5y[2])   F52_Y = ppacF52A_Y;
+    else if(f5y[3])   F52_Y = ppacF52B_Y;
+    else{             
+      //BG_flag;
+    }
+
+    //=== F5 Y ===
+    F5Y = (F51_Y + F52_Y)/2.;
+
+    //=== F71 X ===
+    if(f7x[0]&f7x[1]) F71_X = (ppacF71A_X + ppacF71B_X)/2.;
+    else if(f7x[0])   F71_X = ppacF71A_X;
+    else if(f7x[1])   F71_X = ppacF71B_X;
+    else{             F71_X = pla7pos[1]*plaF7_dT + pla7pos[0];
+      //BG_flag;
+    }
+
+    //=== F72 X ===
+    if(f7x[2]&f7x[3]) F72_X = (ppacF72A_X + ppacF72B_X)/2.;
+    else if(f7x[2])   F72_X = ppacF72A_X;
+    else if(f7x[3])   F72_X = ppacF72B_X;
+    else{             
+      //BG_flag;
+    }
+
+    //=== F7 X ===
+    F7X = (F71_X + F72_X)/2.;
+
+    //=== F71 Y ===
+    if(f7y[0]&f7y[1]) F71_Y = (ppacF71A_Y + ppacF71B_Y)/2.;
+    else if(f7y[0])   F71_Y = ppacF71A_Y;
+    else if(f7y[1])   F71_Y = ppacF71B_Y;
+    else{             
+      //BG_flag;
+    }
+
+    //=== F72 Y ===
+    if(f7y[2]&f7y[3]) F72_Y = (ppacF72A_Y + ppacF72B_Y)/2.;
+    else if(f7y[2])   F72_Y = ppacF72A_Y;
+    else if(f7y[3])   F72_Y = ppacF72B_Y;
+    else{             
+      //BG_flag;
+    }
+
+    //=== F7 Y ===
+    F7Y = (F71_Y + F72_Y)/2.;
     
 
 
