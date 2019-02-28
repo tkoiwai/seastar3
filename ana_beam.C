@@ -853,11 +853,11 @@ int main(int argc, char *argv[]){
       plaflag[2] = kFALSE;
     }
 
-    if(cIC_low[0] < icF7_raw[0]-icF7_raw[1] && icF7_raw[0]-icF7_raw[1] < cIC_up[0]) icflag = kFALSE;
-    if(cIC_low[1] < icF7_raw[1]-icF7_raw[2] && icF7_raw[1]-icF7_raw[2] < cIC_up[1]) icflag = kFALSE;
-    if(cIC_low[2] < icF7_raw[2]-icF7_raw[3] && icF7_raw[2]-icF7_raw[3] < cIC_up[2]) icflag = kFALSE;
-    if(cIC_low[3] < icF7_raw[3]-icF7_raw[4] && icF7_raw[3]-icF7_raw[4] < cIC_up[3]) icflag = kFALSE;
-    if(cIC_low[4] < icF7_raw[4]-icF7_raw[5] && icF7_raw[4]-icF7_raw[5] < cIC_up[4]) icflag = kFALSE;
+    if(cIC_low[0] > icF7_raw[0]-icF7_raw[1] || icF7_raw[0]-icF7_raw[1] > cIC_up[0]) icflag = kFALSE;
+    if(cIC_low[1] > icF7_raw[1]-icF7_raw[2] || icF7_raw[1]-icF7_raw[2] > cIC_up[1]) icflag = kFALSE;
+    if(cIC_low[2] > icF7_raw[2]-icF7_raw[3] || icF7_raw[2]-icF7_raw[3] > cIC_up[2]) icflag = kFALSE;
+    if(cIC_low[3] > icF7_raw[3]-icF7_raw[4] || icF7_raw[3]-icF7_raw[4] > cIC_up[3]) icflag = kFALSE;
+    if(cIC_low[4] > icF7_raw[4]-icF7_raw[5] || icF7_raw[4]-icF7_raw[5] > cIC_up[4]) icflag = kFALSE;
 
 
 
