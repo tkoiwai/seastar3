@@ -352,7 +352,7 @@ int main(int argc, char *argv[]){
   Double_t betaF3F7, betaF3F5, betaF5F7, betaF7F13, betaF3F13;
   Double_t gammaF3F7, gammaF3F5, gammaF5F7, gammaF7F13, gammaF3F13;
   Double_t zetBRraw;
-  Double_t zetBR, zetBR313;
+  Double_t zetBR, zetBR313, zetBR37;
 
   Int_t tsum_f31ax, tsum_f31bx, tsum_f32ax, tsum_f32bx;
   Int_t tsum_f31ay, tsum_f31by, tsum_f32ay, tsum_f32by;
@@ -419,6 +419,7 @@ int main(int argc, char *argv[]){
   anatrB->Branch("zetBRraw",&zetBRraw);
   anatrB->Branch("zetBR",&zetBR);
   anatrB->Branch("zetBR313",&zetBR313);
+  anatrB->Branch("zetBR37",&zetBR37);
  
   anatrB->Branch("F3X",&F3X);
   anatrB->Branch("F3Y",&F3Y);
@@ -467,8 +468,8 @@ int main(int argc, char *argv[]){
   cout << "Start conversion." << endl;
   
   int nEntry = caltr->GetEntries();
-  //for(int iEntry=0;iEntry<nEntry;++iEntry){
-    for(int iEntry=0;iEntry<20;++iEntry){
+  for(int iEntry=0;iEntry<nEntry;++iEntry){
+    //for(int iEntry=0;iEntry<20;++iEntry){
     caltr->GetEntry(iEntry);
 
     if(iEntry%100 == 0){
@@ -590,12 +591,9 @@ int main(int argc, char *argv[]){
     reco1brhoF5F7 = TMath::Sqrt(-1);
     reco2brhoF5F7 = TMath::Sqrt(-1);
 
+    
+
     //=== Calculation ===
-    //tofF3F7 = F7_Time - F3_Time + OffsetF3F7;
-    //tofF3F5 = F5_Time - F3_Time + OffsetF3F5;
-    //tofF5F7 = F7_Time - F5_Time + OffsetF5F7;
-    //tofF7F13 = SBT1_Time - F7_Time + OffsetF7F13;
-    //tofF3F13 = SBT1_Time - F3_Time + OffsetF3F13;
     tofF3F7 = plaF7_T - plaF3_T + OffsetF3F7;    
     tofF3F5 = plaF5_T - plaF3_T + OffsetF3F5;    
     tofF5F7 = plaF7_T - plaF5_T + OffsetF5F7;    
@@ -606,7 +604,6 @@ int main(int argc, char *argv[]){
     vF5F7 = DistF5F7/tofF5F7;
     vF7F13 = DistF7F13/tofF7F13;
     vF3F13 = DistF3F13/tofF3F13;
-
     betaF3F7 = vF3F7/clight;
     betaF3F5 = vF3F5/clight;
     betaF5F7 = vF5F7/clight;
@@ -617,10 +614,13 @@ int main(int argc, char *argv[]){
     gammaF5F7 = 1/TMath::Sqrt(1.-betaF5F7*betaF5F7);
     gammaF7F13 = 1/TMath::Sqrt(1.-betaF7F13*betaF7F13);
     gammaF3F13 = 1/TMath::Sqrt(1.-betaF3F13*betaF3F13);
-
+    
+    double dev37  = TMath::Log(2*m_e*vF3F7*vF3F7/Ionpair)-TMath::Log(1-betaF3F7*betaF3F7)-betaF3F7*betaF3F7;
+    double dev313 = TMath::Log(2*m_e*vF3F13*vF3F13/Ionpair)-TMath::Log(1-betaF3F13*betaF3F13)-betaF3F13*betaF3F13;
     zetBRraw = vF7F13 * TMath::Sqrt(icF7_E/(TMath::Log(2*m_e*vF7F13*vF7F13/Ionpair)-TMath::Log(1-betaF7F13*betaF7F13)-betaF7F13*betaF7F13));
 
-    zetBR313 = vF3F13 * TMath::Sqrt(icF7_E/(TMath::Log(2*m_e*vF3F13*vF3F13/Ionpair)-TMath::Log(1-betaF3F13*betaF3F13)-betaF3F13*betaF3F13));
+    zetBR37  = vF3F7  * TMath::Sqrt(icF7_E/dev37);
+    zetBR313 = vF3F13 * TMath::Sqrt(icF7_E/dev313);
     
     zetBR = zetBR_c1 * zetBRraw + zetBR_c0;
 
