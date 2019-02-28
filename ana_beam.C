@@ -32,7 +32,9 @@ int main(int argc, char *argv[]){
   time(&start);
 
   Int_t FileNumber = TString(argv[1]).Atoi();
-
+  cout << endl;
+  cout << "=== Execute ana_beam for RUN " << FileNumber << " ===" << endl;
+  cout << endl;
   //===== Load input file =================================================
 
   TString FileName = Form("/home/koiwai/analysis/rootfiles/unpacked/run%04d.root",FileNumber);
@@ -274,22 +276,22 @@ int main(int argc, char *argv[]){
   TTree *anatrB = new TTree("anatrB","anatrB");
 
   //===== Declear const.s =================================================
-  double pla3pos[2];
-  double pla7pos[2];
+  //double pla3pos[2];
+  //double pla7pos[2];
   //double pla7z[3];
-  double pla3q2e[2];
-  double pla7q2e[2];
-  double pla13_1q2e[2];
-  double pla13_2q2e[2];
-  for(Int_t i=0;i<2;++i){
-    pla3pos[i] = env_pla->GetValue(Form("pla3pos%d",i),0.0);
-    pla7pos[i] = env_pla->GetValue(Form("pla7pos%d",i),0.0);
+  //double pla3q2e[2];
+  //double pla7q2e[2];
+  //double pla13_1q2e[2];
+  //double pla13_2q2e[2];
+  //for(Int_t i=0;i<2;++i){
+    //pla3pos[i] = env_pla->GetValue(Form("pla3pos%d",i),0.0);
+    //pla7pos[i] = env_pla->GetValue(Form("pla7pos%d",i),0.0);
     //pla7z[i] = env_pla->GetValue(Form("pla7Z[%d]",i),0.0);
-    pla3q2e[i]    = env_q->GetValue(Form("pla3q2e%d",i),0.0);
-    pla7q2e[i]    = env_q->GetValue(Form("pla7q2e%d",i),0.0);
-    pla13_1q2e[i] = env_q->GetValue(Form("pla13_1q2e%d",i),0.0);
-    pla13_2q2e[i] = env_q->GetValue(Form("pla13_2q2e%d",i),0.0);
-  }
+    //pla3q2e[i]    = env_q->GetValue(Form("pla3q2e%d",i),0.0);
+    //pla7q2e[i]    = env_q->GetValue(Form("pla7q2e%d",i),0.0);
+    //pla13_1q2e[i] = env_q->GetValue(Form("pla13_1q2e%d",i),0.0);
+    //pla13_2q2e[i] = env_q->GetValue(Form("pla13_2q2e%d",i),0.0);
+  //}
 
   double DistF3F7 = 46568.; //[mm]
   double DistF3F5 = 23284.;
@@ -378,7 +380,10 @@ int main(int argc, char *argv[]){
   Double_t reco1deltaF5F7, reco2deltaF5F7, reco1brhoF5F7, reco2brhoF5F7;
   Double_t reco1aoq57, reco2aoq57;
   
-  Int_t BG_flag; //flag for background
+  Bool_t BG_flag; //flag for background
+  Bool_t plaflag[3], ppacflag[3];
+  Bool_t icflag;
+  
   Int_t f71flag, f72flag;
 
   bitset<4> f3x(0), f3y(0), f5x(0), f5y(0), f7x(0), f7y(0); // bit[2B 2A 1B 1A];
@@ -444,14 +449,20 @@ int main(int argc, char *argv[]){
   anatrB->Branch("reco1aoq57",&reco1aoq57);
   anatrB->Branch("reco2aoq57",&reco2aoq57);
   
-  anatrB->Branch("BG_flag",&BG_flag);
+  anatrB->Branch("BG_flag",&BG_flag,"BG_flag/O");
+  anatrB->Branch("plaflag",plaflag,"plaflag[3]/O");
+  anatrB->Branch("ppacflag",ppacflag,"ppacflag[3]/O");
+  anatrB->Branch("icflag",&icflag,"icflag/O");
+  
   anatrB->Branch("f71flag",&f71flag);
   anatrB->Branch("f72flag",&f72flag);
 
   infile->cd();
 
-
  //===== Begin LOOP ======================================================
+
+  cout << "Start conversion." << endl;
+  
   int nEntry = caltr->GetEntries();
   for(int iEntry=0;iEntry<nEntry;++iEntry){
     //for(int iEntry=0;iEntry<20;++iEntry){
@@ -465,7 +476,13 @@ int main(int argc, char *argv[]){
     RunNum = RunNumber;
     
     //=== Initialization ===
-    BG_flag = 0;
+    BG_flag = kTRUE;
+    for(int flag_index=0;flag_index<3;flag_index++){
+      plaflag[flag_index] = kTRUE;
+      ppacflag[flag_index] = kTRUE;
+    }
+    icflag = kTRUE;
+    
     f71flag = 0;
     f72flag = 0;
     //BR56Ca = 0;
@@ -677,22 +694,21 @@ int main(int argc, char *argv[]){
     if(cppac_low[23] < tsum_f72by && tsum_f72by < cppac_up[23]) f7y.set(3);
 
 
-
     //=== F31 X ===
     if(f3x[0]&f3x[1]) F31_X = (ppacF31A_X + ppacF31B_X)/2.;
     else if(f3x[0])   F31_X = ppacF31A_X;
     else if(f3x[1])   F31_X = ppacF31B_X;
-    //else{             //F31_X = pla3pos[1]*plaF3_dT + pla3pos[0];
-      //BG_flag;
-    //}
+    else{             //F31_X = pla3pos[1]*plaF3_dT + pla3pos[0];
+                      ppacflag[0] = kFALSE;
+    }
 
     //=== F32 X ===
     if(f3x[2]&f3x[3]) F32_X = (ppacF32A_X + ppacF32B_X)/2.;
     else if(f3x[2])   F32_X = ppacF32A_X;
     else if(f3x[3])   F32_X = ppacF32B_X;
-    //else{             F32_X = pla3pos[1]*plaF3_dT + pla3pos[0];
-        //BG_flag;
-    //}
+    else{             //F32_X = pla3pos[1]*plaF3_dT + pla3pos[0];
+                      ppacflag[0] = kFALSE;
+    }
 
     //=== F3 X ===
     F3X = (F31_X + F32_X)/2.;
@@ -701,17 +717,11 @@ int main(int argc, char *argv[]){
     if(f3y[0]&f3y[1]) F31_Y = (ppacF31A_Y + ppacF31B_Y)/2.;
     else if(f3y[0])   F31_Y = ppacF31A_Y;
     else if(f3y[1])   F31_Y = ppacF31B_Y;
-    //else{             
-      //BG_flag;
-    //}
-
+    
     //=== F32 Y ===
     if(f3y[2]&f3y[3]) F32_Y = (ppacF32A_Y + ppacF32B_Y)/2.;
     else if(f3y[2])   F32_Y = ppacF32A_Y;
     else if(f3y[3])   F32_Y = ppacF32B_Y;
-    //else{             //F32_Y = pla3pos[1]*plaF3_dT + pla3pos[0];
-      //BG_flag;
-    //}
 
     //=== F3 Y ===
     F3Y = (F31_Y + F32_Y)/2.;
@@ -720,17 +730,13 @@ int main(int argc, char *argv[]){
     if(f5x[0]&f5x[1]) F51_X = (ppacF51A_X + ppacF51B_X)/2.;
     else if(f5x[0])   F51_X = ppacF51A_X;
     else if(f5x[1])   F51_X = ppacF51B_X;
-    //else{             
-      //BG_flag;
-    //}
+    else              ppacflag[1] = kFALSE;
 
     //=== F52 X ===
     if(f5x[2]&f5x[3]) F52_X = (ppacF52A_X + ppacF52B_X)/2.;
     else if(f5x[2])   F52_X = ppacF52A_X;
     else if(f5x[3])   F52_X = ppacF52B_X;
-    //else{             
-      //BG_flag;
-    //}
+    else              ppacflag[1] = kFALSE;
 
     //=== F5 X ===
     F5X = (F51_X + F52_X)/2.;
@@ -739,18 +745,12 @@ int main(int argc, char *argv[]){
     if(f5y[0]&f5y[1]) F51_Y = (ppacF51A_Y + ppacF51B_Y)/2.;
     else if(f5y[0])   F51_Y = ppacF51A_Y;
     else if(f5y[1])   F51_Y = ppacF51B_Y;
-    //else{             
-      //BG_flag;
-    //}
 
     //=== F52 Y ===
     if(f5y[2]&f5y[3]) F52_Y = (ppacF52A_Y + ppacF52B_Y)/2.;
     else if(f5y[2])   F52_Y = ppacF52A_Y;
     else if(f5y[3])   F52_Y = ppacF52B_Y;
-    //else{             
-      //BG_flag;
-    //}
-
+    
     //=== F5 Y ===
     F5Y = (F51_Y + F52_Y)/2.;
 
@@ -759,7 +759,7 @@ int main(int argc, char *argv[]){
     else if(f7x[0])   F71_X = ppacF71A_X;
     else if(f7x[1])   F71_X = ppacF71B_X;
     else{             //F71_X = pla7pos[1]*plaF7_dT + pla7pos[0];
-      //BG_flag;
+      ppacflag[2] = kFALSE;
     }
 
     //=== F72 X ===
@@ -767,7 +767,7 @@ int main(int argc, char *argv[]){
     else if(f7x[2])   F72_X = ppacF72A_X;
     else if(f7x[3])   F72_X = ppacF72B_X;
     else{             //F71_X = pla7pos[1]*plaF7_dT + pla7pos[0];
-      //BG_flag;
+      ppacflag[2] = kFALSE;
     }
 
     //=== F7 X ===
@@ -777,18 +777,12 @@ int main(int argc, char *argv[]){
     if(f7y[0]&f7y[1]) F71_Y = (ppacF71A_Y + ppacF71B_Y)/2.;
     else if(f7y[0])   F71_Y = ppacF71A_Y;
     else if(f7y[1])   F71_Y = ppacF71B_Y;
-    //else{             
-      //BG_flag;
-    //}
 
     //=== F72 Y ===
     if(f7y[2]&f7y[3]) F72_Y = (ppacF72A_Y + ppacF72B_Y)/2.;
     else if(f7y[2])   F72_Y = ppacF72A_Y;
     else if(f7y[3])   F72_Y = ppacF72B_Y;
-    //else{             
-      //BG_flag;
-    //}
-
+ 
     //=== F7 Y ===
     F7Y = (F71_Y + F72_Y)/2.;
     
@@ -845,6 +839,30 @@ int main(int argc, char *argv[]){
     //if(cBR53Ca->IsInside(aoqBR,zetBR)) BR53Ca = 1;
     //if(cBR51K->IsInside(aoqBR,zetBR))  BR51K  = 1;
     //if(cBR56Sc->IsInside(aoqBR,zetBR)) BR56Sc = 1;
+    
+    if(!cplaF3->IsInside(plaF3_TR-plaF3_TL,log(plaF3_QL/plaF3_QR))){
+      BG_flag = kFALSE;
+      plaflag[0] = kFALSE;
+    }
+    if(!cplaF5->IsInside(plaF5_TR-plaF5_TL,log(plaF5_QL/plaF5_QR))){
+      BG_flag = kFALSE;
+      plaflag[1] = kFALSE;
+    }
+    if(!cplaF7->IsInside(plaF7_TR-plaF7_TL,log(plaF7_QL/plaF7_QR))){
+      BG_flag = kFALSE;
+      plaflag[2] = kFALSE;
+    }
+
+    if(cIC_low[0] < icF7_raw[0]-icF7_raw[1] && icF7_raw[0]-icF7_raw[1] < cIC_up[0]) icflag = kFALSE;
+    if(cIC_low[1] < icF7_raw[1]-icF7_raw[2] && icF7_raw[1]-icF7_raw[2] < cIC_up[1]) icflag = kFALSE;
+    if(cIC_low[2] < icF7_raw[2]-icF7_raw[3] && icF7_raw[2]-icF7_raw[3] < cIC_up[2]) icflag = kFALSE;
+    if(cIC_low[3] < icF7_raw[3]-icF7_raw[4] && icF7_raw[3]-icF7_raw[4] < cIC_up[3]) icflag = kFALSE;
+    if(cIC_low[4] < icF7_raw[4]-icF7_raw[5] && icF7_raw[4]-icF7_raw[5] < cIC_up[4]) icflag = kFALSE;
+
+
+
+
+    
   
     anatrB->Fill();
   }
@@ -854,6 +872,10 @@ int main(int argc, char *argv[]){
 
   time(&stop);
   printf("Elapsed time: %.1f seconds\n",difftime(stop,start));
+
+  cout << nEntry/1000 << " events treated." << endl;
+  cout << "Conversion Finished!" << endl;
+  cout << endl;
   
   return 0;
 }
