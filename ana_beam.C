@@ -594,33 +594,34 @@ int main(int argc, char *argv[]){
     
 
     //=== Calculation ===
-    tofF3F7 = plaF7_T - plaF3_T + OffsetF3F7;    
-    tofF3F5 = plaF5_T - plaF3_T + OffsetF3F5;    
-    tofF5F7 = plaF7_T - plaF5_T + OffsetF5F7;    
-    tofF7F13 = sbt1_T - plaF7_T + OffsetF7F13;
-    tofF3F13 = sbt1_T - plaF3_T + OffsetF3F13;
-    vF3F7 = DistF3F7/tofF3F7;
-    vF3F5 = DistF3F5/tofF3F5;
-    vF5F7 = DistF5F7/tofF5F7;
-    vF7F13 = DistF7F13/tofF7F13;
-    vF3F13 = DistF3F13/tofF3F13;
-    betaF3F7 = vF3F7/clight;
-    betaF3F5 = vF3F5/clight;
-    betaF5F7 = vF5F7/clight;
-    betaF7F13 = vF7F13/clight;
-    betaF3F13 = vF3F13/clight;
-    gammaF3F7 = 1/TMath::Sqrt(1.-betaF3F7*betaF3F7);
-    gammaF3F5 = 1/TMath::Sqrt(1.-betaF3F5*betaF3F5);
-    gammaF5F7 = 1/TMath::Sqrt(1.-betaF5F7*betaF5F7);
+    tofF3F7    = plaF7_T - plaF3_T + OffsetF3F7;    
+    tofF3F5    = plaF5_T - plaF3_T + OffsetF3F5;    
+    tofF5F7    = plaF7_T - plaF5_T + OffsetF5F7;    
+    tofF7F13   = sbt1_T  - plaF7_T + OffsetF7F13;
+    tofF3F13   = sbt1_T  - plaF3_T + OffsetF3F13;
+    vF3F7      = DistF3F7/tofF3F7;
+    vF3F5      = DistF3F5/tofF3F5;
+    vF5F7      = DistF5F7/tofF5F7;
+    vF7F13     = DistF7F13/tofF7F13;
+    vF3F13     = DistF3F13/tofF3F13;
+    betaF3F7   = vF3F7/clight;
+    betaF3F5   = vF3F5/clight;
+    betaF5F7   = vF5F7/clight;
+    betaF7F13  = vF7F13/clight;
+    betaF3F13  = vF3F13/clight;
+    gammaF3F7  = 1/TMath::Sqrt(1.-betaF3F7*betaF3F7);
+    gammaF3F5  = 1/TMath::Sqrt(1.-betaF3F5*betaF3F5);
+    gammaF5F7  = 1/TMath::Sqrt(1.-betaF5F7*betaF5F7);
     gammaF7F13 = 1/TMath::Sqrt(1.-betaF7F13*betaF7F13);
     gammaF3F13 = 1/TMath::Sqrt(1.-betaF3F13*betaF3F13);
     
     double dev37  = TMath::Log(2*m_e*vF3F7*vF3F7/Ionpair)-TMath::Log(1-betaF3F7*betaF3F7)-betaF3F7*betaF3F7;
     double dev313 = TMath::Log(2*m_e*vF3F13*vF3F13/Ionpair)-TMath::Log(1-betaF3F13*betaF3F13)-betaF3F13*betaF3F13;
-    zetBRraw = vF7F13 * TMath::Sqrt(icF7_E/(TMath::Log(2*m_e*vF7F13*vF7F13/Ionpair)-TMath::Log(1-betaF7F13*betaF7F13)-betaF7F13*betaF7F13));
 
     zetBR37  = vF3F7  * TMath::Sqrt(icF7_E/dev37);
     zetBR313 = vF3F13 * TMath::Sqrt(icF7_E/dev313);
+
+    zetBRraw = zetBR313;
     
     zetBR = zetBR_c1 * zetBRraw + zetBR_c0;
 
@@ -664,10 +665,7 @@ int main(int argc, char *argv[]){
     tsum_f72ay = ppacF72A_Y_T1 + ppacF72A_Y_T2;
     tsum_f72by = ppacF72B_Y_T1 + ppacF72B_Y_T2;
     
-    //    bitset<4> f3x(0), f3y(0), f5x(0), f5y(0), f7x(0), f7y(0); // bit[2B 2A 1B 1A];
-    if(cppac_low[0]  < tsum_f31ax && tsum_f31ax < cppac_up[0]){
-      f3x.set(0);
-    }
+    if(cppac_low[0]  < tsum_f31ax && tsum_f31ax < cppac_up[0])  f3x.set(0);
     if(cppac_low[1]  < tsum_f31bx && tsum_f31bx < cppac_up[1])  f3x.set(1);
     if(cppac_low[2]  < tsum_f32ax && tsum_f32ax < cppac_up[2])  f3x.set(2);
     if(cppac_low[3]  < tsum_f32bx && tsum_f32bx < cppac_up[3])  f3x.set(3);
