@@ -32,9 +32,7 @@ int main(int argc, char *argv[]){
   time(&start);
 
   Int_t FileNumber = TString(argv[1]).Atoi();
-  cout << endl;
-  cout << "=== Execute ana_beam for RUN " << FileNumber << " ===" << endl;
-  cout << endl;
+  printf("\n%s %d %s\n\n","=== Execute ana_beam for RUN",FileNumber," ===" );
   //===== Load input file =================================================
 
   TString FileName = Form("/home/koiwai/analysis/rootfiles/unpacked/run%04d.root",FileNumber);
@@ -42,6 +40,13 @@ int main(int argc, char *argv[]){
   
   TTree *caltr;
   infile->GetObject("caltr",caltr);
+
+  printf("%-20s %s \n","Input data file:",FileName.Data());
+
+
+  //=== Load Env file ===
+  TEnv *env_set = new TEnv("/home/koiwai/analysis/conversion_settings.prm");
+  printf("%-20s %s \n","Setting file:","/home/koiwai/analysis/conversion_settings.prm");
 
   
   //===== in tree variables ===============================================
@@ -212,12 +217,12 @@ int main(int argc, char *argv[]){
 
   caltr->SetBranchAddress("sbt1_Tslew",&sbt1_Tslew);
   caltr->SetBranchAddress("sbt2_Tslew",&sbt2_Tslew);    
-  //caltr->SetBranchAddress("sbt1_dTslew",&sbt1_dTslew);
-  //caltr->SetBranchAddress("sbt2_dTslew",&sbt2_dTslew);
-  
+    
   //===== Load CUT files ==================================================
   //=== Plastic (graphical cut)===
-  TFile *fcutpla = TFile::Open("/home/koiwai/analysis/cutfiles/placuts.root");
+  TString placutfilename = env_set->GetValue("placut","");
+  TFile *fcutpla = TFile::Open(placutfilename);
+  printf("%-20s %-25s \n","Cut file for Pla:",placutfilename.Data());
   TCutG *cplaF3 = (TCutG*)fcutpla->Get("CPLAF3");
   TCutG *cplaF5 = (TCutG*)fcutpla->Get("CPLAF5");
   TCutG *cplaF7 = (TCutG*)fcutpla->Get("CPLAF7");
@@ -229,43 +234,39 @@ int main(int argc, char *argv[]){
   */
   
   //=== PPAC Tsum gate ===
-  ifstream fin;
-  //fin.open("/home/koiwai/analysis/cutfiles/ppaccuts.dat");
-  fin.open("/home/koiwai/analysis/cutfiles/cut_PPAC_Tsum.dat");
-  if(fin.fail()){
+  TString ppaccutfilename = env_set->GetValue("ppaccut","");
+  ifstream finppac;
+  finppac.open(ppaccutfilename);
+  printf("%-20s %-25s \n","Cut file for PPAC:",ppaccutfilename.Data());
+  if(finppac.fail()){
     cout << "Error: file is not found." << endl;
     return 1;
   }
-
-  string dummy[24];
+  string dummyppac[24];
   Double_t cppac_low[24], cppac_up[24];
   
-  for(Int_t cPPAC_index = 0;cPPAC_index<24;++cPPAC_index){
-    //fin >> dummy[cPPAC_index] >> cppac_low[cPPAC_index] >> cppac_up[cPPAC_index];
-    fin >> cppac_low[cPPAC_index] >> cppac_up[cPPAC_index];
-  }
-
-
+  for(Int_t cPPAC_index = 0;cPPAC_index<24;++cPPAC_index)
+    finppac >> dummyppac[cPPAC_index] >> cppac_low[cPPAC_index] >> cppac_up[cPPAC_index];
 
   //=== IC gate ===
+  TString iccutfilename = env_set->GetValue("iccut","");
   ifstream finic;
-  finic.open("/home/koiwai/analysis/cutfiles/ppaccuts.dat");
+  finic.open(iccutfilename);
+  printf("%-20s %-25s \n","Cut file for IC:",iccutfilename.Data());
   if(finic.fail()){
     cout << "Error: file is not found." << endl;
     return 1;
   }
 
-  string dummyic[5];
-  Int_t cIC_low[5], cIC_up[5];
+  Double_t cIC_low[5], cIC_up[5];
   
-  for(Int_t cIC_index = 0;cIC_index<5;++cIC_index){
-    fin >>  cIC_low[cIC_index] >> cIC_up[cIC_index];
-  }
+  for(Int_t cIC_index = 0;cIC_index<5;++cIC_index)
+    finic >> cIC_low[cIC_index] >> cIC_up[cIC_index];
 
   
   //===== Load .dat files =====
-  
-  TEnv *env = new TEnv("/home/koiwai/analysis/db/geometry_psp17.dat");
+  TEnv *env = new TEnv(env_set->GetValue("geometrydata",""));
+  printf("%-20s %s \n","Geometry file:",env_set->GetValue("geometrydata",""));
   TEnv *env_pla  = new TEnv("/home/koiwai/analysis/db/pla2pos_Z.dat");
   TEnv *env_q = new TEnv("/home/koiwai/analysis/db/plaQ2f7icE.dat");
   
@@ -274,6 +275,8 @@ int main(int argc, char *argv[]){
   TFile *anafile = new TFile(AnaFileName,"recreate");
 
   TTree *anatrB = new TTree("anatrB","anatrB");
+
+  printf("\n%-20s %s \n\n","Output file:",AnaFileName.Data());
 
   //===== Declear const.s =================================================
   //double pla3pos[2];
@@ -464,12 +467,12 @@ int main(int argc, char *argv[]){
   cout << "Start conversion." << endl;
   
   int nEntry = caltr->GetEntries();
-  for(int iEntry=0;iEntry<nEntry;++iEntry){
-    //for(int iEntry=0;iEntry<20;++iEntry){
+  //for(int iEntry=0;iEntry<nEntry;++iEntry){
+    for(int iEntry=0;iEntry<20;++iEntry){
     caltr->GetEntry(iEntry);
 
     if(iEntry%100 == 0){
-      std::clog << iEntry/1000 << "k events treated..." << "\r";
+      std::clog << iEntry/1000 << "k / " << nEntry/1000 << "k events treated..." << "\r";
     }
 
     EventNum = EventNumber;
@@ -485,10 +488,6 @@ int main(int argc, char *argv[]){
     
     f71flag = 0;
     f72flag = 0;
-    //BR56Ca = 0;
-    //BR53Ca = 0;
-    //BR51K  = 0;
-    //BR56Sc = 0;
     tofF3F7 = TMath::Sqrt(-1);
     tofF3F5 = TMath::Sqrt(-1);
     tofF5F7 = TMath::Sqrt(-1);
@@ -859,7 +858,7 @@ int main(int argc, char *argv[]){
     if(cIC_low[3] > icF7_raw[3]-icF7_raw[4] || icF7_raw[3]-icF7_raw[4] > cIC_up[3]) icflag = kFALSE;
     if(cIC_low[4] > icF7_raw[4]-icF7_raw[5] || icF7_raw[4]-icF7_raw[5] > cIC_up[4]) icflag = kFALSE;
 
-
+    if(!icflag) BG_flag = kFALSE;
 
 
     
@@ -873,7 +872,7 @@ int main(int argc, char *argv[]){
   time(&stop);
   printf("Elapsed time: %.1f seconds\n",difftime(stop,start));
 
-  cout << nEntry/1000 << " events treated." << endl;
+  cout << nEntry/1000 << "k events have been treated." << endl;
   cout << "Conversion Finished!" << endl;
   cout << endl;
   
