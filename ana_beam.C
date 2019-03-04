@@ -239,7 +239,8 @@ int main(int argc, char *argv[]){
   finppac.open(ppaccutfilename);
   printf("%-20s %-25s \n","Cut file for PPAC:",ppaccutfilename.Data());
   if(finppac.fail()){
-    cout << "Error: file is not found." << endl;
+    //cout << "Error: file is not found." << endl;
+    printf("Error: file %s is not found.\n",ppaccutfilename.Data());
     return 1;
   }
   string dummyppac[24];
@@ -254,7 +255,8 @@ int main(int argc, char *argv[]){
   finic.open(iccutfilename);
   printf("%-20s %-25s \n","Cut file for IC:",iccutfilename.Data());
   if(finic.fail()){
-    cout << "Error: file is not found." << endl;
+    //cout << "Error: file is not found." << endl;
+    printf("Error: file %s is not found.\n",iccutfilename.Data());
     return 1;
   }
 
@@ -389,7 +391,7 @@ int main(int argc, char *argv[]){
   
   Int_t f71flag, f72flag;
 
-  bitset<4> f3x(0), f3y(0), f5x(0), f5y(0), f7x(0), f7y(0); // bit[2B 2A 1B 1A];
+
 
   
   //======
@@ -465,11 +467,12 @@ int main(int argc, char *argv[]){
 
  //===== Begin LOOP ======================================================
 
-  cout << "Start conversion." << endl;
+  //cout << "Start conversion." << endl;
+  printf("Conversion START!\n");
   
   int nEntry = caltr->GetEntries();
-  for(int iEntry=0;iEntry<nEntry;++iEntry){
-    //for(int iEntry=0;iEntry<20;++iEntry){
+  //for(int iEntry=0;iEntry<nEntry;++iEntry){
+    for(int iEntry=0;iEntry<10;++iEntry){
     caltr->GetEntry(iEntry);
 
     if(iEntry%100 == 0){
@@ -638,6 +641,7 @@ int main(int argc, char *argv[]){
     zetplaic = vF3F7 * TMath::Sqrt(de/(TMath::Log(2*m_e*vF3F7*vF3F7/Ionpair)-TMath::Log(1-betaF3F7*betaF3F7)-betaF3F7*betaF3F7));
     */
 
+    bitset<4> f3x(0), f3y(0), f5x(0), f5y(0), f7x(0), f7y(0); // bit[2B 2A 1B 1A];
 
     // ===== TSum gate =====
     tsum_f31ax = ppacF31A_X_T1 + ppacF31A_X_T2;  
@@ -690,19 +694,33 @@ int main(int argc, char *argv[]){
     if(cppac_low[22] < tsum_f72ay && tsum_f72ay < cppac_up[22]) f7y.set(2);
     if(cppac_low[23] < tsum_f72by && tsum_f72by < cppac_up[23]) f7y.set(3);
 
+    cout << f3x << endl;
 
     //=== F31 X ===
     if(f3x[0]&f3x[1]) F31_X = (ppacF31A_X + ppacF31B_X)/2.;
-    else if(f3x[0])   F31_X = ppacF31A_X;
-    else if(f3x[1])   F31_X = ppacF31B_X;
+    else if(f3x[0]&!f3x[1])   F31_X = ppacF31A_X;
+    else if(f3x[1]&!f3x[0])   F31_X = ppacF31B_X;
     else{             //F31_X = pla3pos[1]*plaF3_dT + pla3pos[0];
                       ppacflag[0] = kFALSE;
     }
 
     //=== F32 X ===
-    if(f3x[2]&f3x[3]) F32_X = (ppacF32A_X + ppacF32B_X)/2.;
-    else if(f3x[2])   F32_X = ppacF32A_X;
-    else if(f3x[3])   F32_X = ppacF32B_X;
+    if(f3x[2]&f3x[3]) {
+      F32_X = (ppacF32A_X + ppacF32B_X)/2.;
+      cout << "tsum f32AX " << tsum_f32ax << endl;
+      cout << "tsum f32BX " << tsum_f32bx << endl; 
+      cout << "ppacF32A_X " << ppacF32A_X << endl;
+      cout << "ppacF32B_X " << ppacF32B_X << endl;
+      cout << "F32_X      " << F32_X      << endl;    
+    }
+    else if(f3x[2]&!f3x[3])   {
+      F32_X = ppacF32A_X;
+      //cout << F32_X << endl;
+    }
+    else if(f3x[3]&!f3x[2])   {
+      F32_X = ppacF32B_X;
+      //cout << F32_X << endl;
+    }
     else{             //F32_X = pla3pos[1]*plaF3_dT + pla3pos[0];
                       ppacflag[0] = kFALSE;
     }
@@ -870,9 +888,12 @@ int main(int argc, char *argv[]){
   time(&stop);
   printf("Elapsed time: %.1f seconds\n",difftime(stop,start));
 
-  cout << nEntry/1000 << "k events have been treated." << endl;
-  cout << "Conversion Finished!" << endl;
-  cout << endl;
+  //cout << nEntry/1000 << "k events have been treated." << endl;
+  //cout << "Conversion Finished!" << endl;
+  //cout << endl;
+  printf("%d k events have been treated.\n",nEntry/1000);
+  printf("Conversion Finished!\n\n");
+  
   
   return 0;
 }
