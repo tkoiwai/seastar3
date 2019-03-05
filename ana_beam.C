@@ -363,7 +363,6 @@ int main(int argc, char *argv[]){
   Int_t tsum_f71ay, tsum_f71by, tsum_f72ay, tsum_f72by;
   
   
-
   //=== for A/Q ===
   Double_t F3X, F3Y, F3A, F3B; //X, Y:[mm]
   Double_t F5X, F5Y, F5A, F5B; //A, B:[mrad]
@@ -389,8 +388,6 @@ int main(int argc, char *argv[]){
   Bool_t icflag;
   
   Int_t f71flag, f72flag;
-
-
 
   
   //======
@@ -437,9 +434,6 @@ int main(int argc, char *argv[]){
 
   anatrB->Branch("F31_X",&F31_X);
   anatrB->Branch("F32_X",&F32_X);
-
-
-
   
   anatrB->Branch("deltaF3F5",&deltaF3F5);
   anatrB->Branch("deltaF5F7",&deltaF5F7);
@@ -517,7 +511,6 @@ int main(int argc, char *argv[]){
     gammaF5F7 = TMath::Sqrt(-1);
     gammaF7F13 = TMath::Sqrt(-1);
     gammaF3F13 = TMath::Sqrt(-1);
-
     
     zetBRraw= TMath::Sqrt(-1);
     zetBR = TMath::Sqrt(-1);
@@ -678,9 +671,9 @@ int main(int argc, char *argv[]){
     if(cppac_low[0]  < tsum_f31ax && tsum_f31ax < cppac_up[0])  f3x.set(0);
     if(cppac_low[1]  < tsum_f31bx && tsum_f31bx < cppac_up[1])  f3x.set(1);
     if(cppac_low[2]  < tsum_f32ax && tsum_f32ax < cppac_up[2])  f3x.set(2);
-    if(ppacF32A_X == -9999)                                     f3x.reset(2);
+    //if(ppacF32A_X == -9999)                                     f3x.reset(2);
     if(cppac_low[3]  < tsum_f32bx && tsum_f32bx < cppac_up[3])  f3x.set(3);
-    if(ppacF32B_X == -9999)                                     f3x.reset(3);
+    //if(ppacF32B_X == -9999)                                     f3x.reset(3);
     if(cppac_low[4]  < tsum_f31ay && tsum_f31ay < cppac_up[4])  f3y.set(0);
     if(cppac_low[5]  < tsum_f31by && tsum_f31by < cppac_up[5])  f3y.set(1);
     if(cppac_low[6]  < tsum_f32ay && tsum_f32ay < cppac_up[6])  f3y.set(2);
