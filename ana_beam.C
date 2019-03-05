@@ -639,10 +639,12 @@ int main(int argc, char *argv[]){
     zetplaic = vF3F7 * TMath::Sqrt(de/(TMath::Log(2*m_e*vF3F7*vF3F7/Ionpair)-TMath::Log(1-betaF3F7*betaF3F7)-betaF3F7*betaF3F7));
     */
 
-    bitset<4> f3x(0), f3y(0), f5x(0), f5y(0), f7x(0), f7y(0); // bit[2B 2A 1B 1A];
-    //cout << "init?  " << f3x << endl;
+    
 
     // ===== TSum gate =====
+
+    bitset<4> f3x(0), f3y(0), f5x(0), f5y(0), f7x(0), f7y(0); // bit[2B 2A 1B 1A];
+    
     tsum_f31ax = ppacF31A_X_T1 + ppacF31A_X_T2;  
     tsum_f31bx = ppacF31B_X_T1 + ppacF31B_X_T2;
     tsum_f32ax = ppacF32A_X_T1 + ppacF32A_X_T2;
@@ -671,9 +673,7 @@ int main(int argc, char *argv[]){
     if(cppac_low[0]  < tsum_f31ax && tsum_f31ax < cppac_up[0])  f3x.set(0);
     if(cppac_low[1]  < tsum_f31bx && tsum_f31bx < cppac_up[1])  f3x.set(1);
     if(cppac_low[2]  < tsum_f32ax && tsum_f32ax < cppac_up[2])  f3x.set(2);
-    //if(ppacF32A_X == -9999)                                     f3x.reset(2);
     if(cppac_low[3]  < tsum_f32bx && tsum_f32bx < cppac_up[3])  f3x.set(3);
-    //if(ppacF32B_X == -9999)                                     f3x.reset(3);
     if(cppac_low[4]  < tsum_f31ay && tsum_f31ay < cppac_up[4])  f3y.set(0);
     if(cppac_low[5]  < tsum_f31by && tsum_f31by < cppac_up[5])  f3y.set(1);
     if(cppac_low[6]  < tsum_f32ay && tsum_f32ay < cppac_up[6])  f3y.set(2);
@@ -694,8 +694,6 @@ int main(int argc, char *argv[]){
     if(cppac_low[21] < tsum_f71by && tsum_f71by < cppac_up[21]) f7y.set(1);
     if(cppac_low[22] < tsum_f72ay && tsum_f72ay < cppac_up[22]) f7y.set(2);
     if(cppac_low[23] < tsum_f72by && tsum_f72by < cppac_up[23]) f7y.set(3);
-
-    //cout << f3x << endl;
 
     //=== F31 X ===
     if(f3x[0]&f3x[1]) F31_X = (ppacF31A_X + ppacF31B_X)/2.;
@@ -847,14 +845,6 @@ int main(int argc, char *argv[]){
     aoqBR = reco2aoq57 + 0.0000001*F5X*F5X -0.00001*F5X;
 
     //===== Cut by graphical cut ==========================================================
-    //if(!cF3pla->IsInside(F3_TR-F3_TL,log(F3_QL/F3_QR))) BG_flag = 1;
-    //if(!cF5pla->IsInside(F5_TR-F5_TL,log(F5_QL/F5_QR))) BG_flag = 1;
-    //if(!cF7pla->IsInside(F7_TR-F7_TL,log(F7_QL/F7_QR))) BG_flag = 1;
-    //if(!cF5Qchange->IsInside(aoqF3F5/aoqF5F7,zetBR)) BG_flag = 4; after finalizing the PID
-    //if(cBR56Ca->IsInside(aoqBR,zetBR)) BR56Ca = 1;
-    //if(cBR53Ca->IsInside(aoqBR,zetBR)) BR53Ca = 1;
-    //if(cBR51K->IsInside(aoqBR,zetBR))  BR51K  = 1;
-    //if(cBR56Sc->IsInside(aoqBR,zetBR)) BR56Sc = 1;
     
     if(!cplaF3->IsInside(plaF3_TR-plaF3_TL,log(plaF3_QL/plaF3_QR))){
       BG_flag = kFALSE;
@@ -877,11 +867,13 @@ int main(int argc, char *argv[]){
 
     if(!icflag) BG_flag = kFALSE;
 
-
-    
+    for(int i=0;i<3;i++){
+      if(!ppacflag[i]) BG_flag = kFALSE;      
+    } 
   
     anatrB->Fill();
-  }
+
+  }// LOOP END
   anafile->cd();
   anatrB->Write();
   anafile->Close();
