@@ -18,7 +18,12 @@ using namespace std;
 
 int main(int argc, char *argv[]){
 
+  time_t start, stop;
+  time(&start);
+
   Int_t FileNum = TString(argv[1]).Atoi();
+
+  printf("\n%s %d %s \n\n","=== Exexute ana_mwdc fir RUN",FileNumber,"===");
   
   //===== Load input file =====
   TString infname = Form("/home/koiwai/analysis/rootfiles/all/run%04d_ALL.root",FileNum);
@@ -26,6 +31,8 @@ int main(int argc, char *argv[]){
   
   TTree *caltr;
   infile->GetObject("caltr",caltr);
+
+  printf("%-20s %s \n","Input data file:",infname.Data());
 
   //===== input tree variables =====
   Long64_t EventNumber;
@@ -98,6 +105,7 @@ int main(int argc, char *argv[]){
   TFile *anafile_mwdc = new TFile(ofname,"RECREATE");
   TTree *anatrDC  = new TTree("anatrDC","anatrDC");
   
+  printf("\n%-20s %s \n\n","Output file:",ofname.Data());
   
   //===== Create TDC Distributions =====
   Int_t BDCNumLayer = 8;
@@ -258,12 +266,15 @@ int main(int argc, char *argv[]){
   anatrDC->Branch("BG_flag",&BG_flag);
   
   //===== Begin LOOP =====
+
+  printf("Conversion START!\n");
+  
   int nEntry = caltr->GetEntries();
   for(int iEntry=0;iEntry<nEntry;++iEntry){
     //for(int iEntry=0;iEntry<5;++iEntry){
   
-    if(iEntry%100 == 0){
-      clog<< iEntry/1000 << "k events treated..." << "\r";
+    if(iEntry%1000 == 0){
+      clog<< iEntry/1000 << "k / " << nEntry/1000 << "k events treated..." << "\r";
     }
 
     RunNum = RunNumber;
@@ -1351,4 +1362,11 @@ int main(int argc, char *argv[]){
   anafile_mwdc->cd();
   anatrDC->Write();
   anafile_mwdc->Close();
+
+  time(&stop);
+  printf("Elapsed time: %.1f seconds\n",difftime(stop,start));
+
+  printf("%d k events have been treated.\n",nEntry/1000);
+  printf("Conversion Finished!\n\n");
+  
 }//main()
