@@ -243,7 +243,8 @@ int main(int argc, char *argv[]){
     return 1;
   }
   string dummyppac[24];
-  Double_t cppac_low[24], cppac_up[24];
+  //Double_t cppac_low[24], cppac_up[24];
+  Int_t cppac_low[24], cppac_up[24];
   
   for(Int_t cPPAC_index = 0;cPPAC_index<24;++cPPAC_index)
     finppac >> dummyppac[cPPAC_index] >> cppac_low[cPPAC_index] >> cppac_up[cPPAC_index];
@@ -677,7 +678,9 @@ int main(int argc, char *argv[]){
     if(cppac_low[0]  < tsum_f31ax && tsum_f31ax < cppac_up[0])  f3x.set(0);
     if(cppac_low[1]  < tsum_f31bx && tsum_f31bx < cppac_up[1])  f3x.set(1);
     if(cppac_low[2]  < tsum_f32ax && tsum_f32ax < cppac_up[2])  f3x.set(2);
+    if(ppacF32A_X == -9999)                                     f3x.reset(2);
     if(cppac_low[3]  < tsum_f32bx && tsum_f32bx < cppac_up[3])  f3x.set(3);
+    if(ppacF32B_X == -9999)                                     f3x.reset(3);
     if(cppac_low[4]  < tsum_f31ay && tsum_f31ay < cppac_up[4])  f3y.set(0);
     if(cppac_low[5]  < tsum_f31by && tsum_f31by < cppac_up[5])  f3y.set(1);
     if(cppac_low[6]  < tsum_f32ay && tsum_f32ay < cppac_up[6])  f3y.set(2);
