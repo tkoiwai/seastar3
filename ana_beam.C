@@ -269,6 +269,7 @@ int main(int argc, char *argv[]){
   TEnv *env = new TEnv(env_set->GetValue("geometrydata",""));
   printf("%-20s %s \n","Geometry file:",env_set->GetValue("geometrydata",""));
   TEnv *env_pla  = new TEnv("/home/koiwai/analysis/db/pla2pos_Z.dat");
+  printf("%-20s %s \n","Pla2Pos calib file:",env_set->GetValue("pla2pos",""));
   TEnv *env_q = new TEnv("/home/koiwai/analysis/db/plaQ2f7icE.dat");
   
   //===== Create output file/tree =========================================
@@ -280,22 +281,24 @@ int main(int argc, char *argv[]){
   printf("\n%-20s %s \n\n","Output file:",AnaFileName.Data());
 
   //===== Declear const.s =================================================
-  //double pla3pos[2];
-  //double pla7pos[2];
+  double pla3pos[2];
+  double pla5pos[10];
+  double pla7pos[2];
   //double pla7z[3];
   //double pla3q2e[2];
   //double pla7q2e[2];
   //double pla13_1q2e[2];
   //double pla13_2q2e[2];
-  //for(Int_t i=0;i<2;++i){
-    //pla3pos[i] = env_pla->GetValue(Form("pla3pos%d",i),0.0);
-    //pla7pos[i] = env_pla->GetValue(Form("pla7pos%d",i),0.0);
+  for(Int_t i=0;i<2;++i){
+    pla3pos[i] = env_pla->GetValue(Form("pla3pos%d",i),0.0);
+    pla7pos[i] = env_pla->GetValue(Form("pla7pos%d",i),0.0);
     //pla7z[i] = env_pla->GetValue(Form("pla7Z[%d]",i),0.0);
     //pla3q2e[i]    = env_q->GetValue(Form("pla3q2e%d",i),0.0);
     //pla7q2e[i]    = env_q->GetValue(Form("pla7q2e%d",i),0.0);
     //pla13_1q2e[i] = env_q->GetValue(Form("pla13_1q2e%d",i),0.0);
     //pla13_2q2e[i] = env_q->GetValue(Form("pla13_2q2e%d",i),0.0);
-  //}
+  }
+  for(int i=0;i<10;i++) pla5pos[i] = env_pla->GetValue(Form("pla5pos%d",i),0.0);
 
   double DistF3F7 = 46568.; //[mm]
   double DistF3F5 = 23284.;
@@ -474,7 +477,7 @@ int main(int argc, char *argv[]){
     //for(int iEntry=0;iEntry<10;++iEntry){
     caltr->GetEntry(iEntry);
 
-    if(iEntry%100 == 0){
+    if(iEntry%1000 == 0){
       std::clog << iEntry/1000 << "k / " << nEntry/1000 << "k events treated..." << "\r";
     }
 
@@ -696,11 +699,11 @@ int main(int argc, char *argv[]){
     if(cppac_low[23] < tsum_f72by && tsum_f72by < cppac_up[23]) f7y.set(3);
 
     //=== F31 X ===
-    if(f3x[0]&f3x[1]) F31_X = (ppacF31A_X + ppacF31B_X)/2.;
+    if(f3x[0]&f3x[1])         F31_X = (ppacF31A_X + ppacF31B_X)/2.;
     else if(f3x[0]&!f3x[1])   F31_X = ppacF31A_X;
     else if(f3x[1]&!f3x[0])   F31_X = ppacF31B_X;
-    else{             //F31_X = pla3pos[1]*plaF3_dT + pla3pos[0];
-                      ppacflag[0] = kFALSE;
+    else{                     F31_X = pla3pos[1]*plaF3_dT + pla3pos[0];
+                              ppacflag[0] = kFALSE;
     }
 
     //=== F32 X ===
@@ -720,7 +723,7 @@ int main(int argc, char *argv[]){
       F32_X = ppacF32B_X;
       //cout << F32_X << endl;
     }
-    else{             //F32_X = pla3pos[1]*plaF3_dT + pla3pos[0];
+    else{             F32_X = pla3pos[1]*plaF3_dT + pla3pos[0];
                       ppacflag[0] = kFALSE;
     }
 
@@ -744,13 +747,35 @@ int main(int argc, char *argv[]){
     if(f5x[0]&f5x[1]) F51_X = (ppacF51A_X + ppacF51B_X)/2.;
     else if(f5x[0])   F51_X = ppacF51A_X;
     else if(f5x[1])   F51_X = ppacF51B_X;
-    else              ppacflag[1] = kFALSE;
+    else{             F51_X = pla5pos[9]*pow(plaF5_dT,9) +
+	                      pla5pos[8]*pow(plaF5_dT,8) +
+	                      pla5pos[7]*pow(plaF5_dT,7) +
+	                      pla5pos[6]*pow(plaF5_dT,6) +
+	                      pla5pos[5]*pow(plaF5_dT,5) +
+	                      pla5pos[4]*pow(plaF5_dT,4) +
+	                      pla5pos[3]*pow(plaF5_dT,3) +
+	                      pla5pos[2]*pow(plaF5_dT,2) +
+	                      pla5pos[1]*plaF5_dT        +
+	                      pla5pos[0];
+                      ppacflag[1] = kFALSE;
+    }
 
     //=== F52 X ===
     if(f5x[2]&f5x[3]) F52_X = (ppacF52A_X + ppacF52B_X)/2.;
     else if(f5x[2])   F52_X = ppacF52A_X;
     else if(f5x[3])   F52_X = ppacF52B_X;
-    else              ppacflag[1] = kFALSE;
+    else{             F51_X = pla5pos[9]*pow(plaF5_dT,9) +
+	                      pla5pos[8]*pow(plaF5_dT,8) +
+	                      pla5pos[7]*pow(plaF5_dT,7) +
+	                      pla5pos[6]*pow(plaF5_dT,6) +
+	                      pla5pos[5]*pow(plaF5_dT,5) +
+	                      pla5pos[4]*pow(plaF5_dT,4) +
+	                      pla5pos[3]*pow(plaF5_dT,3) +
+	                      pla5pos[2]*pow(plaF5_dT,2) +
+	                      pla5pos[1]*plaF5_dT        +
+	                      pla5pos[0];
+                      ppacflag[1] = kFALSE;
+    }
 
     //=== F5 X ===
     F5X = (F51_X + F52_X)/2.;
@@ -772,16 +797,16 @@ int main(int argc, char *argv[]){
     if(f7x[0]&f7x[1]) F71_X = (ppacF71A_X + ppacF71B_X)/2.;
     else if(f7x[0])   F71_X = ppacF71A_X;
     else if(f7x[1])   F71_X = ppacF71B_X;
-    else{             //F71_X = pla7pos[1]*plaF7_dT + pla7pos[0];
-      ppacflag[2] = kFALSE;
+    else{             F71_X = pla7pos[1]*plaF7_dT + pla7pos[0];
+                      ppacflag[2] = kFALSE;
     }
 
     //=== F72 X ===
     if(f7x[2]&f7x[3]) F72_X = (ppacF72A_X + ppacF72B_X)/2.;
     else if(f7x[2])   F72_X = ppacF72A_X;
     else if(f7x[3])   F72_X = ppacF72B_X;
-    else{             //F71_X = pla7pos[1]*plaF7_dT + pla7pos[0];
-      ppacflag[2] = kFALSE;
+    else{             F71_X = pla7pos[1]*plaF7_dT + pla7pos[0];
+                      ppacflag[2] = kFALSE;
     }
 
     //=== F7 X ===
