@@ -825,21 +825,23 @@ int main(int argc, char *argv[]){
     //=== F7 Y ===
     F7Y = (F71_Y + F72_Y)/2.;
     
-
-    if((f3x[0]|f3x[1])&(f3x[2]|f3x[3])) F3A = 1000.*TMath::ATan((F31_X-F32_X)/DistF3PPAC);
-    F3B = 1000.*TMath::ATan((F31_Y-F32_Y)/DistF3PPAC);
-   
-    F5A = 1000.*TMath::ATan((F51_X-F52_X)/DistF5PPAC);
-    F5B = 1000.*TMath::ATan((F51_Y-F52_Y)/DistF5PPAC);
-    
-    F7A = 1000.*TMath::ATan((F71_X-F72_X)/DistF7PPAC);
-    F7B = 1000.*TMath::ATan((F71_Y-F72_Y)/DistF7PPAC);
-
+    if(ppacflag[0]){
+      F3A = 1000.*TMath::ATan((F31_X-F32_X)/DistF3PPAC);
+      F3B = 1000.*TMath::ATan((F31_Y-F32_Y)/DistF3PPAC);
+    }
+    if(ppacflag[1]){
+      F5A = 1000.*TMath::ATan((F51_X-F52_X)/DistF5PPAC);
+      F5B = 1000.*TMath::ATan((F51_Y-F52_Y)/DistF5PPAC);
+    }
+    if(ppacflag[2]){
+      F7A = 1000.*TMath::ATan((F71_X-F72_X)/DistF7PPAC);
+      F7B = 1000.*TMath::ATan((F71_Y-F72_Y)/DistF7PPAC);
+    }
     //reco1f7x = F7_TimeDiff*22.1925 + 22.1925*2.60488;
     //reco2f7x = F7_TimeDiff*10.05 + 10.05*2.60488;
 
     recoF3A = (ADF3F5*F5X - XDF3F5*F5A - (ADF3F5*XXF3F5 - XDF3F5*AXF3F5)*F3X)/(ADF3F5*XAF3F5 - XDF3F5*AAF3F5);
-    
+
     deltaF3F5 = (F5X - XXF3F5*F3X - XAF3F5*recoF3A)/XDF3F5; //[%] 
     deltaF5F7 = (F7X - XXF5F7*F5X - XAF5F7*F5A)/XDF5F7;
 
