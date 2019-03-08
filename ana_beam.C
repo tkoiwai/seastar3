@@ -375,6 +375,10 @@ int main(int argc, char *argv[]){
   Double_t F51_X, F51_Y, F52_X, F52_Y;
   Double_t F71_X, F71_Y, F72_X, F72_Y;
 
+  Double_t delta57x, delta57a;
+  Double_t brho57x,  brho57a;
+  Double_t aoq57x,   aoq57a;
+
   Double_t deltaF3F5, deltaF5F7;
   Double_t deltaF3F5_X, deltaF3F5_A;
   Double_t brhoF3F5, brhoF5F7;
@@ -437,6 +441,13 @@ int main(int argc, char *argv[]){
 
   anatrB->Branch("F31_X",&F31_X);
   anatrB->Branch("F32_X",&F32_X);
+
+  anatrB->Branch("delta57x",&delta57x);
+  anatrB->Branch("delta57a",&delta57a);
+  anatrB->Branch("brho57x",&brho57x);
+  anatrB->Branch("brho57a",&brho57a);
+  anatrB->Branch("aoq57x",&aoq57x);
+  anatrB->Branch("aoq57a",&aoq57a);
   
   anatrB->Branch("deltaF3F5",&deltaF3F5);
   anatrB->Branch("deltaF5F7",&deltaF5F7);
@@ -569,6 +580,13 @@ int main(int argc, char *argv[]){
     F71_Y = TMath::Sqrt(-1);
     F72_X = TMath::Sqrt(-1);
     F72_Y = TMath::Sqrt(-1);
+
+    delta57x = TMath::Sqrt(-1);
+    delta57a = TMath::Sqrt(-1);
+    brho57x  = TMath::Sqrt(-1);
+    brho57a  = TMath::Sqrt(-1);
+    aoq57x   = TMath::Sqrt(-1);
+    aoq57a   = TMath::Sqrt(-1);
 
     deltaF3F5 = TMath::Sqrt(-1);
     deltaF5F7 = TMath::Sqrt(-1);
@@ -837,6 +855,16 @@ int main(int argc, char *argv[]){
       F7A = 1000.*TMath::ATan((F71_X-F72_X)/DistF7PPAC);
       F7B = 1000.*TMath::ATan((F71_Y-F72_Y)/DistF7PPAC);
     }
+
+    delta57x = (F7X - XXF5F7*F5X - XAF5F7*F5A)/XDF5F7;
+    delta57a = (F7A - AXF5F7*F5X - AAF5F7*F5A)/ADF5F7;
+
+    brho57x = Brho0F5F7*(1 + delta57x*0.01);
+    brho57a = Brho0F5F7*(1 + delta57a*0.01);
+
+    aoq57x = brho57x*clight/m_u/betaF3F13/gammaF3F13;
+    aoq57a = brho57a*clight/m_u/betaF3F13/gammaF3F13;
+    
     //reco1f7x = F7_TimeDiff*22.1925 + 22.1925*2.60488;
     //reco2f7x = F7_TimeDiff*10.05 + 10.05*2.60488;
 
