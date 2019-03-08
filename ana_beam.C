@@ -314,8 +314,10 @@ int main(int argc, char *argv[]){
   double m_e = 511.; //[keV]
   double m_u = 931.49432; //[MeV]
   double clight = 299.792458; //[mm/nsec]
+  //double zetBR_c0 = env->GetValue("zetBRcalib0",0.0);
+  //double zetBR_c1 = env->GetValue("zetBRcalib1",0.0);
   double zetBR_c0 = env->GetValue("zetBR_c0",0.0);
-  double zetBR_c1 = env->GetValue("zetBR_c1",0.0);
+  double zetBR_c1 = env->GetValue("zetBR_c1",0.0);  
   double DistF3PPAC = 890.; //[mm]
   double DistF5PPAC = 650.;
   double DistF7PPAC = 945.;
