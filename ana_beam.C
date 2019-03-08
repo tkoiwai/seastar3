@@ -648,6 +648,7 @@ int main(int argc, char *argv[]){
     zetBRraw = zetBR313;
     
     zetBR = zetBR_c1 * zetBRraw + zetBR_c0;
+    zetBR = 0.986796*zetBR+0.170486;
 
     /*
     //@@@ tried to deduce Z with pla charge @@@
