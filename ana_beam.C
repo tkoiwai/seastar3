@@ -925,7 +925,7 @@ int main(int argc, char *argv[]){
 
     if(!icflag) BG_flag = kFALSE;
 
-    for(int i=0;i<3;i++){
+    for(int i=1;i<3;i++){
       if(!ppacflag[i]) BG_flag = kFALSE;      
     } 
   
