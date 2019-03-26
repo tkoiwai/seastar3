@@ -847,16 +847,16 @@ int main(int argc, char *argv[]){
     F7Y = (F71_Y + F72_Y)/2.;
     
     if(ppacflag[0]){
-      F3A = 1000.*TMath::ATan((F31_X-F32_X)/DistF3PPAC);
-      F3B = 1000.*TMath::ATan((F31_Y-F32_Y)/DistF3PPAC);
+      F3A = 1000.*TMath::ATan((F32_X-F31_X)/DistF3PPAC);
+      F3B = 1000.*TMath::ATan((F32_Y-F31_Y)/DistF3PPAC);
     }
     if(ppacflag[1]){
-      F5A = 1000.*TMath::ATan((F51_X-F52_X)/DistF5PPAC);
-      F5B = 1000.*TMath::ATan((F51_Y-F52_Y)/DistF5PPAC);
+      F5A = 1000.*TMath::ATan((F52_X-F51_X)/DistF5PPAC);
+      F5B = 1000.*TMath::ATan((F52_Y-F51_Y)/DistF5PPAC);
     }
     if(ppacflag[2]){
-      F7A = 1000.*TMath::ATan((F71_X-F72_X)/DistF7PPAC);
-      F7B = 1000.*TMath::ATan((F71_Y-F72_Y)/DistF7PPAC);
+      F7A = 1000.*TMath::ATan((F72_X-F71_X)/DistF7PPAC);
+      F7B = 1000.*TMath::ATan((F72_Y-F71_Y)/DistF7PPAC);
     }
 
     delta57x = (F7X - XXF5F7*F5X - XAF5F7*F5A)/XDF5F7;
