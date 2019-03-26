@@ -377,20 +377,21 @@ int main(int argc, char *argv[]){
   Double_t F51_X, F51_Y, F52_X, F52_Y;
   Double_t F71_X, F71_Y, F72_X, F72_Y;
 
-  Double_t delta57x, delta57a;
+  Double_t delta57x, delta57a, delta35;
   Double_t brho57x,  brho57a;
   Double_t aoq57x,   aoq57a;
-
-  Double_t deltaF3F5, deltaF5F7;
-  Double_t deltaF3F5_X, deltaF3F5_A;
-  Double_t brhoF3F5, brhoF5F7;
-  Double_t aoqF3F13, aoqF5F7, aoqF3F5;
-  Double_t recoF3A, recodeltaF3F5_X, recodeltaF3F5_A;
+  Double_t recoF3A;
+  
+  //Double_t deltaF3F5, deltaF5F7;
+  //Double_t deltaF3F5_X, deltaF3F5_A;
+  //Double_t brhoF3F5, brhoF5F7;
+  //Double_t aoqF3F13, aoqF5F7, aoqF3F5;
+  //Double_t recoF3A, recodeltaF3F5_X, recodeltaF3F5_A;
   Double_t aoqBR;
 
-  Double_t reco1f7x, reco2f7x;
-  Double_t reco1deltaF5F7, reco2deltaF5F7, reco1brhoF5F7, reco2brhoF5F7;
-  Double_t reco1aoq57, reco2aoq57;
+  //Double_t reco1f7x, reco2f7x;
+  //Double_t reco1deltaF5F7, reco2deltaF5F7, reco1brhoF5F7, reco2brhoF5F7;
+  //Double_t reco1aoq57, reco2aoq57;
   
   Bool_t BG_flag; //flag for background
   Bool_t plaflag[3], ppacflag[3];
@@ -446,30 +447,31 @@ int main(int argc, char *argv[]){
 
   anatrB->Branch("delta57x",&delta57x);
   anatrB->Branch("delta57a",&delta57a);
+  anatrB->Branch("delta35",&delta35);
   anatrB->Branch("brho57x",&brho57x);
   anatrB->Branch("brho57a",&brho57a);
   anatrB->Branch("aoq57x",&aoq57x);
   anatrB->Branch("aoq57a",&aoq57a);
   
-  anatrB->Branch("deltaF3F5",&deltaF3F5);
-  anatrB->Branch("deltaF5F7",&deltaF5F7);
-  anatrB->Branch("brhoF3F5",&brhoF3F5);
-  anatrB->Branch("brhoF5F7",&brhoF5F7);
-  anatrB->Branch("aoqF3F13",&aoqF3F13);
-  anatrB->Branch("aoqF5F7",&aoqF5F7);
-  anatrB->Branch("aoqF3F5",&aoqF3F5);
+  //anatrB->Branch("deltaF3F5",&deltaF3F5);
+  //anatrB->Branch("deltaF5F7",&deltaF5F7);
+  //anatrB->Branch("brhoF3F5",&brhoF3F5);
+  //anatrB->Branch("brhoF5F7",&brhoF5F7);
+  //anatrB->Branch("aoqF3F13",&aoqF3F13);
+  //anatrB->Branch("aoqF5F7",&aoqF5F7);
+  //anatrB->Branch("aoqF3F5",&aoqF3F5);
   anatrB->Branch("recoF3A",&recoF3A);
-  anatrB->Branch("recodeltaF3F5_A",&recodeltaF3F5_A);
-  anatrB->Branch("recodeltaF3F5_X",&recodeltaF3F5_X);
-  anatrB->Branch("deltaF3F5_A",&deltaF3F5_A);
-  anatrB->Branch("deltaF3F5_X",&deltaF3F5_X);
+  //anatrB->Branch("recodeltaF3F5_A",&recodeltaF3F5_A);
+  //anatrB->Branch("recodeltaF3F5_X",&recodeltaF3F5_X);
+  //anatrB->Branch("deltaF3F5_A",&deltaF3F5_A);
+  //anatrB->Branch("deltaF3F5_X",&deltaF3F5_X);
   anatrB->Branch("aoqBR",&aoqBR);
 
-  anatrB->Branch("reco1f7x",&reco1f7x);
-  anatrB->Branch("reco2f7x",&reco2f7x);
-
-  anatrB->Branch("reco1aoq57",&reco1aoq57);
-  anatrB->Branch("reco2aoq57",&reco2aoq57);
+  //anatrB->Branch("reco1f7x",&reco1f7x);
+  //anatrB->Branch("reco2f7x",&reco2f7x);
+  //
+  //anatrB->Branch("reco1aoq57",&reco1aoq57);
+  //anatrB->Branch("reco2aoq57",&reco2aoq57);
   
   anatrB->Branch("BG_flag",&BG_flag,"BG_flag/O");
   anatrB->Branch("plaflag",plaflag,"plaflag[3]/O");
@@ -585,35 +587,36 @@ int main(int argc, char *argv[]){
 
     delta57x = TMath::Sqrt(-1);
     delta57a = TMath::Sqrt(-1);
+    delta35  = TMath::Sqrt(-1);
     brho57x  = TMath::Sqrt(-1);
     brho57a  = TMath::Sqrt(-1);
     aoq57x   = TMath::Sqrt(-1);
     aoq57a   = TMath::Sqrt(-1);
 
-    deltaF3F5 = TMath::Sqrt(-1);
-    deltaF5F7 = TMath::Sqrt(-1);
-    brhoF3F5 = TMath::Sqrt(-1);
-    brhoF5F7 = TMath::Sqrt(-1);
-    aoqF3F13 = TMath::Sqrt(-1);
-    aoqF5F7 = TMath::Sqrt(-1);
-    aoqF3F5 = TMath::Sqrt(-1);
+    //deltaF3F5 = TMath::Sqrt(-1);
+    //deltaF5F7 = TMath::Sqrt(-1);
+    //brhoF3F5 = TMath::Sqrt(-1);
+    //brhoF5F7 = TMath::Sqrt(-1);
+    //aoqF3F13 = TMath::Sqrt(-1);
+    //aoqF5F7 = TMath::Sqrt(-1);
+    //aoqF3F5 = TMath::Sqrt(-1);
     recoF3A = TMath::Sqrt(-1);
-    recodeltaF3F5_A = TMath::Sqrt(-1);
-    recodeltaF3F5_X = TMath::Sqrt(-1);
-    deltaF3F5_A = TMath::Sqrt(-1);
-    deltaF3F5_X = TMath::Sqrt(-1);
+    //recodeltaF3F5_A = TMath::Sqrt(-1);
+    //recodeltaF3F5_X = TMath::Sqrt(-1);
+    //deltaF3F5_A = TMath::Sqrt(-1);
+    //deltaF3F5_X = TMath::Sqrt(-1);
     aoqBR = TMath::Sqrt(-1);
 
-    reco1f7x = TMath::Sqrt(-1);
-    reco2f7x = TMath::Sqrt(-1);
-
-    reco1aoq57 = TMath::Sqrt(-1);
-    reco2aoq57 = TMath::Sqrt(-1);
-
-    reco1deltaF5F7 = TMath::Sqrt(-1);
-    reco2deltaF5F7 = TMath::Sqrt(-1);
-    reco1brhoF5F7 = TMath::Sqrt(-1);
-    reco2brhoF5F7 = TMath::Sqrt(-1);
+    //reco1f7x = TMath::Sqrt(-1);
+    //reco2f7x = TMath::Sqrt(-1);
+    //
+    //reco1aoq57 = TMath::Sqrt(-1);
+    //reco2aoq57 = TMath::Sqrt(-1);
+    //
+    //reco1deltaF5F7 = TMath::Sqrt(-1);
+    //reco2deltaF5F7 = TMath::Sqrt(-1);
+    //reco1brhoF5F7 = TMath::Sqrt(-1);
+    //reco2brhoF5F7 = TMath::Sqrt(-1);
 
     
 
@@ -873,34 +876,40 @@ int main(int argc, char *argv[]){
 
     recoF3A = (ADF3F5*F5X - XDF3F5*F5A - (ADF3F5*XXF3F5 - XDF3F5*AXF3F5)*F3X)/(ADF3F5*XAF3F5 - XDF3F5*AAF3F5);
 
-    deltaF3F5 = (F5X - XXF3F5*F3X - XAF3F5*recoF3A)/XDF3F5; //[%] 
-    deltaF5F7 = (F7X - XXF5F7*F5X - XAF5F7*F5A)/XDF5F7;
+    if(F3A<-200||200<F3A) F3A = recoF3A;
 
-    reco1deltaF5F7 = (reco1f7x - XXF5F7*F5X - XAF5F7*F5A)/XDF5F7;
-    reco2deltaF5F7 = (reco2f7x - XXF5F7*F5X - XAF5F7*F5A)/XDF5F7;
+    delta35 = (AAF3F5*F5X - XAF3F5*F5A - (AAF3F5*XXF3F5 - XAF3F5*AXF3F5)*F3X)/(AAF3F5*XDF3F5 - XAF3F5*ADF3F5);
+    
+    //deltaF3F5 = (F5X - XXF3F5*F3X - XAF3F5*recoF3A)/XDF3F5; //[%] 
+    //deltaF5F7 = (F7X - XXF5F7*F5X - XAF5F7*F5A)/XDF5F7;
 
-    brhoF3F5 = Brho0F3F5*(1 + deltaF3F5*0.01);
-    brhoF5F7 = Brho0F5F7*(1 + deltaF5F7*0.01);
+    //reco1deltaF5F7 = (reco1f7x - XXF5F7*F5X - XAF5F7*F5A)/XDF5F7;
+    //reco2deltaF5F7 = (reco2f7x - XXF5F7*F5X - XAF5F7*F5A)/XDF5F7;
 
-    reco1brhoF5F7 = Brho0F5F7*(1 + reco1deltaF5F7*0.01);
-    reco2brhoF5F7 = Brho0F5F7*(1 + reco2deltaF5F7*0.01);
+    //brhoF3F5 = Brho0F3F5*(1 + deltaF3F5*0.01);
+    //brhoF5F7 = Brho0F5F7*(1 + deltaF5F7*0.01);
+
+    //reco1brhoF5F7 = Brho0F5F7*(1 + reco1deltaF5F7*0.01);
+    //reco2brhoF5F7 = Brho0F5F7*(1 + reco2deltaF5F7*0.01);
     
     //aoqF3F5 = brhoF3F5*clight/m_u/betaF3F5/gammaF3F5 + 0.0017*F3X + 0.00005*F5X + 0.000002*F5X*F5X;
     //aoqF5F7 = brhoF5F7*clight/m_u/betaF5F7/gammaF5F7 + 0.0006*F5A + 0.00015*F7A;
 
-    aoqF3F5 = brhoF3F5*clight/m_u/betaF3F13/gammaF3F13 + 0.0006*F3X;
-    aoqF3F13 = brhoF5F7*clight/m_u/betaF3F13/gammaF3F13;
-    aoqF5F7 = brhoF5F7*clight/m_u/betaF7F13/gammaF7F13;
-
-    reco1aoq57 = reco1brhoF5F7*clight/m_u/betaF3F13/gammaF3F13;
-    reco2aoq57 = reco2brhoF5F7*clight/m_u/betaF3F13/gammaF3F13;
+    //aoqF3F5 = brhoF3F5*clight/m_u/betaF3F13/gammaF3F13 + 0.0006*F3X;
+    //aoqF3F13 = brhoF5F7*clight/m_u/betaF3F13/gammaF3F13;
+    //aoqF5F7 = brhoF5F7*clight/m_u/betaF7F13/gammaF7F13;
+    
+    //reco1aoq57 = reco1brhoF5F7*clight/m_u/betaF3F13/gammaF3F13;
+    //reco2aoq57 = reco2brhoF5F7*clight/m_u/betaF3F13/gammaF3F13;
     
     //aoqBR = aoqF5F7 + 0.0002*F7X + 0.00025*F5A + 0.00065*F7A + 0.00009*F5X - 0.000002*F5X*F5X + 0.000003*F7Y*F7Y + 0.000007*F7B*F7B;
     //aoqBR = aoqF5F7 + 0.0005*F7X - 0.00001*F7X*F7X + 0.00005*F7A - 0.00003*F5X + 0.0000002*F5X*F5X;
     //aoqBR = aoqF3F13 + 0.0006*F7X + 0.00007*F7A + 0.000000*1*F5X*F5X - 0.00015*F3X;
     //aoqBR = reco1aoq57 + 0.007*(F7_TimeDiff+2.6) - 0.0001*F7A + 0.0000001*F5X*F5X -0.00001*F5X;
 
-    aoqBR = reco2aoq57 + 0.0000001*F5X*F5X -0.00001*F5X;
+    //aoqBR = reco2aoq57 + 0.0000001*F5X*F5X -0.00001*F5X;
+
+    aoqBR = aoq57x + 0.00075*F7X - 0.0003*F3X - 0.0001*F3A;
 
     //===== Cut by graphical cut ==========================================================
     
