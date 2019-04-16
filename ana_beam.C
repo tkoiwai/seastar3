@@ -264,6 +264,51 @@ int main(int argc, char *argv[]){
   for(Int_t cIC_index = 0;cIC_index<5;++cIC_index)
     finic >> cIC_low[cIC_index] >> cIC_up[cIC_index];
 
+  //=== PID gates ===
+  TFile *fcutBR_V  = TFile::Open("/home/koiwai/analysis/cutfiles/cutBR_V.root");
+  TFile *fcutBR_Ti = TFile::Open("/home/koiwai/analysis/cutfiles/cutBR_Ti.root");
+  TFile *fcutBR_Sc = TFile::Open("/home/koiwai/analysis/cutfiles/cutBR_Sc.root");
+  TFile *fcutBR_Ca = TFile::Open("/home/koiwai/analysis/cutfiles/cutBR_Ca.root");
+  TFile *fcutBR_K  = TFile::Open("/home/koiwai/analysis/cutfiles/cutBR_K.root");
+  TFile *fcutBR_Ar = TFile::Open("/home/koiwai/analysis/cutfiles/cutBR_Ar.root");
+
+  TCutG *cbr64v  = (TCutG*)fcutBR_V->Get("br64v");
+  TCutG *cbr63v  = (TCutG*)fcutBR_V->Get("br63v");
+  TCutG *cbr62v  = (TCutG*)fcutBR_V->Get("br62v");
+  TCutG *cbr61v  = (TCutG*)fcutBR_V->Get("br61v");
+  TCutG *cbr60v  = (TCutG*)fcutBR_V->Get("br60v"); 
+
+  TCutG *cbr62ti = (TCutG*)fcutBR_Ti->Get("br62ti");
+  TCutG *cbr61ti = (TCutG*)fcutBR_Ti->Get("br61ti");
+  TCutG *cbr60ti = (TCutG*)fcutBR_Ti->Get("br60ti");
+  TCutG *cbr59ti = (TCutG*)fcutBR_Ti->Get("br59ti");
+  TCutG *cbr58ti = (TCutG*)fcutBR_Ti->Get("br58ti");
+  TCutG *cbr57ti = (TCutG*)fcutBR_Ti->Get("br57ti");
+
+  TCutG *cbr59sc = (TCutG*)fcutBR_Sc->Get("br59sc");
+  TCutG *cbr58sc = (TCutG*)fcutBR_Sc->Get("br58sc");
+  TCutG *cbr57sc = (TCutG*)fcutBR_Sc->Get("br57sc");
+  TCutG *cbr56sc = (TCutG*)fcutBR_Sc->Get("br56sc");
+  TCutG *cbr55sc = (TCutG*)fcutBR_Sc->Get("br55sc");
+  TCutG *cbr54sc = (TCutG*)fcutBR_Sc->Get("br54sc");
+
+  TCutG *cbr56ca = (TCutG*)fcutBR_Ca->Get("br56ca");
+  TCutG *cbr55ca = (TCutG*)fcutBR_Ca->Get("br55ca");
+  TCutG *cbr54ca = (TCutG*)fcutBR_Ca->Get("br54ca");
+  TCutG *cbr53ca = (TCutG*)fcutBR_Ca->Get("br53ca");
+  TCutG *cbr52ca = (TCutG*)fcutBR_Ca->Get("br52ca");
+
+  TCutG *cbr54k  = (TCutG*)fcutBR_K->Get("br54k");
+  TCutG *cbr53k  = (TCutG*)fcutBR_K->Get("br53k");
+  TCutG *cbr52k  = (TCutG*)fcutBR_K->Get("br52k");
+  TCutG *cbr51k  = (TCutG*)fcutBR_K->Get("br51k");
+  TCutG *cbr50k  = (TCutG*)fcutBR_K->Get("br50k");
+  TCutG *cbr49k  = (TCutG*)fcutBR_K->Get("br49k");
+
+  TCutG *cbr51ar = (TCutG*)fcutBR_Ar->Get("br51ar");
+  TCutG *cbr50ar = (TCutG*)fcutBR_Ar->Get("br50ar");
+  TCutG *cbr49ar = (TCutG*)fcutBR_Ar->Get("br49ar");
+  TCutG *cbr48ar = (TCutG*)fcutBR_Ar->Get("br48ar");
   
   //===== Load .dat files =====
   TEnv *env = new TEnv(env_set->GetValue("geometrydata",""));
@@ -399,6 +444,39 @@ int main(int argc, char *argv[]){
   
   Int_t f71flag, f72flag;
 
+  //=== PID ===
+  Bool_t br64v; 
+  Bool_t br63v; 
+  Bool_t br62v; 
+  Bool_t br61v; 
+  Bool_t br60v; 
+  Bool_t br62ti;
+  Bool_t br61ti;
+  Bool_t br60ti;
+  Bool_t br59ti;
+  Bool_t br58ti;
+  Bool_t br57ti;
+  Bool_t br59sc;
+  Bool_t br58sc;
+  Bool_t br57sc;
+  Bool_t br56sc;
+  Bool_t br55sc;
+  Bool_t br54sc;
+  Bool_t br56ca;
+  Bool_t br55ca;
+  Bool_t br54ca;
+  Bool_t br53ca;
+  Bool_t br52ca;
+  Bool_t br54k; 
+  Bool_t br53k; 
+  Bool_t br52k; 
+  Bool_t br51k; 
+  Bool_t br50k; 
+  Bool_t br49k; 
+  Bool_t br51ar;
+  Bool_t br50ar;
+  Bool_t br49ar;
+  Bool_t br48ar;
   
   //======
   anatrB->Branch("EventNumber",&EventNum);
@@ -481,6 +559,39 @@ int main(int argc, char *argv[]){
   anatrB->Branch("f71flag",&f71flag);
   anatrB->Branch("f72flag",&f72flag);
 
+  anatrB->Branch("br64v",&br64v); 
+  anatrB->Branch("br63v",&br63v); 
+  anatrB->Branch("br62v",&br62v); 
+  anatrB->Branch("br61v",&br61v); 
+  anatrB->Branch("br60v",&br60v); 
+  anatrB->Branch("br62ti",&br62ti);
+  anatrB->Branch("br61ti",&br61ti);
+  anatrB->Branch("br60ti",&br60ti);
+  anatrB->Branch("br59ti",&br59ti);
+  anatrB->Branch("br58ti",&br58ti);
+  anatrB->Branch("br57ti",&br57ti);
+  anatrB->Branch("br59sc",&br59sc);
+  anatrB->Branch("br58sc",&br58sc);
+  anatrB->Branch("br57sc",&br57sc);
+  anatrB->Branch("br56sc",&br56sc);
+  anatrB->Branch("br55sc",&br55sc);
+  anatrB->Branch("br54sc",&br54sc);
+  anatrB->Branch("br56ca",&br56ca);
+  anatrB->Branch("br55ca",&br55ca);
+  anatrB->Branch("br54ca",&br54ca);
+  anatrB->Branch("br53ca",&br53ca);
+  anatrB->Branch("br52ca",&br52ca);
+  anatrB->Branch("br54k",&br54k); 
+  anatrB->Branch("br53k",&br53k); 
+  anatrB->Branch("br52k",&br52k); 
+  anatrB->Branch("br51k",&br51k); 
+  anatrB->Branch("br50k",&br50k); 
+  anatrB->Branch("br49k",&br49k); 
+  anatrB->Branch("br51ar",&br51ar);
+  anatrB->Branch("br50ar",&br50ar);
+  anatrB->Branch("br49ar",&br49ar);
+  anatrB->Branch("br48ar",&br48ar);
+  
   infile->cd();
 
  //===== Begin LOOP ======================================================
@@ -618,6 +729,38 @@ int main(int argc, char *argv[]){
     //reco1brhoF5F7 = TMath::Sqrt(-1);
     //reco2brhoF5F7 = TMath::Sqrt(-1);
 
+    br64v  = kFALSE;
+    br63v  = kFALSE;
+    br62v  = kFALSE;
+    br61v  = kFALSE;
+    br60v  = kFALSE;
+    br62ti = kFALSE;
+    br61ti = kFALSE;
+    br60ti = kFALSE;
+    br59ti = kFALSE;
+    br58ti = kFALSE;
+    br57ti = kFALSE;
+    br59sc = kFALSE;
+    br58sc = kFALSE;
+    br57sc = kFALSE;
+    br56sc = kFALSE;
+    br55sc = kFALSE;
+    br54sc = kFALSE;
+    br56ca = kFALSE;
+    br55ca = kFALSE;
+    br54ca = kFALSE;
+    br53ca = kFALSE;
+    br52ca = kFALSE;
+    br54k  = kFALSE;
+    br53k  = kFALSE;
+    br52k  = kFALSE;
+    br51k  = kFALSE;
+    br50k  = kFALSE;
+    br49k  = kFALSE;
+    br51ar = kFALSE;
+    br50ar = kFALSE;
+    br49ar = kFALSE;
+    br48ar = kFALSE;
     
 
     //=== Calculation ===
@@ -936,8 +1079,42 @@ int main(int argc, char *argv[]){
 
     for(int i=1;i<3;i++){
       if(!ppacflag[i]) BG_flag = kFALSE;      
-    } 
-  
+    }
+
+    if(cbr64v->IsInside(aoqBR,zetBR))  br64v  = kTRUE;
+    if(cbr63v->IsInside(aoqBR,zetBR))  br63v  = kTRUE;
+    if(cbr62v->IsInside(aoqBR,zetBR))  br62v  = kTRUE;
+    if(cbr61v->IsInside(aoqBR,zetBR))  br61v  = kTRUE;
+    if(cbr60v->IsInside(aoqBR,zetBR))  br60v  = kTRUE;
+    if(cbr62ti->IsInside(aoqBR,zetBR)) br62ti = kTRUE;
+    if(cbr61ti->IsInside(aoqBR,zetBR)) br61ti = kTRUE;
+    if(cbr60ti->IsInside(aoqBR,zetBR)) br60ti = kTRUE;
+    if(cbr59ti->IsInside(aoqBR,zetBR)) br59ti = kTRUE;
+    if(cbr58ti->IsInside(aoqBR,zetBR)) br58ti = kTRUE;
+    if(cbr57ti->IsInside(aoqBR,zetBR)) br57ti = kTRUE;
+    if(cbr59sc->IsInside(aoqBR,zetBR)) br59sc = kTRUE;
+    if(cbr58sc->IsInside(aoqBR,zetBR)) br58sc = kTRUE;
+    if(cbr57sc->IsInside(aoqBR,zetBR)) br57sc = kTRUE;
+    if(cbr56sc->IsInside(aoqBR,zetBR)) br56sc = kTRUE;
+    if(cbr55sc->IsInside(aoqBR,zetBR)) br55sc = kTRUE;
+    if(cbr54sc->IsInside(aoqBR,zetBR)) br54sc = kTRUE;
+    if(cbr56ca->IsInside(aoqBR,zetBR)) br56ca = kTRUE;
+    if(cbr55ca->IsInside(aoqBR,zetBR)) br55ca = kTRUE;
+    if(cbr54ca->IsInside(aoqBR,zetBR)) br54ca = kTRUE;
+    if(cbr53ca->IsInside(aoqBR,zetBR)) br53ca = kTRUE;
+    if(cbr52ca->IsInside(aoqBR,zetBR)) br52ca = kTRUE;
+    if(cbr54k->IsInside(aoqBR,zetBR))  br54k  = kTRUE;
+    if(cbr53k->IsInside(aoqBR,zetBR))  br53k  = kTRUE;
+    if(cbr52k->IsInside(aoqBR,zetBR))  br52k  = kTRUE;
+    if(cbr51k->IsInside(aoqBR,zetBR))  br51k  = kTRUE;
+    if(cbr50k->IsInside(aoqBR,zetBR))  br50k  = kTRUE;
+    if(cbr49k->IsInside(aoqBR,zetBR))  br49k  = kTRUE;
+    if(cbr51ar->IsInside(aoqBR,zetBR)) br51ar = kTRUE;
+    if(cbr50ar->IsInside(aoqBR,zetBR)) br50ar = kTRUE;
+    if(cbr49ar->IsInside(aoqBR,zetBR)) br49ar = kTRUE;
+    if(cbr48ar->IsInside(aoqBR,zetBR)) br48ar = kTRUE;
+
+    //=============
     anatrB->Fill();
 
   }// LOOP END
