@@ -1052,7 +1052,8 @@ int main(int argc, char *argv[]){
 
     //aoqBR = reco2aoq57 + 0.0000001*F5X*F5X -0.00001*F5X;
 
-    aoqBR = aoq57x + 0.00075*F7X - 0.0003*F3X - 0.0001*F3A;
+    //aoqBR = aoq57x + 0.00075*F7X - 0.0003*F3X - 0.0001*F3A;
+    aoqBR = aoq57x + 0.00075*F7X - 0.0003*F3X;
 
     //===== Cut by graphical cut ==========================================================
     
