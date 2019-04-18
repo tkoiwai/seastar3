@@ -25,18 +25,25 @@ using namespace TMath;
 
 int main(int argc, char *argv[]){
 
+  time_t start, stop;
+  time(&start);
+
   Int_t FileNum = TString(argv[1]).Atoi();
+
+  printf("\n%s %d %s \n\n","=== Exexute ana_smri for RUN",FileNumber,"===");
   
   //===== Load input file =====
-  TString infname = Form("/home/koiwai/analysis/rootfiles/all/run%04d_ALL.root",FileNum);
+  TString infname = Form("/home/koiwai/analysis/rootfiles/unpacked/run%04d_ALL.root",FileNum);
   TFile *infile = TFile::Open(infname);
   
   TTree *caltr;
   infile->GetObject("caltr",caltr);
 
+  printf("%-20s %s \n","Input data file:",infname.Data());
+
   //===== input tree variables =====
-  Long64_t EventNumber_all;
-  Int_t RunNumber_all;
+  Long64_t EventNumber_all = 0;
+  Int_t RunNumber_all = -1;
 
   //Double_t AllHodo_Charge[24];
   //Double_t AllHodo_Time[24];
@@ -102,6 +109,8 @@ int main(int argc, char *argv[]){
   TTree *anatrDC;
   infileDC->GetObject("anatrDC",anatrDC);
 
+  printf("%-20s %s \n","Input MWDC file:",infnameDC.Data());
+
   //===== Declare DC variables =====
   Int_t EventNumber_dc, RunNumber_dc;
 
@@ -146,6 +155,8 @@ int main(int argc, char *argv[]){
   TTree *anatrB;
   infileB->GetObject("anatrB",anatrB);
 
+  printf("%-20s %s \n","Input beam file:",infnameB.Data());
+
   //===== Declare Beam Variable =====
   Int_t EventNumber_beam, RunNumber_beam;
 
@@ -153,8 +164,8 @@ int main(int argc, char *argv[]){
 
   Double_t zetBR, aoqBR;
 
-  Int_t BG_flag_beam;
-  Int_t BR56Sc;
+  Bool_t BG_flag_beam;
+  //Int_t BR56Sc;
 
   
   //===== Beam SetBranchAddress =====
@@ -168,7 +179,7 @@ int main(int argc, char *argv[]){
   anatrB->SetBranchAddress("aoqBR",&aoqBR);
 
   anatrB->SetBranchAddress("BG_flag",&BG_flag_beam);
-  anatrB->SetBranchAddress("BR56Sc",&BR56Sc);
+  //anatrB->SetBranchAddress("BR56Sc",&BR56Sc);
   
   
   //===== AddFriend =====
@@ -176,11 +187,11 @@ int main(int argc, char *argv[]){
   caltr->AddFriend(anatrB);
 
   //===== Load cut files =====
-  TFile *cutfilesbt1 = new TFile("/home/koiwai/analysis/cutfiles/cutsbt1.root");
-  TCutG *csbt1 = (TCutG*)cutfilesbt1->Get("sbt1");
+  //TFile *cutfilesbt1 = new TFile("/home/koiwai/analysis/cutfiles/cutsbt1.root");
+  //TCutG *csbt1 = (TCutG*)cutfilesbt1->Get("sbt1");
 
-  TFile *SApid_temp = new TFile("/home/koiwai/analysis/macros/SApid_temp.root");
-  TCutG *cSA56Sc_temp = (TCutG*)SApid_temp->Get("SA56Sc_temp");
+  //TFile *SApid_temp = new TFile("/home/koiwai/analysis/macros/SApid_temp.root");
+  //TCutG *cSA56Sc_temp = (TCutG*)SApid_temp->Get("SA56Sc_temp");
 
   
   //===== Load .dat files =====
@@ -218,6 +229,8 @@ int main(int argc, char *argv[]){
   TString ofname = Form("/home/koiwai/analysis/rootfiles/ana/smri/ana_smri%04d.root",FileNum);
   TFile *anafile_smri = new TFile(ofname,"RECREATE");
   TTree *anatrS  = new TTree("anatrS","anatrS");
+
+  printf("\n%-20s %s \n\n","Output file:",ofname.Data());
   
   /*
   //===== Create TDC Distributions =====
