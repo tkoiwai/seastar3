@@ -444,6 +444,8 @@ int main(int argc, char *argv[]){
   
   Int_t f71flag, f72flag;
 
+  Double_t recoF31_X;
+
   //=== PID ===
   Bool_t br64v; 
   Bool_t br63v; 
@@ -522,6 +524,8 @@ int main(int argc, char *argv[]){
 
   anatrB->Branch("F31_X",&F31_X);
   anatrB->Branch("F32_X",&F32_X);
+
+  anatrB->Branch("recoF31_X",&recoF31_X);
 
   anatrB->Branch("delta57x",&delta57x);
   anatrB->Branch("delta57a",&delta57a);
@@ -695,6 +699,8 @@ int main(int argc, char *argv[]){
     F71_Y = TMath::Sqrt(-1);
     F72_X = TMath::Sqrt(-1);
     F72_Y = TMath::Sqrt(-1);
+
+    recoF31_X = TMath::Sqrt(-1);
 
     delta57x = TMath::Sqrt(-1);
     delta57a = TMath::Sqrt(-1);
@@ -872,7 +878,7 @@ int main(int argc, char *argv[]){
     else{                     F31_X = pla3pos[1]*plaF3_dT + pla3pos[0];
                               ppacflag[0] = kFALSE;
     }
-
+    recoF31_X = F31_X = pla3pos[1]*plaF3_dT + pla3pos[0];
     //=== F32 X ===
     if(f3x[2]&f3x[3]) {
       F32_X = (ppacF32A_X + ppacF32B_X)/2.;
