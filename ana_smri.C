@@ -30,10 +30,10 @@ int main(int argc, char *argv[]){
 
   Int_t FileNum = TString(argv[1]).Atoi();
 
-  printf("\n%s %d %s \n\n","=== Exexute ana_smri for RUN",FileNumber,"===");
+  printf("\n%s %d %s \n\n","=== Exexute ana_smri for RUN",FileNum,"===");
   
   //===== Load input file =====
-  TString infname = Form("/home/koiwai/analysis/rootfiles/unpacked/run%04d_ALL.root",FileNum);
+  TString infname = Form("/home/koiwai/analysis/rootfiles/unpacked/run%04d.root",FileNum);
   TFile *infile = TFile::Open(infname);
   
   TTree *caltr;
@@ -55,9 +55,10 @@ int main(int argc, char *argv[]){
   Double_t Hodoi_TUCal[24], Hodoi_TDCal[24], Hodoi_QUCal[24], Hodoi_QDCal[24];
   Double_t Hodoi_TCal[24], Hodoi_TRaw[24], Hodoi_QCal[24], Hodoi_QRaw[24];
 
-  Double_t SBT1_Charge, SBT2_Charge, SBT1_Time, SBT2_Time, SBT1_TimeDiff, SBT2_TimeDiff;
-  Double_t SBT1_QL, SBT1_QR, SBT1_TL, SBT1_TR;
-  Double_t SBT2_QL, SBT2_QR, SBT2_TL, SBT2_TR;
+  Double_t sbt1_Q, sbt2_Q, sbt1_T, sbt2_T, sbt1_dT, sbt2_dT;
+  Double_t sbt1_QL, sbt1_QR, sbt1_TL, sbt1_TR;
+  Double_t sbt2_QL, sbt2_QR, sbt2_TL, sbt2_TR;
+  Double_t sbt1_Tslew, sbt2_Tslew;
 
   //===== SetBranchAddress =====
   caltr->SetBranchAddress("RunNumber",&RunNumber_all);
@@ -87,20 +88,22 @@ int main(int argc, char *argv[]){
   caltr->SetBranchAddress("Hodo_QRaw",&Hodo_QRaw);
   caltr->SetBranchAddress("Hodo_TRaw",&Hodo_TRaw);
   
-  caltr->SetBranchAddress("SBT1_Charge",&SBT1_Charge);
-  caltr->SetBranchAddress("SBT1_Time",&SBT1_Time);
-  caltr->SetBranchAddress("SBT1_TimeDiff",&SBT1_TimeDiff);
-  caltr->SetBranchAddress("SBT2_Charge",&SBT2_Charge);
-  caltr->SetBranchAddress("SBT2_Time",&SBT2_Time);
-  caltr->SetBranchAddress("SBT2_TimeDiff",&SBT2_TimeDiff);
-  caltr->SetBranchAddress("SBT1_QL",&SBT1_QL);
-  caltr->SetBranchAddress("SBT1_QR",&SBT1_QR);
-  caltr->SetBranchAddress("SBT1_TL",&SBT1_TL);
-  caltr->SetBranchAddress("SBT1_TR",&SBT1_TR);
-  caltr->SetBranchAddress("SBT2_QL",&SBT2_QL);
-  caltr->SetBranchAddress("SBT2_QR",&SBT2_QR);
-  caltr->SetBranchAddress("SBT2_TL",&SBT2_TL);
-  caltr->SetBranchAddress("SBT2_TR",&SBT2_TR);
+  caltr->SetBranchAddress("sbt1_Q",&sbt1_Q);
+  caltr->SetBranchAddress("sbt1_T",&sbt1_T);
+  caltr->SetBranchAddress("sbt1_dT",&sbt1_dT);
+  caltr->SetBranchAddress("sbt2_Q",&sbt2_Q);
+  caltr->SetBranchAddress("sbt2_T",&sbt2_T);
+  caltr->SetBranchAddress("sbt2_dT",&sbt2_dT);
+  caltr->SetBranchAddress("sbt1_QL",&sbt1_QL);
+  caltr->SetBranchAddress("sbt1_QR",&sbt1_QR);
+  caltr->SetBranchAddress("sbt1_TL",&sbt1_TL);
+  caltr->SetBranchAddress("sbt1_TR",&sbt1_TR);
+  caltr->SetBranchAddress("sbt2_QL",&sbt2_QL);
+  caltr->SetBranchAddress("sbt2_QR",&sbt2_QR);
+  caltr->SetBranchAddress("sbt2_TL",&sbt2_TL);
+  caltr->SetBranchAddress("sbt2_TR",&sbt2_TR);
+  caltr->SetBranchAddress("sbt1_Tslew",&sbt1_Tslew);
+  caltr->SetBranchAddress("sbt2_Tslew",&sbt2_Tslew);
 
   //===== Load input DC file =====
   TString infnameDC = Form("/home/koiwai/analysis/rootfiles/ana/mwdc/ana_mwdc%04d.root",FileNum);
@@ -167,6 +170,39 @@ int main(int argc, char *argv[]){
   Bool_t BG_flag_beam;
   //Int_t BR56Sc;
 
+  //=== PID ===
+  Bool_t br64v; 
+  Bool_t br63v; 
+  Bool_t br62v; 
+  Bool_t br61v; 
+  Bool_t br60v; 
+  Bool_t br62ti;
+  Bool_t br61ti;
+  Bool_t br60ti;
+  Bool_t br59ti;
+  Bool_t br58ti;
+  Bool_t br57ti;
+  Bool_t br59sc;
+  Bool_t br58sc;
+  Bool_t br57sc;
+  Bool_t br56sc;
+  Bool_t br55sc;
+  Bool_t br54sc;
+  Bool_t br56ca;
+  Bool_t br55ca;
+  Bool_t br54ca;
+  Bool_t br53ca;
+  Bool_t br52ca;
+  Bool_t br54k; 
+  Bool_t br53k; 
+  Bool_t br52k; 
+  Bool_t br51k; 
+  Bool_t br50k; 
+  Bool_t br49k; 
+  Bool_t br51ar;
+  Bool_t br50ar;
+  Bool_t br49ar;
+  Bool_t br48ar;
   
   //===== Beam SetBranchAddress =====
   anatrB->SetBranchAddress("EventNumber",&EventNumber_beam);
@@ -180,7 +216,39 @@ int main(int argc, char *argv[]){
 
   anatrB->SetBranchAddress("BG_flag",&BG_flag_beam);
   //anatrB->SetBranchAddress("BR56Sc",&BR56Sc);
-  
+
+  anatrB->SetBranchAddress("br64v",&br64v); 
+  anatrB->SetBranchAddress("br63v",&br63v); 
+  anatrB->SetBranchAddress("br62v",&br62v); 
+  anatrB->SetBranchAddress("br61v",&br61v); 
+  anatrB->SetBranchAddress("br60v",&br60v); 
+  anatrB->SetBranchAddress("br62ti",&br62ti);
+  anatrB->SetBranchAddress("br61ti",&br61ti);
+  anatrB->SetBranchAddress("br60ti",&br60ti);
+  anatrB->SetBranchAddress("br59ti",&br59ti);
+  anatrB->SetBranchAddress("br58ti",&br58ti);
+  anatrB->SetBranchAddress("br57ti",&br57ti);
+  anatrB->SetBranchAddress("br59sc",&br59sc);
+  anatrB->SetBranchAddress("br58sc",&br58sc);
+  anatrB->SetBranchAddress("br57sc",&br57sc);
+  anatrB->SetBranchAddress("br56sc",&br56sc);
+  anatrB->SetBranchAddress("br55sc",&br55sc);
+  anatrB->SetBranchAddress("br54sc",&br54sc);
+  anatrB->SetBranchAddress("br56ca",&br56ca);
+  anatrB->SetBranchAddress("br55ca",&br55ca);
+  anatrB->SetBranchAddress("br54ca",&br54ca);
+  anatrB->SetBranchAddress("br53ca",&br53ca);
+  anatrB->SetBranchAddress("br52ca",&br52ca);
+  anatrB->SetBranchAddress("br54k",&br54k); 
+  anatrB->SetBranchAddress("br53k",&br53k); 
+  anatrB->SetBranchAddress("br52k",&br52k); 
+  anatrB->SetBranchAddress("br51k",&br51k); 
+  anatrB->SetBranchAddress("br50k",&br50k); 
+  anatrB->SetBranchAddress("br49k",&br49k); 
+  anatrB->SetBranchAddress("br51ar",&br51ar);
+  anatrB->SetBranchAddress("br50ar",&br50ar);
+  anatrB->SetBranchAddress("br49ar",&br49ar);
+  anatrB->SetBranchAddress("br48ar",&br48ar);
   
   //===== AddFriend =====
   caltr->AddFriend(anatrDC);
@@ -468,15 +536,15 @@ int main(int argc, char *argv[]){
 
   Double_t aoqSA_notcor, aoqSA_tmpcor;
   
-  Int_t BG_flag;
+  Bool_t BG_flag;
 
-  Int_t SA56Sc_temp;
+  //Int_t SA56Sc_temp;
 
-  double sbt_t;
+  //double sbt_t;
   
   //===== Create anatree Branch =====
-  anatrS->Branch("RunNum",&RunNum);
-  anatrS->Branch("EventNum",&EventNum);
+  anatrS->Branch("RunNumber",&RunNum);
+  anatrS->Branch("EventNumber",&EventNum);
 
   anatrS->Branch("t_minoshodo_notcor",&t_minoshodo_notcor);
   anatrS->Branch("t_minoshodo",&t_minoshodo);
@@ -506,13 +574,46 @@ int main(int argc, char *argv[]){
   anatrS->Branch("brhoSA_rad",&brhoSA_rad);
   anatrS->Branch("lengSA_rad",&lengSA_rad);
 
-  anatrS->Branch("BG_flag",&BG_flag);
+  anatrS->Branch("BG_flag",&BG_flag,"BG_flag/O");
   anatrS->Branch("BG_flag_beam",&BG_flag_beam);
 
-  anatrS->Branch("BR56Sc",&BR56Sc);
-  anatrS->Branch("SA56Sc_temp",&SA56Sc_temp);
+  anatrS->Branch("br64v",&br64v); 
+  anatrS->Branch("br63v",&br63v); 
+  anatrS->Branch("br62v",&br62v); 
+  anatrS->Branch("br61v",&br61v); 
+  anatrS->Branch("br60v",&br60v); 
+  anatrS->Branch("br62ti",&br62ti);
+  anatrS->Branch("br61ti",&br61ti);
+  anatrS->Branch("br60ti",&br60ti);
+  anatrS->Branch("br59ti",&br59ti);
+  anatrS->Branch("br58ti",&br58ti);
+  anatrS->Branch("br57ti",&br57ti);
+  anatrS->Branch("br59sc",&br59sc);
+  anatrS->Branch("br58sc",&br58sc);
+  anatrS->Branch("br57sc",&br57sc);
+  anatrS->Branch("br56sc",&br56sc);
+  anatrS->Branch("br55sc",&br55sc);
+  anatrS->Branch("br54sc",&br54sc);
+  anatrS->Branch("br56ca",&br56ca);
+  anatrS->Branch("br55ca",&br55ca);
+  anatrS->Branch("br54ca",&br54ca);
+  anatrS->Branch("br53ca",&br53ca);
+  anatrS->Branch("br52ca",&br52ca);
+  anatrS->Branch("br54k",&br54k); 
+  anatrS->Branch("br53k",&br53k); 
+  anatrS->Branch("br52k",&br52k); 
+  anatrS->Branch("br51k",&br51k); 
+  anatrS->Branch("br50k",&br50k); 
+  anatrS->Branch("br49k",&br49k); 
+  anatrS->Branch("br51ar",&br51ar);
+  anatrS->Branch("br50ar",&br50ar);
+  anatrS->Branch("br49ar",&br49ar);
+  anatrS->Branch("br48ar",&br48ar);
 
-  anatrS->Branch("sbt_t",&sbt_t);
+  //anatrS->Branch("BR56Sc",&BR56Sc);
+  //anatrS->Branch("SA56Sc_temp",&SA56Sc_temp);
+
+  //anatrS->Branch("sbt_t",&sbt_t);
   
   //===== Begin LOOP =====
   int nEntry = caltr->GetEntries();
@@ -539,7 +640,7 @@ int main(int argc, char *argv[]){
     lengSA_rad = Sqrt(-1);
 
     BG_flag = 0;
-    SA56Sc_temp = 0;
+    //SA56Sc_temp = 0;
     
     Double_t x[6];
 
@@ -570,18 +671,18 @@ int main(int argc, char *argv[]){
     rad[4] = FDC2_X;
     rad[5] = FDC2_A*1000;
 
-    //brhoSA = MDF_Brho_A56Z20(x);
-    //lengSA = MDF_Len_A56Z20(x);
-    brhoSA = MDF_Brho_A54Z20(x);
-    lengSA = MDF_Len_A54Z20(x);
+    brhoSA = MDF_Brho_A56Z20(x);
+    lengSA = MDF_Len_A56Z20(x);
+    //brhoSA = MDF_Brho_A54Z20(x);
+    //lengSA = MDF_Len_A54Z20(x);
 
     //brhoSA_tan = MDF_Brho_A56Z20(tan);
     //lengSA_tan = MDF_Len_A56Z20(tan);
 
-    //brhoSA_rad = MDF_Brho_A56Z20(rad);
-    //lengSA_rad = MDF_Len_A56Z20(rad);
-    brhoSA_rad = MDF_Brho_A54Z20(rad);
-    lengSA_rad = MDF_Len_A54Z20(rad);
+    brhoSA_rad = MDF_Brho_A56Z20(rad);
+    lengSA_rad = MDF_Len_A56Z20(rad);
+    //brhoSA_rad = MDF_Brho_A54Z20(rad);
+    //lengSA_rad = MDF_Len_A54Z20(rad);
     
     
     //@@@ HODO @@@
@@ -630,13 +731,13 @@ int main(int argc, char *argv[]){
 
     //@@@ SBT1 slew correction @@@
 
-    SBT1_Time += -35./sqrt(SBT1_QL)+1.095 -25./sqrt(SBT1_QR)+1.179;
-    SBT2_Time += -28./sqrt(SBT2_QL)+1.230 -40./sqrt(SBT2_QR)+2.118;
+    //SBT1_Time += -35./sqrt(SBT1_QL)+1.095 -25./sqrt(SBT1_QR)+1.179;
+    //SBT2_Time += -28./sqrt(SBT2_QL)+1.230 -40./sqrt(SBT2_QR)+2.118;
 
-    sbt_t = SBT1_Time;
+    //sbt_t = SBT1_Time;
     
-    //t_minoshodo_notcor = hodo_t - SBT1_Time - (Dist_SBTTarget/betaF7F13/clight) + toff_hodo;
-    t_minoshodo_notcor = hodo_t - SBT1_Time - (Dist_SBTTarget/betaF3F13/clight) + toff_hodo;
+    //t_minoshodo_notcor = hodo_t - sbt1_Tslew - (Dist_SBTTarget/betaF7F13/clight) + toff_hodo;
+    t_minoshodo_notcor = hodo_t - sbt1_Tslew - (Dist_SBTTarget/betaF3F13/clight) + toff_hodo;
 
     switch(hodo_id){
     case  2: t_minoshodo = t_minoshodo_notcor + hodo02_tofcor[RunNum]; break;
@@ -696,8 +797,8 @@ int main(int argc, char *argv[]){
 
     //===== BG cut =====
     //=== cut by CUTG ===
-    if(!csbt1->IsInside(SBT1_TR-SBT1_TL,log(SBT1_QL/SBT1_QR))) BG_flag = 1;
-    if(cSA56Sc_temp->IsInside(aoqSA,zetSA)) SA56Sc_temp = 1;
+    //if(!csbt1->IsInside(SBT1_TR-SBT1_TL,log(SBT1_QL/SBT1_QR))) BG_flag = 1;
+    //if(cSA56Sc_temp->IsInside(aoqSA,zetSA)) SA56Sc_temp = 1;
     
     //=== cut by Hodo Time ===
     for(Int_t i=0;i<24;i++){
@@ -708,5 +809,10 @@ int main(int argc, char *argv[]){
   anafile_smri->cd();
   anatrS->Write();
   anafile_smri->Close();
+
+  time(&stop);
+  printf("Elapsed time: %.1f seconds\n",difftime(stop,start));
+
+  printf("%d k events have been treated.\n",nEntry/1000);
   cout << "Conversion finished!" << endl;
 }//main()
