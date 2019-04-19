@@ -313,9 +313,9 @@ int main(int argc, char *argv[]){
   //===== Load .dat files =====
   TEnv *env = new TEnv(env_set->GetValue("geometrydata",""));
   printf("%-20s %s \n","Geometry file:",env_set->GetValue("geometrydata",""));
-  TEnv *env_pla  = new TEnv("/home/koiwai/analysis/db/pla2pos_Z.dat");
+  TEnv *env_pla  = new TEnv("/home/koiwai/analysis/datfiles/pla2pos_Z.dat");
   printf("%-20s %s \n","Pla2Pos calib file:",env_set->GetValue("pla2pos",""));
-  TEnv *env_q = new TEnv("/home/koiwai/analysis/db/plaQ2f7icE.dat");
+  TEnv *env_q = new TEnv("/home/koiwai/analysis/datfiles/plaQ2f7icE.dat");
   
   //===== Create output file/tree =========================================
   TString AnaFileName = Form("/home/koiwai/analysis/rootfiles/ana/beam/ana_beam%04d.root",FileNumber);
@@ -563,38 +563,38 @@ int main(int argc, char *argv[]){
   anatrB->Branch("f71flag",&f71flag);
   anatrB->Branch("f72flag",&f72flag);
 
-  anatrB->Branch("br64v",&br64v); 
-  anatrB->Branch("br63v",&br63v); 
-  anatrB->Branch("br62v",&br62v); 
-  anatrB->Branch("br61v",&br61v); 
-  anatrB->Branch("br60v",&br60v); 
-  anatrB->Branch("br62ti",&br62ti);
-  anatrB->Branch("br61ti",&br61ti);
-  anatrB->Branch("br60ti",&br60ti);
-  anatrB->Branch("br59ti",&br59ti);
-  anatrB->Branch("br58ti",&br58ti);
-  anatrB->Branch("br57ti",&br57ti);
-  anatrB->Branch("br59sc",&br59sc);
-  anatrB->Branch("br58sc",&br58sc);
-  anatrB->Branch("br57sc",&br57sc);
-  anatrB->Branch("br56sc",&br56sc);
-  anatrB->Branch("br55sc",&br55sc);
-  anatrB->Branch("br54sc",&br54sc);
-  anatrB->Branch("br56ca",&br56ca);
-  anatrB->Branch("br55ca",&br55ca);
-  anatrB->Branch("br54ca",&br54ca);
-  anatrB->Branch("br53ca",&br53ca);
-  anatrB->Branch("br52ca",&br52ca);
-  anatrB->Branch("br54k",&br54k); 
-  anatrB->Branch("br53k",&br53k); 
-  anatrB->Branch("br52k",&br52k); 
-  anatrB->Branch("br51k",&br51k); 
-  anatrB->Branch("br50k",&br50k); 
-  anatrB->Branch("br49k",&br49k); 
-  anatrB->Branch("br51ar",&br51ar);
-  anatrB->Branch("br50ar",&br50ar);
-  anatrB->Branch("br49ar",&br49ar);
-  anatrB->Branch("br48ar",&br48ar);
+  anatrB->Branch("br64v",&br64v,"br64v/O"); 
+  anatrB->Branch("br63v",&br63v,"br63v/O"); 
+  anatrB->Branch("br62v",&br62v,"br62v/O"); 
+  anatrB->Branch("br61v",&br61v,"br61v/O"); 
+  anatrB->Branch("br60v",&br60v,"br60v/O"); 
+  anatrB->Branch("br62ti",&br62ti,"br62ti/O");
+  anatrB->Branch("br61ti",&br61ti,"br61ti/O");
+  anatrB->Branch("br60ti",&br60ti,"br60ti/O");
+  anatrB->Branch("br59ti",&br59ti,"br59ti/O");
+  anatrB->Branch("br58ti",&br58ti,"br58ti/O");
+  anatrB->Branch("br57ti",&br57ti,"br57ti/O");
+  anatrB->Branch("br59sc",&br59sc,"br59sc/O");
+  anatrB->Branch("br58sc",&br58sc,"br58sc/O");
+  anatrB->Branch("br57sc",&br57sc,"br57sc/O");
+  anatrB->Branch("br56sc",&br56sc,"br56sc/O");
+  anatrB->Branch("br55sc",&br55sc,"br55sc/O");
+  anatrB->Branch("br54sc",&br54sc,"br54sc/O");
+  anatrB->Branch("br56ca",&br56ca,"br56ca/O");
+  anatrB->Branch("br55ca",&br55ca,"br55ca/O");
+  anatrB->Branch("br54ca",&br54ca,"br54ca/O");
+  anatrB->Branch("br53ca",&br53ca,"br53ca/O");
+  anatrB->Branch("br52ca",&br52ca,"br52ca/O");
+  anatrB->Branch("br54k",&br54k,"br54k/O"); 
+  anatrB->Branch("br53k",&br53k,"br53k/O"); 
+  anatrB->Branch("br52k",&br52k,"br52k/O"); 
+  anatrB->Branch("br51k",&br51k,"br51k/O"); 
+  anatrB->Branch("br50k",&br50k,"br50k/O"); 
+  anatrB->Branch("br49k",&br49k,"br49k/O"); 
+  anatrB->Branch("br51ar",&br51ar,"br51ar/O");
+  anatrB->Branch("br50ar",&br50ar,"br50ar/O");
+  anatrB->Branch("br49ar",&br49ar,"br49ar/O");
+  anatrB->Branch("br48ar",&br48ar,"br48ar/O");
   
   infile->cd();
 
