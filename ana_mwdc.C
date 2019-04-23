@@ -23,10 +23,10 @@ int main(int argc, char *argv[]){
 
   Int_t FileNum = TString(argv[1]).Atoi();
 
-  printf("\n%s %d %s \n\n","=== Exexute ana_mwdc for RUN",FileNumber,"===");
+  printf("\n%s %d %s \n\n","=== Exexute ana_mwdc for RUN",FileNum,"===");
   
   //===== Load input file =====
-  TString infname = Form("/home/koiwai/analysis/rootfiles/all/run%04d_ALL.root",FileNum);
+  TString infname = Form("/home/koiwai/analysis/rootfiles/unpacked/run%04d.root",FileNum);
   TFile *infile = TFile::Open(infname);
   
   TTree *caltr;
