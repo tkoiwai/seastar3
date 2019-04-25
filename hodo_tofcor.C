@@ -129,7 +129,7 @@ void hodo_tofcor(Int_t runnum, Int_t hodo_id){
     fout << runnum << ":" << tofcor14 << endl;
     break;
   case 15:
-    anatrS->Draw("t_minoshodo_notcor>>h(200,55,67)","BG_flag_beam&&hodo_id==15&&br561v");
+    anatrS->Draw("t_minoshodo_notcor>>h(200,55,67)","BG_flag_beam&&hodo_id==15&&br61v");
     TF1 *func = new TF1("func","gaus");
     h->Fit("func");
     Double_t tofcor15 = 60.9090 - func->GetParameter(1);
