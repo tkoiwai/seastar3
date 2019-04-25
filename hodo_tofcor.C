@@ -2,6 +2,8 @@
 
 void hodo_tofcor(Int_t runnum, Int_t hodo_id){
 
+  gROOT->ProcessLine( "gErrorIgnoreLevel = 2001;");
+  
   //loadsmri(runnum);
   TString FileNameS = Form("/home/koiwai/analysis/rootfiles/ana/smri/ana_smri%04d.root",runnum);
   TFile *f = TFile::Open(FileNameS);
