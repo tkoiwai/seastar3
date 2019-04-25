@@ -268,7 +268,8 @@ int main(int argc, char *argv[]){
   TEnv *env_hodoq        = new TEnv("/home/koiwai/analysis/db/hodo_qcor.dat");
   TEnv *env_hodoq2z      = new TEnv("/home/koiwai/analysis/db/hodo_q2z.dat");
   TEnv *env_hodozraw2z   = new TEnv("/home/koiwai/analysis/db/hodo_zraw2z.dat");
-  TEnv *env_hodo02tofcor = new TEnv("/home/koiwai/analysis/db/hodo02_tofcor.dat");
+  /*
+  //TEnv *env_hodo02tofcor = new TEnv("/home/koiwai/analysis/db/hodo02_tofcor.dat");
   TEnv *env_hodo03tofcor = new TEnv("/home/koiwai/analysis/db/hodo03_tofcor.dat");
   TEnv *env_hodo04tofcor = new TEnv("/home/koiwai/analysis/db/hodo04_tofcor.dat");
   TEnv *env_hodo05tofcor = new TEnv("/home/koiwai/analysis/db/hodo05_tofcor.dat");
@@ -290,7 +291,13 @@ int main(int argc, char *argv[]){
   TEnv *env_hodo21tofcor = new TEnv("/home/koiwai/analysis/db/hodo21_tofcor.dat");
   TEnv *env_hodo22tofcor = new TEnv("/home/koiwai/analysis/db/hodo22_tofcor.dat");
   TEnv *env_hodo23tofcor = new TEnv("/home/koiwai/analysis/db/hodo23_tofcor.dat");
-  TEnv *env_hodo24tofcor = new TEnv("/home/koiwai/analysis/db/hodo24_tofcor.dat");
+  //TEnv *env_hodo24tofcor = new TEnv("/home/koiwai/analysis/db/hodo24_tofcor.dat");
+  */
+  TEnv *env_hodotofcor[24];
+  for(int id=0;id<24;++id){
+    env_hodotofcor[id] = new TEnv(Form("/home/koiwai/analysis/db/hodo%02d_tofcor.dat",id+1));
+  }
+  
   TEnv *env_hodoaoqcor   = new TEnv("/home/koiwai/analysis/db/hodo_aoqcor.dat");
   
   //===== Create output file/tree =====
@@ -378,7 +385,7 @@ int main(int argc, char *argv[]){
     hodo_aoqcor[i][1] = env_hodoaoqcor->GetValue(Form("%02dp1",i+1),1.0);
     //cout << hodo_aoqcor[i][0] << endl;
   }
-  
+  /*
   Double_t hodo02_tofcor[231];
   for(Int_t i=0;i<231;i++){
     const char *n = Form("%d",FileNum);
@@ -494,7 +501,16 @@ int main(int argc, char *argv[]){
     const char *n = Form("%d",FileNum);
     hodo24_tofcor[i] = env_hodo24tofcor->GetValue(n,0.0);
   }
+  */
 
+  Double_t hodo_tofcor[24];
+  const char *nn = Form("%d",FileNum);
+  for(int id=0;id<24;++id){
+    //TEnv *env_hodoIDtofcor = (TEnv*)Form("env_hodo%02dtofcor",id+1);
+    hodo_tofcor[id] = env_hodotofcor[id]->GetValue(nn,0.0);
+    //hodo_tofcor[id] = env_hodoIDtofcor->GetValue(nn,0.0);
+    //cout << "hodo_tofcor" << id << " " << hodo_tofcor[id] << endl;
+  }
   /* //try some day...
   Double_t hodo_tofcor[24][231];
   //for(Int_t id=0;id<24;id++){
@@ -618,7 +634,7 @@ int main(int argc, char *argv[]){
   //===== Begin LOOP =====
   int nEntry = caltr->GetEntries();
   for(int iEntry=0;iEntry<nEntry;++iEntry){
-    //for(int iEntry=0;iEntry<1;++iEntry){
+  //for(int iEntry=0;iEntry<1;++iEntry){
   
     if(iEntry%100 == 0){
       clog<< iEntry/1000 << "k events treated..." << "\r";
@@ -739,6 +755,7 @@ int main(int argc, char *argv[]){
     //t_minoshodo_notcor = hodo_t - sbt1_Tslew - (Dist_SBTTarget/betaF7F13/clight) + toff_hodo;
     t_minoshodo_notcor = hodo_t - sbt1_Tslew - (Dist_SBTTarget/betaF3F13/clight) + toff_hodo;
 
+    /*
     switch(hodo_id){
     case  2: t_minoshodo = t_minoshodo_notcor + hodo02_tofcor[RunNum]; break;
     case  3: t_minoshodo = t_minoshodo_notcor + hodo03_tofcor[RunNum]; break;
@@ -764,6 +781,8 @@ int main(int argc, char *argv[]){
     case 23: t_minoshodo = t_minoshodo_notcor + hodo23_tofcor[RunNum]; break;
     case 24: t_minoshodo = t_minoshodo_notcor + hodo24_tofcor[RunNum]; break;					 
     }
+    */
+    t_minoshodo = t_minoshodo_notcor + hodo_tofcor[hodo_id-1];
     
     v_minoshodo = lengSA_rad/t_minoshodo;
     beta_minoshodo  = v_minoshodo/clight;
