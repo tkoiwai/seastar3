@@ -4,6 +4,10 @@
 #include<math.h>
 #include<bitset>
 
+#include<iomanip>
+#include<sys/time.h>
+#include<signal.h>
+
 #include"TROOT.h"
 #include"TDirectory.h"
 #include"TFile.h"
@@ -23,8 +27,25 @@
 using namespace std;
 using namespace TMath;
 
-int main(int argc, char *argv[]){
+bool signal_recieved = false;
+void signalhandler(int sig){
+  if(sig==SIGINT){
+    signal_recieved = true;
+  }
+}
 
+double get_time(){
+  struct timeval t;
+  gettimeofday(&t,NULL);
+  double d = t.tv_sec + (double)t.tv_usec/1000000;
+  return d;
+}
+
+int main(int argc, char *argv[]){
+  double time_start = get_time();
+  signal(SIGINT,signalhandler);
+
+  
   time_t start, stop;
   time(&start);
 
@@ -632,12 +653,20 @@ int main(int argc, char *argv[]){
   //anatrS->Branch("sbt_t",&sbt_t);
   
   //===== Begin LOOP =====
+  double time_prev = 0.;
   int nEntry = caltr->GetEntries();
   for(int iEntry=0;iEntry<nEntry;++iEntry){
   //for(int iEntry=0;iEntry<1;++iEntry){
-  
-    if(iEntry%100 == 0){
-      clog<< iEntry/1000 << "k events treated..." << "\r";
+    
+    if(iEntry%1000 == 0){
+      //clog << iEntry/1000 << "k events treated..." << endl;
+      //time(&t1);
+      //cout <<
+      double time_end = get_time();
+      cout << (100.*iEntry)/nEntry << " % (" << iEntry << " events) done\t" << iEntry/(time_end - time_start) << " events/s\t" << (nEntry - iEntry)*(time_end - time_start)/(double)iEntry << " s to go\r " ;
+      if(iEntry!=1000) cout << "current speed: " << 1000./(time_end - time_prev) << " events/s\t" << endl;
+      else cout << endl;
+      time_prev = get_time();
     }
 
     caltr->GetEntry(iEntry);
@@ -832,6 +861,13 @@ int main(int argc, char *argv[]){
   time(&stop);
   printf("Elapsed time: %.1f seconds\n",difftime(stop,start));
 
-  printf("%d k events have been treated.\n",nEntry/1000);
+  double time_end = get_time();
+  cout << endl << "Program Run Time " << time_end - time_start << " s." << endl;
+  cout << nEntry/(time_end - time_start) << " events/s." << endl;
+
+
+
+  
+  //printf("%d k events have been treated.\n",nEntry/1000);
   cout << "Conversion finished!" << endl;
 }//main()
