@@ -878,5 +878,5 @@ int main(int argc, char *argv[]){
 
   
   //printf("%d k events have been treated.\n",nEntry/1000);
-  cout << "Conversion finished!" << endl;
+  cout << "RUN " << FileNum << ":" << "Conversion finished! : smri" << FileNum << "ok" << endl;
 }//main()
