@@ -578,6 +578,8 @@ int main(int argc, char *argv[]){
   //Int_t SA56Sc_temp;
 
   //double sbt_t;
+
+  double hodo09_tofcor;
   
   //===== Create anatree Branch =====
   anatrS->Branch("RunNumber",&RunNum);
@@ -647,6 +649,8 @@ int main(int argc, char *argv[]){
   anatrS->Branch("br49ar",&br49ar);
   anatrS->Branch("br48ar",&br48ar);
 
+  anatrS->Branch("hodo09_tofcor",&hodo09_tofcor);
+  
   //anatrS->Branch("BR56Sc",&BR56Sc);
   //anatrS->Branch("SA56Sc_temp",&SA56Sc_temp);
 
@@ -656,7 +660,7 @@ int main(int argc, char *argv[]){
   double time_prev = 0.;
   int nEntry = caltr->GetEntries();
   for(int iEntry=0;iEntry<nEntry;++iEntry){
-  //for(int iEntry=0;iEntry<1;++iEntry){
+    //for(int iEntry=0;iEntry<1;++iEntry){
     
     if(iEntry%1000 == 0){
       //clog << iEntry/1000 << "k events treated..." << endl;
@@ -760,6 +764,8 @@ int main(int argc, char *argv[]){
       allHodo_T[i] = Sqrt(-1);
     }
 
+    hodo09_tofcor = Sqrt(-1);
+
     //=== Calc. ===
     for(Int_t i=0;i<24;i++){
       allHodo_Q[i] = Hodoi_QCal[i]*hodo_qcor[i];
@@ -811,7 +817,10 @@ int main(int argc, char *argv[]){
     case 24: t_minoshodo = t_minoshodo_notcor + hodo24_tofcor[RunNum]; break;					 
     }
     */
-    t_minoshodo = t_minoshodo_notcor + hodo_tofcor[hodo_id-1];
+    //t_minoshodo = t_minoshodo_notcor + hodo_tofcor[hodo_id-1];
+    t_minoshodo = hodo_t - sbt1_Tslew - (Dist_SBTTarget/betaF3F13/clight) + toff_hodo + hodo_tofcor[hodo_id-1];
+
+    hodo09_tofcor = hodo_tofcor[9-1];
     
     v_minoshodo = lengSA_rad/t_minoshodo;
     beta_minoshodo  = v_minoshodo/clight;
