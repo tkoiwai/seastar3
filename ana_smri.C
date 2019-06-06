@@ -96,11 +96,11 @@ int main(int argc, char *argv[]){
   
   //===== Load .dat files =======================================================================
   TEnv *env              = new TEnv("/home/koiwai/analysis/db/geometry_psp.dat");
-  TEnv *env_hodot        = new TEnv("/home/koiwai/analysis/db/hodo_toff.dat");
-  TEnv *env_hodoq        = new TEnv("/home/koiwai/analysis/db/hodo_qcor.dat");
-  TEnv *env_hodoq2z      = new TEnv("/home/koiwai/analysis/db/hodo_q2z.dat");
-  TEnv *env_hodozraw2z   = new TEnv("/home/koiwai/analysis/db/hodo_zraw2z.dat");
-  TEnv *env_hodotofcor[24];
+  TEnv *env_hodot        = new TEnv("/home/koiwai/analysis/db/hodo_toff.dat"); //unpacked -> hodo_t
+  TEnv *env_hodoq        = new TEnv("/home/koiwai/analysis/db/hodo_qcor.dat"); //unpacked -> hodo_q
+  //TEnv *env_hodoq2z      = new TEnv("/home/koiwai/analysis/db/hodo_q2z.dat");  
+  TEnv *env_hodozraw2z   = new TEnv("/home/koiwai/analysis/db/hodo_zraw2z.dat"); // zraw -> z
+  TEnv *env_hodotofcor[24]; // t_minoshodo_notcor + hodo_tofcor = t_minodhodo
   for(int id=0;id<24;++id)
     env_hodotofcor[id] = new TEnv(Form("/home/koiwai/analysis/db/hodo%02d_tofcor.dat",id+1));
   TEnv *env_hodoaoqcor   = new TEnv("/home/koiwai/analysis/db/hodo_aoqcor.dat");
@@ -130,21 +130,27 @@ int main(int argc, char *argv[]){
   //===== Declare anatree const.s ===============================================================
   Double_t hodo_toff[24], hodo_qcor[24];
   //Double_t hodo_t2q0[24], hodo_t2q1[24];
-  //Double_t hodo_zraw2z0[24], hodo_zraw2z1[24], hodo_zraw2z2[24];
-  Double_t hodo_235T_zraw2z_p0[24], hodo_235T_zraw2z_p1[24];
-  Double_t hodo_270T_zraw2z_p0[24], hodo_270T_zraw2z_p1[24];
+  Double_t hodo_zraw2z_p0[24], hodo_zraw2z_p1[24];// hodo_zraw2z2[24];
+  //Double_t hodo_235T_zraw2z_p0[24], hodo_235T_zraw2z_p1[24];
+  //Double_t hodo_270T_zraw2z_p0[24], hodo_270T_zraw2z_p1[24];
   Double_t hodo_zraw2z[2];
   for(Int_t id=0;id<24;id++){
     hodo_toff[id] = env_hodot->GetValue(Form("hodo_toff_%02d",id+1),0.0);
     hodo_qcor[id] = env_hodoq->GetValue(Form("hodo_qcor_%02d",id+1),0.0);
-    hodo_235T_zraw2z_p0[id] = env_hodozraw2z->GetValue(Form("235T_%02d_p0",id+1),0.0);
-    hodo_235T_zraw2z_p1[id] = env_hodozraw2z->GetValue(Form("235T_%02d_p1",id+1),0.0);
-    hodo_270T_zraw2z_p0[id] = env_hodozraw2z->GetValue(Form("270T_%02d_p0",id+1),0.0);
-    hodo_270T_zraw2z_p1[id] = env_hodozraw2z->GetValue(Form("270T_%02d_p1",id+1),0.0);
+    //hodo_235T_zraw2z_p0[id] = env_hodozraw2z->GetValue(Form("235T_%02d_p0",id+1),0.0);
+    //hodo_235T_zraw2z_p1[id] = env_hodozraw2z->GetValue(Form("235T_%02d_p1",id+1),0.0);
+    //hodo_270T_zraw2z_p0[id] = env_hodozraw2z->GetValue(Form("270T_%02d_p0",id+1),0.0);
+    //hodo_270T_zraw2z_p1[id] = env_hodozraw2z->GetValue(Form("270T_%02d_p1",id+1),0.0);
+    hodo_zraw2z_p0[id] = env_hodozraw2z->GetValue(Form("zraw2z_%02d_p0",id+1),0.0);
+    hodo_zraw2z_p1[id] = env_hodozraw2z->GetValue(Form("zraw2z_%02d_p1",id+1),1.0);
   }
-  hodo_zraw2z[0] = env_hodozraw2z->GetValue("zraw2z_p0",0.0);
-  hodo_zraw2z[1] = env_hodozraw2z->GetValue("zraw2z_p1",0.0);
+  //hodo_zraw2z[0] = env_hodozraw2z->GetValue("zraw2z_p0",0.0);
+  //hodo_zraw2z[1] = env_hodozraw2z->GetValue("zraw2z_p1",0.0);
 
+  cout << "hodo_toff_09 " << hodo_toff[8] << endl;
+  cout << "zraw2z_09_p0 " << hodo_zraw2z_p0[9] << endl;
+  cout << "zraw2z_09_p1 " << hodo_zraw2z_p1[9] << endl;
+  
   Double_t hodo_aoqcor[24][2];
   for(Int_t i=0;i<24;i++){
     hodo_aoqcor[i][0] = env_hodoaoqcor->GetValue(Form("%02dp0",i+1),0.0);
@@ -168,16 +174,17 @@ int main(int argc, char *argv[]){
   //===== Begin LOOP =============================================================================
   double time_prev = 0.;
   int nEntry = caltr->GetEntries();
-  //for(int iEntry=0;iEntry<nEntry;++iEntry){
-    for(int iEntry=0;iEntry<10;++iEntry){
+  //int nEntry = 10000;
+  for(int iEntry=0;iEntry<nEntry;++iEntry){
+  //for(int iEntry=0;iEntry<100000;++iEntry){
     
     if(iEntry%1000 == 0){
       //clog << iEntry/1000 << "k events treated..." << endl;
       //time(&t1);
       //cout <<
       double time_end = get_time();
-      cout << (100.*iEntry)/nEntry << " % (" << iEntry << " events) done\t" << iEntry/(time_end - time_start) << " events/s\t" << (nEntry - iEntry)*(time_end - time_start)/(double)iEntry << " s to go\r " ;
-      if(iEntry!=1000) cout << "current speed: " << 1000./(time_end - time_prev) << " events/s\t" << endl;
+      cout << "\r" << (100.*iEntry)/nEntry << " % (" << iEntry << " events) done\t" << iEntry/(time_end - time_start) << " events/s  \t" << (nEntry - iEntry)*(time_end - time_start)/(double)iEntry << " s to go  " ;
+      if(iEntry!=1000) cout << "current speed: " << 1000./(time_end - time_prev) << " events/s \t" << endl;
       else cout << endl;
       time_prev = get_time();
     }
@@ -306,12 +313,14 @@ int main(int argc, char *argv[]){
     
     //zetSA235 = hodo_235T_zraw2z_p0[hodo_id-1] + hodo_235T_zraw2z_p1[hodo_id-1]*zraw;
     //zetSA270 = hodo_270T_zraw2z_p0[hodo_id-1] + hodo_270T_zraw2z_p1[hodo_id-1]*zraw;
-    if(hodo_id==3||hodo_id==4||hodo_id==5)
-      zetSA = hodo_235T_zraw2z_p0[hodo_id-1] + hodo_235T_zraw2z_p1[hodo_id-1]*zraw;
-    else
-      zetSA = hodo_270T_zraw2z_p0[hodo_id-1] + hodo_270T_zraw2z_p1[hodo_id-1]*zraw;
+    //if(hodo_id==3||hodo_id==4||hodo_id==5)
+    //  zetSA = hodo_235T_zraw2z_p0[hodo_id-1] + hodo_235T_zraw2z_p1[hodo_id-1]*zraw;
+    //else
+    //  zetSA = hodo_270T_zraw2z_p0[hodo_id-1] + hodo_270T_zraw2z_p1[hodo_id-1]*zraw;
 
-    zetSA = hodo_zraw2z[0] + hodo_zraw2z[1]*zetSA;
+    zetSA = hodo_zraw2z_p0[hodo_id-1] + hodo_zraw2z_p1[hodo_id-1]*zraw;
+    //if(hodo_id==9)
+    //  zetSA = 0.0060259114 * zraw - 3.8686351311;
     
     aoqSA_notcor = brhoSA_rad/beta_minoshodo/gamma_minoshodo*clight/mu;
     aoqSA_tmpcor = 0.545 + 0.7551*aoqSA_notcor;
