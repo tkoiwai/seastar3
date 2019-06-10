@@ -147,10 +147,6 @@ int main(int argc, char *argv[]){
   //hodo_zraw2z[0] = env_hodozraw2z->GetValue("zraw2z_p0",0.0);
   //hodo_zraw2z[1] = env_hodozraw2z->GetValue("zraw2z_p1",0.0);
 
-  cout << "hodo_toff_09 " << hodo_toff[8] << endl;
-  cout << "zraw2z_09_p0 " << hodo_zraw2z_p0[9] << endl;
-  cout << "zraw2z_09_p1 " << hodo_zraw2z_p1[9] << endl;
-  
   Double_t hodo_aoqcor[24][2];
   for(Int_t i=0;i<24;i++){
     hodo_aoqcor[i][0] = env_hodoaoqcor->GetValue(Form("%02dp0",i+1),0.0);
@@ -173,8 +169,8 @@ int main(int argc, char *argv[]){
  
   //===== Begin LOOP =============================================================================
   double time_prev = 0.;
-  int nEntry = caltr->GetEntries();
-  //int nEntry = 10000;
+  //int nEntry = caltr->GetEntries();
+  int nEntry = 100000;
   for(int iEntry=0;iEntry<nEntry;++iEntry){
   //for(int iEntry=0;iEntry<100000;++iEntry){
     
@@ -184,8 +180,8 @@ int main(int argc, char *argv[]){
       //cout <<
       double time_end = get_time();
       cout << "\r" << (100.*iEntry)/nEntry << " % (" << iEntry << " events) done\t" << iEntry/(time_end - time_start) << " events/s  \t" << (nEntry - iEntry)*(time_end - time_start)/(double)iEntry << " s to go  " ;
-      if(iEntry!=1000) cout << "current speed: " << 1000./(time_end - time_prev) << " events/s \t" << endl;
-      else cout << endl;
+      if(iEntry!=1000) cout << "current speed: " << 1000./(time_end - time_prev) << " events/s \t";
+      //else cout << endl;
       time_prev = get_time();
     }
 
@@ -199,8 +195,8 @@ int main(int argc, char *argv[]){
     //=== Initialize ===-------------------------------------------------------------------------
     brhoSA = Sqrt(-1);
     lengSA = Sqrt(-1);
-    //brhoSA_tan = Sqrt(-1);
-    //lengSA_tan = Sqrt(-1);
+    brhoSA_tan = Sqrt(-1);
+    lengSA_tan = Sqrt(-1);
     brhoSA_rad = Sqrt(-1);
     lengSA_rad = Sqrt(-1);
 
@@ -216,7 +212,7 @@ int main(int argc, char *argv[]){
     x[4] = FDC2_X;
     x[5] = FDC2_A;
 
-    /*
+    
     Double_t tan[6];
 
     tan[0] = FDC1_X;
@@ -225,7 +221,7 @@ int main(int argc, char *argv[]){
     tan[3] = Tan(FDC1_B)*1000;
     tan[4] = FDC2_X;
     tan[5] = Tan(FDC2_A)*1000;
-    */
+    
     
     Double_t rad[6];
 
@@ -241,8 +237,8 @@ int main(int argc, char *argv[]){
     //brhoSA = MDF_Brho_A54Z20(x);
     //lengSA = MDF_Len_A54Z20(x);
 
-    //brhoSA_tan = MDF_Brho_A56Z20(tan);
-    //lengSA_tan = MDF_Len_A56Z20(tan);
+    brhoSA_tan = MDF_Brho_A56Z20(tan);
+    lengSA_tan = MDF_Len_A56Z20(tan);
 
     brhoSA_rad = MDF_Brho_A56Z20(rad);
     lengSA_rad = MDF_Len_A56Z20(rad);
@@ -265,11 +261,11 @@ int main(int argc, char *argv[]){
 
     aoqSA        = Sqrt(-1);
     aoqSA_notcor = Sqrt(-1);
-    aoqSA_tmpcor = Sqrt(-1);
+    //aoqSA_tmpcor = Sqrt(-1);
 
     zetSA    = Sqrt(-1);
-    zetSA235 = Sqrt(-1);
-    zetSA270 = Sqrt(-1);
+    //zetSA235 = Sqrt(-1);
+    //zetSA270 = Sqrt(-1);
     zraw     = Sqrt(-1);
     dev      = Sqrt(-1);
 
@@ -322,8 +318,8 @@ int main(int argc, char *argv[]){
     //if(hodo_id==9)
     //  zetSA = 0.0060259114 * zraw - 3.8686351311;
     
-    aoqSA_notcor = brhoSA_rad/beta_minoshodo/gamma_minoshodo*clight/mu;
-    aoqSA_tmpcor = 0.545 + 0.7551*aoqSA_notcor;
+    aoqSA_notcor = brhoSA_tan/beta_minoshodo/gamma_minoshodo*clight/mu;
+    //aoqSA_tmpcor = 0.545 + 0.7551*aoqSA_notcor;
     //aoqSA = hodo_aoqcor[hodo_id-1][0] + hodo_aoqcor[hodo_id-1][1]*aoqSA_tmpcor;
     aoqSA = hodo_aoqcor[hodo_id-1][0] + hodo_aoqcor[hodo_id-1][1]*aoqSA_notcor;
         
