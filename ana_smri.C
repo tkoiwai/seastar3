@@ -53,7 +53,7 @@ int main(int argc, char *argv[]){
 
   Int_t FileNum = TString(argv[1]).Atoi();
 
-  printf("\n%s %d %s \n\n","=== Exexute ana_smri for RUN",FileNum,"===");
+  printf("\n%s %d %s \n\n","=== Execute ana_smri for RUN",FileNum,"===");
   
   //===== Load input file =======================================================================
   TString infname = Form("/home/koiwai/analysis/rootfiles/unpacked/run%04d.root",FileNum);
@@ -179,9 +179,9 @@ int main(int argc, char *argv[]){
       //time(&t1);
       //cout <<
       double time_end = get_time();
-      cout << "\r" << (100.*iEntry)/nEntry << " % (" << iEntry << " events) done\t" << iEntry/(time_end - time_start) << " events/s  \t" << (nEntry - iEntry)*(time_end - time_start)/(double)iEntry << " s to go  " ;
-      if(iEntry!=1000) cout << "current speed: " << 1000./(time_end - time_prev) << " events/s \t";
-      //else cout << endl;
+      cout << (100.*iEntry)/nEntry << " % (" << iEntry << " events) done\t" << iEntry/(time_end - time_start) << " events/s  \t" << (nEntry - iEntry)*(time_end - time_start)/(double)iEntry << " s to go  " ;
+      if(iEntry!=1000) cout << "current speed: " << 1000./(time_end - time_prev) << " events/s \r" << flush;
+      else cout << endl;
       time_prev = get_time();
     }
 
@@ -273,7 +273,7 @@ int main(int argc, char *argv[]){
       allHodo_T[i] = Sqrt(-1);
     }
 
-    hodo09_tofcor = Sqrt(-1);
+    //hodo09_tofcor = Sqrt(-1);
 
     tof13T   = Sqrt(-1);
     tof13H   = Sqrt(-1);
@@ -281,7 +281,7 @@ int main(int argc, char *argv[]){
     tofTH    = Sqrt(-1);
 
     Initialize_smri();
-    if(EventNum%=1000) init_test = kTRUE;
+    if(EventNum%1000==0) init_test = kTRUE;
 
     //=== Calc. ===--------------------------------------------------------------------------------
     for(Int_t i=0;i<24;i++){
@@ -299,7 +299,7 @@ int main(int argc, char *argv[]){
     tof13T   = Dist_SBTTarget/betaF7F13/clight;
     tof13H   = hodo_t - sbt1_Tslew;
     tofTH_nc = tof13H - tof13T + toff_hodo;
-    tofTH    = tofTH_nc + hodo_tocor[hodo_id-1];
+    tofTH    = tofTH_nc + hodo_tofcor[hodo_id-1];
     
     //t_minoshodo_notcor = hodo_t - sbt1_Tslew - (Dist_SBTTarget/betaF7F13/clight) + toff_hodo;
     t_minoshodo_notcor = hodo_t - sbt1_Tslew - (Dist_SBTTarget/betaF3F13/clight) + toff_hodo;
@@ -307,7 +307,7 @@ int main(int argc, char *argv[]){
     //t_minoshodo = t_minoshodo_notcor + hodo_tofcor[hodo_id-1];
     t_minoshodo = hodo_t - sbt1_Tslew - (Dist_SBTTarget/betaF3F13/clight) + toff_hodo + hodo_tofcor[hodo_id-1];
 
-    hodo09_tofcor = hodo_tofcor[9-1];
+    //hodo09_tofcor = hodo_tofcor[9-1];
     
     v_minoshodo = lengSA_tan/t_minoshodo;
     beta_minoshodo  = v_minoshodo/clight;
