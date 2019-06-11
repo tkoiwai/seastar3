@@ -186,7 +186,7 @@ int main(int argc, char *argv[]){
       double time_end = get_time();
       cout << (100.*iEntry)/nEntry << " % (" << iEntry << " events) done\t" << iEntry/(time_end - time_start) << " events/s  \t" << (nEntry - iEntry)*(time_end - time_start)/(double)iEntry << " s to go  " ;
       if(iEntry!=1000) cout << "current speed: " << 1000./(time_end - time_prev) << " events/s \r" << flush;
-      else cout << endl;
+      //else cout << endl;
       time_prev = get_time();
     }
 
@@ -349,6 +349,7 @@ int main(int argc, char *argv[]){
   anafile_smri->Close();
 
   time(&stop);
+  cout << endl;
   printf("Elapsed time: %.1f seconds\n",difftime(stop,start));
 
   double time_end = get_time();
