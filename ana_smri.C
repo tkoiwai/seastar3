@@ -278,6 +278,9 @@ int main(int argc, char *argv[]){
 
     hodo09_tofcor = Sqrt(-1);
 
+    Initialize_smri();
+    if(EventNum%=1000) init_test = kTRUE;
+
     //=== Calc. ===--------------------------------------------------------------------------------
     for(Int_t i=0;i<24;i++){
       allHodo_Q[i] = Hodoi_QCal[i]*hodo_qcor[i];
@@ -299,7 +302,7 @@ int main(int argc, char *argv[]){
 
     hodo09_tofcor = hodo_tofcor[9-1];
     
-    v_minoshodo = lengSA_rad/t_minoshodo;
+    v_minoshodo = lengSA_tan/t_minoshodo;
     beta_minoshodo  = v_minoshodo/clight;
     gamma_minoshodo = 1./Sqrt(1.-beta_minoshodo*beta_minoshodo);
 
