@@ -169,8 +169,12 @@ int main(int argc, char *argv[]){
  
   //===== Begin LOOP =============================================================================
   double time_prev = 0.;
-  //int nEntry = caltr->GetEntries();
-  int nEntry = 100000;
+  int AllEntry = caltr->GetEntries();
+  int tmpEntry = 100000;
+  if(AllEntry>tmpEntry)
+    int nEntry = tmpEntry;
+  else
+    int nEntry = AllEntry;
   for(int iEntry=0;iEntry<nEntry;++iEntry){
   //for(int iEntry=0;iEntry<100000;++iEntry){
     
