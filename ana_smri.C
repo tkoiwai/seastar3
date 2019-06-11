@@ -184,8 +184,8 @@ int main(int argc, char *argv[]){
       //time(&t1);
       //cout <<
       double time_end = get_time();
-      cout << (100.*iEntry)/nEntry << " % (" << iEntry << " events) done\t" << iEntry/(time_end - time_start) << " events/s  \t" << (nEntry - iEntry)*(time_end - time_start)/(double)iEntry << " s to go  " ;
-      if(iEntry!=1000) cout << "current speed: " << 1000./(time_end - time_prev) << " events/s \r" << flush;
+      cout << "\r" << (100.*iEntry)/nEntry << " % (" << iEntry << " events) done\t" << iEntry/(time_end - time_start) << " events/s  \t" << (nEntry - iEntry)*(time_end - time_start)/(double)iEntry << " s to go  " ;
+      if(iEntry!=1000) cout << "current speed: " << 1000./(time_end - time_prev) << " events/s" << flush;
       //else cout << endl;
       time_prev = get_time();
     }
