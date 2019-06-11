@@ -171,10 +171,11 @@ int main(int argc, char *argv[]){
   double time_prev = 0.;
   int AllEntry = caltr->GetEntries();
   int tmpEntry = 100000;
+  int nEntry = 0;
   if(AllEntry>tmpEntry)
-    int nEntry = tmpEntry;
+    nEntry = tmpEntry;
   else
-    int nEntry = AllEntry;
+    nEntry = AllEntry;
   for(int iEntry=0;iEntry<nEntry;++iEntry){
   //for(int iEntry=0;iEntry<100000;++iEntry){
     
