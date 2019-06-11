@@ -261,11 +261,8 @@ int main(int argc, char *argv[]){
 
     aoqSA        = Sqrt(-1);
     aoqSA_notcor = Sqrt(-1);
-    //aoqSA_tmpcor = Sqrt(-1);
 
     zetSA    = Sqrt(-1);
-    //zetSA235 = Sqrt(-1);
-    //zetSA270 = Sqrt(-1);
     zraw     = Sqrt(-1);
     dev      = Sqrt(-1);
 
@@ -277,6 +274,11 @@ int main(int argc, char *argv[]){
     }
 
     hodo09_tofcor = Sqrt(-1);
+
+    tof13T   = Sqrt(-1);
+    tof13H   = Sqrt(-1);
+    tofTH_nc = Sqrt(-1);
+    tofTH    = Sqrt(-1);
 
     Initialize_smri();
     if(EventNum%=1000) init_test = kTRUE;
@@ -294,6 +296,11 @@ int main(int argc, char *argv[]){
     hodo_multi = Hodo_Multiplicity;
     //@@@ HODO end @@@
 
+    tof13T   = Dist_SBTTarget/betaF7F13/clight;
+    tof13H   = hodo_t - sbt1_Tslew;
+    tofTH_nc = tof13H - tof13T + toff_hodo;
+    tofTH    = tofTH_nc + hodo_tocor[hodo_id-1];
+    
     //t_minoshodo_notcor = hodo_t - sbt1_Tslew - (Dist_SBTTarget/betaF7F13/clight) + toff_hodo;
     t_minoshodo_notcor = hodo_t - sbt1_Tslew - (Dist_SBTTarget/betaF3F13/clight) + toff_hodo;
 
@@ -310,19 +317,11 @@ int main(int argc, char *argv[]){
     
     zraw = v_minoshodo*Sqrt(hodo_q/dev);
     
-    //zetSA235 = hodo_235T_zraw2z_p0[hodo_id-1] + hodo_235T_zraw2z_p1[hodo_id-1]*zraw;
-    //zetSA270 = hodo_270T_zraw2z_p0[hodo_id-1] + hodo_270T_zraw2z_p1[hodo_id-1]*zraw;
-    //if(hodo_id==3||hodo_id==4||hodo_id==5)
-    //  zetSA = hodo_235T_zraw2z_p0[hodo_id-1] + hodo_235T_zraw2z_p1[hodo_id-1]*zraw;
-    //else
-    //  zetSA = hodo_270T_zraw2z_p0[hodo_id-1] + hodo_270T_zraw2z_p1[hodo_id-1]*zraw;
-
     zetSA = hodo_zraw2z_p0[hodo_id-1] + hodo_zraw2z_p1[hodo_id-1]*zraw;
     //if(hodo_id==9)
     //  zetSA = 0.0060259114 * zraw - 3.8686351311;
     
     aoqSA_notcor = brhoSA_tan/beta_minoshodo/gamma_minoshodo*clight/mu;
-    //aoqSA_tmpcor = 0.545 + 0.7551*aoqSA_notcor;
     //aoqSA = hodo_aoqcor[hodo_id-1][0] + hodo_aoqcor[hodo_id-1][1]*aoqSA_tmpcor;
     aoqSA = hodo_aoqcor[hodo_id-1][0] + hodo_aoqcor[hodo_id-1][1]*aoqSA_notcor;
         
