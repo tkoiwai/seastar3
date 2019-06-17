@@ -170,12 +170,15 @@ int main(int argc, char *argv[]){
   //===== Begin LOOP =============================================================================
   double time_prev = 0.;
   int AllEntry = caltr->GetEntries();
-  int tmpEntry = 100000;
+  int tmpEntry = 1000000000;
   int nEntry = 0;
   if(AllEntry>tmpEntry)
     nEntry = tmpEntry;
   else
     nEntry = AllEntry;
+
+  cout << "Number of events to treat: " << nEntry << endl;
+  
   for(int iEntry=0;iEntry<nEntry;++iEntry){
   //for(int iEntry=0;iEntry<100000;++iEntry){
     
@@ -184,8 +187,8 @@ int main(int argc, char *argv[]){
       //time(&t1);
       //cout <<
       double time_end = get_time();
-      cout << "\r" << (100.*iEntry)/nEntry << " % (" << iEntry << " events) done\t" << iEntry/(time_end - time_start) << " events/s  \t" << (nEntry - iEntry)*(time_end - time_start)/(double)iEntry << " s to go  " ;
-      if(iEntry!=1000) cout << "current speed: " << 1000./(time_end - time_prev) << " events/s" << flush;
+      cout << "\r" << (100.*iEntry)/nEntry << " % (" << iEntry << " events) done:  " << iEntry/(time_end - time_start) << " events/s:  " << (nEntry - iEntry)*(time_end - time_start)/(double)iEntry << " s to go:  " ;
+      if(iEntry!=1000) cout << "current speed: " << 1000./(time_end - time_prev) << " events/s     " << flush;
       //else cout << endl;
       time_prev = get_time();
     }
@@ -305,6 +308,9 @@ int main(int argc, char *argv[]){
     tof13H   = hodo_t - sbt1_Tslew;
     tofTH_nc = tof13H - tof13T + toff_hodo;
     tofTH    = tofTH_nc + hodo_tofcor[hodo_id-1];
+
+    betaTH  = lengSA_tan/tofTH/clight;
+    gammaTH = 1./Sqrt(1.-betaTH*betaTH);
     
     //t_minoshodo_notcor = hodo_t - sbt1_Tslew - (Dist_SBTTarget/betaF7F13/clight) + toff_hodo;
     t_minoshodo_notcor = hodo_t - sbt1_Tslew - (Dist_SBTTarget/betaF3F13/clight) + toff_hodo;
@@ -318,16 +324,19 @@ int main(int argc, char *argv[]){
     beta_minoshodo  = v_minoshodo/clight;
     gamma_minoshodo = 1./Sqrt(1.-beta_minoshodo*beta_minoshodo);
 
-    dev = Log(2*me*beta_minoshodo*beta_minoshodo/ionpair) - Log(1 - beta_minoshodo*beta_minoshodo) - beta_minoshodo*beta_minoshodo; 
+    //dev = Log(2*me*beta_minoshodo*beta_minoshodo/ionpair) - Log(1 - beta_minoshodo*beta_minoshodo) - beta_minoshodo*beta_minoshodo;
+    dev = Log(2*me*betaTH*betaTH/ionpair) - Log(1 - betaTH*betaTH) - betaTH*betaTH; 
     
-    zraw = v_minoshodo*Sqrt(hodo_q/dev);
+    //zraw = v_minoshodo*Sqrt(hodo_q/dev);
+    zraw = betaTH*clight*Sqrt(hodo_q/dev);
     
     zetSA = hodo_zraw2z_p0[hodo_id-1] + hodo_zraw2z_p1[hodo_id-1]*zraw;
     //if(hodo_id==9)
     //  zetSA = 0.0060259114 * zraw - 3.8686351311;
     
-    aoqSA_notcor = brhoSA_tan/beta_minoshodo/gamma_minoshodo*clight/mu;
-    //aoqSA = hodo_aoqcor[hodo_id-1][0] + hodo_aoqcor[hodo_id-1][1]*aoqSA_tmpcor;
+    //aoqSA_notcor = brhoSA_tan/beta_minoshodo/gamma_minoshodo*clight/mu;
+    aoqSA_notcor = brhoSA_tan/betaTH/gammaTH*clight/mu;
+    
     aoqSA = hodo_aoqcor[hodo_id-1][0] + hodo_aoqcor[hodo_id-1][1]*aoqSA_notcor;
         
     //zraw = hodo_q - (hodo_t2q0[hodo_id+1] + hodo_t2q1[hodo_id+1]*t_minoshodo);
@@ -350,7 +359,10 @@ int main(int argc, char *argv[]){
 
   time(&stop);
   cout << endl;
-  printf("Elapsed time: %.1f seconds\n",difftime(stop,start));
+  int t_hour = (int)difftime(stop,start)%3600;
+  int t_min  = (int)(difftime(stop,start) - t_hour*3600)%60;
+  double t_sec  = difftime(stop,start) - t_hour*3600 - t_min*60;
+  printf("Elapsed time: %dh %dm %.1f seconds\n",t_hour,t_min,t_sec);
 
   double time_end = get_time();
   cout << endl << "Program Run Time " << time_end - time_start << " s." << endl;
