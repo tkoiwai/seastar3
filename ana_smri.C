@@ -359,8 +359,8 @@ int main(int argc, char *argv[]){
 
   time(&stop);
   cout << endl;
-  int t_hour = (int)difftime(stop,start)%3600;
-  int t_min  = (int)(difftime(stop,start) - t_hour*3600)%60;
+  int t_hour = (int)difftime(stop,start)/3600;
+  int t_min  = (int)(difftime(stop,start) - t_hour*3600)/60;
   double t_sec  = difftime(stop,start) - t_hour*3600 - t_min*60;
   printf("Elapsed time: %dh %dm %.1f seconds\n",t_hour,t_min,t_sec);
 
