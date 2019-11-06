@@ -102,8 +102,8 @@ int main(int argc, char *argv[]){
   TEnv *env_hodozraw2z   = new TEnv("/home/koiwai/analysis/db/hodo_zraw2z.dat"); // zraw -> z
   TEnv *env_hodotofcor[24]; // t_minoshodo_notcor + hodo_tofcor = t_minodhodo
   for(int id=0;id<24;++id)
-    env_hodotofcor[id] = new TEnv(Form("/home/koiwai/analysis/db/hodo%02d_tofcor.dat",id+1));
-  TEnv *env_hodoaoqcor   = new TEnv("/home/koiwai/analysis/db/hodo_aoqcor.dat");
+    env_hodotofcor[id] = new TEnv(Form("/home/koiwai/analysis/db/hodo%02d_tofcor.dat",id+1)); //tofcor over runs
+  TEnv *env_hodoaoqcor   = new TEnv("/home/koiwai/analysis/db/hodo_aoqcor.dat"); //aoqcor for each bar
   
   //===== Create output file/tree ===============================================================
   TString ofname = Form("/home/koiwai/analysis/rootfiles/ana/smri/ana_smri%04d.root",FileNum);
@@ -187,7 +187,17 @@ int main(int argc, char *argv[]){
       //time(&t1);
       //cout <<
       double time_end = get_time();
-      cout << "\r" << (100.*iEntry)/nEntry << " % (" << iEntry << " events) done:  " << iEntry/(time_end - time_start) << " events/s:  " << (nEntry - iEntry)*(time_end - time_start)/(double)iEntry << " s to go:  " ;
+
+      double t_diff_a = time_end - time_start;
+      int t_hour_a    = t_diff_a/3600;
+      int t_min_a     = (t_diff_a - 3600*t_hour_a)/60;
+      double t_sec_a  = t_diff_a -3600*t_hour_a - 60*t_min_a;
+      
+      cout << "\r"
+	   << t_hour_a <<"h"<< t_min_a <<"m"<< t_sec_a <<"s elapsed:  "
+	   << (100.*iEntry)/nEntry << " % (" << iEntry << " events) done:  "
+	   << iEntry/(time_end - time_start) << " events/s:  "
+	   << (nEntry - iEntry)*(time_end - time_start)/(double)iEntry << " s to go:  " ;
       if(iEntry!=1000) cout << "current speed: " << 1000./(time_end - time_prev) << " events/s     " << flush;
       //else cout << endl;
       time_prev = get_time();
@@ -201,15 +211,19 @@ int main(int argc, char *argv[]){
  
     //@@@ Brho Length Function @@@
     //=== Initialize ===-------------------------------------------------------------------------
-    brhoSA = Sqrt(-1);
-    lengSA = Sqrt(-1);
+    brhoSA     = Sqrt(-1);
+    lengSA     = Sqrt(-1);
     brhoSA_tan = Sqrt(-1);
     lengSA_tan = Sqrt(-1);
     brhoSA_rad = Sqrt(-1);
     lengSA_rad = Sqrt(-1);
 
     BG_flag = 0;
-    //SA56Sc_temp = 0;
+
+    goodEvt      = false;
+    goodEvt_beam = true;
+    goodEvt_smri = true;
+    goodEvt_mwdc = true;
     
     Double_t x[6];
 
@@ -252,6 +266,12 @@ int main(int argc, char *argv[]){
     lengSA_rad = MDF_Len_A56Z20(rad);
     //brhoSA_rad = MDF_Brho_A54Z20(rad);
     //lengSA_rad = MDF_Len_A54Z20(rad);
+
+
+    brho54 = MDF_Brho_A54Z20(tan);
+    brho56 = MDF_Brho_A56Z20(tan);
+    leng54 = MDF_Len_A54Z20(tan);
+    leng56 = MDF_Len_A56Z20(tan);
     
     
     //@@@ HODO @@@
@@ -289,7 +309,7 @@ int main(int argc, char *argv[]){
     tofTH    = Sqrt(-1);
 
     Initialize_smri();
-    if(EventNum%1000==0) init_test = kTRUE;
+    //if(EventNum%1000==0) init_test = kTRUE;
 
     //=== Calc. ===--------------------------------------------------------------------------------
     for(Int_t i=0;i<24;i++){
@@ -311,6 +331,7 @@ int main(int argc, char *argv[]){
 
     betaTH  = lengSA_tan/tofTH/clight;
     gammaTH = 1./Sqrt(1.-betaTH*betaTH);
+
     
     //t_minoshodo_notcor = hodo_t - sbt1_Tslew - (Dist_SBTTarget/betaF7F13/clight) + toff_hodo;
     t_minoshodo_notcor = hodo_t - sbt1_Tslew - (Dist_SBTTarget/betaF3F13/clight) + toff_hodo;
@@ -318,7 +339,7 @@ int main(int argc, char *argv[]){
     //t_minoshodo = t_minoshodo_notcor + hodo_tofcor[hodo_id-1];
     t_minoshodo = hodo_t - sbt1_Tslew - (Dist_SBTTarget/betaF3F13/clight) + toff_hodo + hodo_tofcor[hodo_id-1];
 
-    //hodo09_tofcor = hodo_tofcor[9-1];
+
     
     v_minoshodo = lengSA_tan/t_minoshodo;
     beta_minoshodo  = v_minoshodo/clight;
@@ -326,6 +347,7 @@ int main(int argc, char *argv[]){
 
     //dev = Log(2*me*beta_minoshodo*beta_minoshodo/ionpair) - Log(1 - beta_minoshodo*beta_minoshodo) - beta_minoshodo*beta_minoshodo;
     dev = Log(2*me*betaTH*betaTH/ionpair) - Log(1 - betaTH*betaTH) - betaTH*betaTH; 
+
     
     //zraw = v_minoshodo*Sqrt(hodo_q/dev);
     zraw = betaTH*clight*Sqrt(hodo_q/dev);
@@ -349,8 +371,13 @@ int main(int argc, char *argv[]){
     
     //=== cut by Hodo Time ===----------------------------------------------------------------------
     for(Int_t i=0;i<24;i++){
-      if(Hodoi_TURaw[i]==-1000||Hodoi_TDRaw[i]==-1000) BG_flag = 1;
+      if(Hodoi_TURaw[i]==-1000||Hodoi_TDRaw[i]==-1000) goodEvt_smri = false;
     }
+    if(!BG_flag_beam) goodEvt_beam = false;
+    if(!BG_flag_dc)   goodEvt_mwdc = false;
+
+    if(goodEvt_smri&&goodEvt_beam) goodEvt = true;
+    
     anatrS->Fill();
   }//for LOOP
   anafile_smri->cd();
