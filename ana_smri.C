@@ -170,7 +170,7 @@ int main(int argc, char *argv[]){
   //===== Begin LOOP =============================================================================
   double time_prev = 0.;
   int AllEntry = caltr->GetEntries();
-  int tmpEntry = 1000000000;
+  int tmpEntry = 100000000;
   int nEntry = 0;
   if(AllEntry>tmpEntry)
     nEntry = tmpEntry;
@@ -178,6 +178,8 @@ int main(int argc, char *argv[]){
     nEntry = AllEntry;
 
   cout << "Number of events to treat: " << nEntry << endl;
+
+  double time_startloop = get_time();
   
   for(int iEntry=0;iEntry<nEntry;++iEntry){
   //for(int iEntry=0;iEntry<100000;++iEntry){
@@ -196,9 +198,10 @@ int main(int argc, char *argv[]){
       cout << "\r"
 	   << t_hour_a <<"h"<< t_min_a <<"m"<< t_sec_a <<"s elapsed:  "
 	   << (100.*iEntry)/nEntry << " % (" << iEntry << " events) done:  "
-	   << iEntry/(time_end - time_start) << " events/s:  "
-	   << (nEntry - iEntry)*(time_end - time_start)/(double)iEntry << " s to go:  " ;
+	   << iEntry/(time_end - time_startloop) << " events/s:  "
+	   << (nEntry - iEntry)*(time_end - time_startloop)/(double)iEntry << " s to go:  " ;
       if(iEntry!=1000) cout << "current speed: " << 1000./(time_end - time_prev) << " events/s     " << flush;
+      cout << endl << flush;
       //else cout << endl;
       time_prev = get_time();
     }
@@ -217,6 +220,10 @@ int main(int argc, char *argv[]){
     lengSA_tan = Sqrt(-1);
     brhoSA_rad = Sqrt(-1);
     lengSA_rad = Sqrt(-1);
+    brho54     = Sqrt(-1);
+    leng54     = Sqrt(-1);
+    brho56     = Sqrt(-1);
+    leng56     = Sqrt(-1);
 
     BG_flag = 0;
 
