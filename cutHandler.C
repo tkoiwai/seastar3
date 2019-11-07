@@ -10,7 +10,7 @@ void cutHandler(){
   cout << "Load / Draw and save 2D cuts in ROOT" << endl;
   cout << "     " << endl;
   cout << "--------------------------------------------------------------------------------" << endl;  
-  cout << "- load cuts by calling \"LoadCut(\"SETTINGFILE\")\" " << endl;
+  cout << "- load cuts by calling \"loadCut(\"SETTINGFILE\")\" " << endl;
   cout << "- set output filename by calling \"setFile(\"YOURFILE.root\")\" "<<endl;
   cout << "  default name is \"cutfile.root\" " <<endl;
   cout << "- start cut by calling \"cut(\"YOURNAME\")\" " << endl;
