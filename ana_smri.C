@@ -163,7 +163,7 @@ int main(int argc, char *argv[]){
   }
 
   //===== Declare valables for calc. =============================================================
-  Double_t dev;
+  Double_t dev, dev54;
 
   Set_Branch_smri(anatrS);
  
@@ -222,8 +222,6 @@ int main(int argc, char *argv[]){
     lengSA_rad = Sqrt(-1);
     brho54     = Sqrt(-1);
     leng54     = Sqrt(-1);
-    brho56     = Sqrt(-1);
-    leng56     = Sqrt(-1);
 
     BG_flag = 0;
 
@@ -276,9 +274,7 @@ int main(int argc, char *argv[]){
 
 
     brho54 = MDF_Brho_A54Z20(tan);
-    brho56 = MDF_Brho_A56Z20(tan);
     leng54 = MDF_Len_A54Z20(tan);
-    leng56 = MDF_Len_A56Z20(tan);
     
     
     //@@@ HODO @@@
@@ -300,6 +296,7 @@ int main(int argc, char *argv[]){
     zetSA    = Sqrt(-1);
     zraw     = Sqrt(-1);
     dev      = Sqrt(-1);
+    dev54    = Sqrt(-1);
 
     Double_t allHodo_Q[24];
     Double_t allHodo_T[24];
@@ -315,7 +312,15 @@ int main(int argc, char *argv[]){
     tofTH_nc = Sqrt(-1);
     tofTH    = Sqrt(-1);
 
-    Initialize_smri();
+    betaTH = Sqrt(-1);
+    gammaTH = Sqrt(-1);
+
+    betaTH54  = Sqrt(-1);
+    gammaTH54 = Sqrt(-1);
+    zraw54    = Sqrt(-1);
+    aoqSA_nc54 = Sqrt(-1);
+    
+    //Initialize_smri();
     //if(EventNum%1000==0) init_test = kTRUE;
 
     //=== Calc. ===--------------------------------------------------------------------------------
@@ -339,25 +344,26 @@ int main(int argc, char *argv[]){
     betaTH  = lengSA_tan/tofTH/clight;
     gammaTH = 1./Sqrt(1.-betaTH*betaTH);
 
+    betaTH54  = leng54/tofTH/clight;
+    gammaTH54 = 1./Sqrt(1.-betaTH54*betaTH54);
+
     
     //t_minoshodo_notcor = hodo_t - sbt1_Tslew - (Dist_SBTTarget/betaF7F13/clight) + toff_hodo;
     t_minoshodo_notcor = hodo_t - sbt1_Tslew - (Dist_SBTTarget/betaF3F13/clight) + toff_hodo;
-
     //t_minoshodo = t_minoshodo_notcor + hodo_tofcor[hodo_id-1];
     t_minoshodo = hodo_t - sbt1_Tslew - (Dist_SBTTarget/betaF3F13/clight) + toff_hodo + hodo_tofcor[hodo_id-1];
-
-
-    
     v_minoshodo = lengSA_tan/t_minoshodo;
     beta_minoshodo  = v_minoshodo/clight;
     gamma_minoshodo = 1./Sqrt(1.-beta_minoshodo*beta_minoshodo);
-
     //dev = Log(2*me*beta_minoshodo*beta_minoshodo/ionpair) - Log(1 - beta_minoshodo*beta_minoshodo) - beta_minoshodo*beta_minoshodo;
-    dev = Log(2*me*betaTH*betaTH/ionpair) - Log(1 - betaTH*betaTH) - betaTH*betaTH; 
 
     
+    dev = Log(2*me*betaTH*betaTH/ionpair) - Log(1 - betaTH*betaTH) - betaTH*betaTH; 
     //zraw = v_minoshodo*Sqrt(hodo_q/dev);
     zraw = betaTH*clight*Sqrt(hodo_q/dev);
+
+    dev54 = Log(2*me*betaTH54*betaTH54/ionpair) - Log(1 - betaTH54*betaTH54) - betaTH54*betaTH54; 
+    zraw54 = betaTH54*clight*Sqrt(hodo_q/dev54);
     
     zetSA = hodo_zraw2z_p0[hodo_id-1] + hodo_zraw2z_p1[hodo_id-1]*zraw;
     //if(hodo_id==9)
@@ -365,6 +371,8 @@ int main(int argc, char *argv[]){
     
     //aoqSA_notcor = brhoSA_tan/beta_minoshodo/gamma_minoshodo*clight/mu;
     aoqSA_notcor = brhoSA_tan/betaTH/gammaTH*clight/mu;
+
+    aoqSA_nc54 = brho54/betaTH54/gammaTH54*clight/mu;
     
     aoqSA = hodo_aoqcor[hodo_id-1][0] + hodo_aoqcor[hodo_id-1][1]*aoqSA_notcor;
         
