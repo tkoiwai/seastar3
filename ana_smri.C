@@ -19,8 +19,10 @@
 #include"TString.h"
 #include"TEnv.h"
 
-#include"/home/koiwai/analysis/brho_func/Brho_A56Z20_br56Ca_sa56Ca.C"
-#include"/home/koiwai/analysis/brho_func/Len_A56Z20_br56Ca_sa56Ca.C"
+//#include"/home/koiwai/analysis/brho_func/Brho_A56Z20_br56Ca_sa56Ca.C"
+#include"/home/koiwai/analysis/macros/brho_func/Brho_A56Z20_br57Sc_sa56Ca.C"
+//#include"/home/koiwai/analysis/brho_func/Len_A56Z20_br56Ca_sa56Ca.C"
+#include"/home/koiwai/analysis/macros/brho_func/Len_A56Z20_br57Sc_sa56Ca.C"
 #include"/home/koiwai/analysis/brho_func/Brho_A54Z20_br54Ca_sa54Ca.C"
 #include"/home/koiwai/analysis/brho_func/Len_A54Z20_br54Ca_sa54Ca.C"
 
@@ -170,7 +172,7 @@ int main(int argc, char *argv[]){
   //===== Begin LOOP =============================================================================
   double time_prev = 0.;
   int AllEntry = caltr->GetEntries();
-  int tmpEntry = 100000000;
+  int tmpEntry = 80000;
   int nEntry = 0;
   if(AllEntry>tmpEntry)
     nEntry = tmpEntry;
@@ -229,6 +231,23 @@ int main(int argc, char *argv[]){
     goodEvt_beam = true;
     goodEvt_smri = true;
     goodEvt_mwdc = true;
+
+    //20191111
+    BDC2_X -= 0.5096;
+    BDC2_Y -= 0.4481;
+
+    Target_X = BDC1_X +Dist_BDC1Target / Dist_BDC1BDC2 * (BDC2_X - BDC1_X);
+    Target_Y = BDC1_Y +Dist_BDC1Target / Dist_BDC1BDC2 * (BDC2_Y - BDC1_Y);
+    //Target_A = (BDC2_X - BDC1_X) / Dist_BDC1BDC2;
+    //Target_B = (BDC2_Y - BDC1_Y) / Dist_BDC1BDC2;
+
+    if(TMath::Abs(Target_X)<100 && TMath::Abs(Target_Y)<100 &&
+       TMath::Abs(FDC1_X)<5000 && TMath::Abs(FDC1_Y) < 5000){
+      FDC1_A = (FDC1_X - Target_X) / (Dist_BDC1FDC1-Dist_BDC1Target);
+      FDC1_B = (FDC1_Y - Target_Y) / (Dist_BDC1FDC1-Dist_BDC1Target);
+    }
+
+
     
     Double_t x[6];
 
