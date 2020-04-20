@@ -23,8 +23,8 @@
 #include"/home/koiwai/analysis/macros/brho_func/Brho_A56Z20_br57Sc_sa56Ca.C"
 //#include"/home/koiwai/analysis/brho_func/Len_A56Z20_br56Ca_sa56Ca.C"
 #include"/home/koiwai/analysis/macros/brho_func/Len_A56Z20_br57Sc_sa56Ca.C"
-#include"/home/koiwai/analysis/brho_func/Brho_A54Z20_br54Ca_sa54Ca.C"
-#include"/home/koiwai/analysis/brho_func/Len_A54Z20_br54Ca_sa54Ca.C"
+//#include"/home/koiwai/analysis/brho_func/Brho_A54Z20_br54Ca_sa54Ca.C"
+//#include"/home/koiwai/analysis/brho_func/Len_A54Z20_br54Ca_sa54Ca.C"
 
 #include"/home/koiwai/analysis/include/smridef.h"
 
@@ -53,6 +53,18 @@ int main(int argc, char *argv[]){
   time_t start, stop;
   time(&start);
 
+  int tmpEntry = 2000000;
+
+  if (argc < 2){
+    printf("Usage: ./ana_smri_test RUNNUMBER\nOR\n        ./ana_smri_test RUNNUMBER MAXEVENTS\n");
+    exit(EXIT_FAILURE); 
+  }
+  printf("=======================================\n");
+  if (argc == 3) {
+    tmpEntry = TString(argv[2]).Atoi();    
+    printf(" You will process %d events\n",tmpEntry);
+  }
+  
   Int_t FileNum = TString(argv[1]).Atoi();
 
   printf("\n%s %d %s \n\n","=== Execute ana_smri for RUN",FileNum,"===");
@@ -69,7 +81,7 @@ int main(int argc, char *argv[]){
   Get_Branch_unpacked(caltr);
   
   //===== Load input DC file ====================================================================
-  TString infnameDC = Form("/home/koiwai/analysis/rootfiles/ana/mwdc/ana_mwdc%04d.root",FileNum);
+  TString infnameDC = Form("/home/koiwai/analysis/rootfiles/ana/mwdc/anaDC%04d.root",FileNum);
   TFile *infileDC = TFile::Open(infnameDC);
   
   TTree *anatrDC;
@@ -100,7 +112,6 @@ int main(int argc, char *argv[]){
   TEnv *env              = new TEnv("/home/koiwai/analysis/db/geometry_psp.dat");
   TEnv *env_hodot        = new TEnv("/home/koiwai/analysis/db/hodo_toff.dat"); //unpacked -> hodo_t
   TEnv *env_hodoq        = new TEnv("/home/koiwai/analysis/db/hodo_qcor.dat"); //unpacked -> hodo_q
-  //TEnv *env_hodoq2z      = new TEnv("/home/koiwai/analysis/db/hodo_q2z.dat");  
   TEnv *env_hodozraw2z   = new TEnv("/home/koiwai/analysis/db/hodo_zraw2z.dat"); // zraw -> z
   TEnv *env_hodotofcor[24]; // t_minoshodo_notcor + hodo_tofcor = t_minodhodo
   for(int id=0;id<24;++id)
@@ -126,29 +137,19 @@ int main(int argc, char *argv[]){
   Double_t clight = 299.79258; //[mm/nsec]
   Double_t mu = 931.49432; //[MeV]
   Double_t me = 511.; //[keV]
-  Double_t ionpair = 4.866; //[keV
+  Double_t ionpair = 15796.0;
 
   
   //===== Declare anatree const.s ===============================================================
   Double_t hodo_toff[24], hodo_qcor[24];
-  //Double_t hodo_t2q0[24], hodo_t2q1[24];
   Double_t hodo_zraw2z_p0[24], hodo_zraw2z_p1[24];// hodo_zraw2z2[24];
-  //Double_t hodo_235T_zraw2z_p0[24], hodo_235T_zraw2z_p1[24];
-  //Double_t hodo_270T_zraw2z_p0[24], hodo_270T_zraw2z_p1[24];
   Double_t hodo_zraw2z[2];
   for(Int_t id=0;id<24;id++){
     hodo_toff[id] = env_hodot->GetValue(Form("hodo_toff_%02d",id+1),0.0);
     hodo_qcor[id] = env_hodoq->GetValue(Form("hodo_qcor_%02d",id+1),0.0);
-    //hodo_235T_zraw2z_p0[id] = env_hodozraw2z->GetValue(Form("235T_%02d_p0",id+1),0.0);
-    //hodo_235T_zraw2z_p1[id] = env_hodozraw2z->GetValue(Form("235T_%02d_p1",id+1),0.0);
-    //hodo_270T_zraw2z_p0[id] = env_hodozraw2z->GetValue(Form("270T_%02d_p0",id+1),0.0);
-    //hodo_270T_zraw2z_p1[id] = env_hodozraw2z->GetValue(Form("270T_%02d_p1",id+1),0.0);
     hodo_zraw2z_p0[id] = env_hodozraw2z->GetValue(Form("zraw2z_%02d_p0",id+1),0.0);
     hodo_zraw2z_p1[id] = env_hodozraw2z->GetValue(Form("zraw2z_%02d_p1",id+1),1.0);
   }
-  //hodo_zraw2z[0] = env_hodozraw2z->GetValue("zraw2z_p0",0.0);
-  //hodo_zraw2z[1] = env_hodozraw2z->GetValue("zraw2z_p1",0.0);
-
   Double_t hodo_aoqcor[24][2];
   for(Int_t i=0;i<24;i++){
     hodo_aoqcor[i][0] = env_hodoaoqcor->GetValue(Form("%02dp0",i+1),0.0);
@@ -158,38 +159,44 @@ int main(int argc, char *argv[]){
   Double_t hodo_tofcor[24];
   const char *nn = Form("%d",FileNum);
   for(int id=0;id<24;++id){
-    //TEnv *env_hodoIDtofcor = (TEnv*)Form("env_hodo%02dtofcor",id+1);
     hodo_tofcor[id] = env_hodotofcor[id]->GetValue(nn,0.0);
-    //hodo_tofcor[id] = env_hodoIDtofcor->GetValue(nn,0.0);
-    //cout << "hodo_tofcor" << id << " " << hodo_tofcor[id] << endl;
   }
+  Double_t hodo_qoff[24] = {
+       0,-500,-500,-500,-500,-780,
+    -500,-500,-700,-500,-500,-600,
+    -600,-600,-500,-750,-500,-400,
+    -250,-350,-200,-150,-200,   0
+  };
+
+  Double_t hodo_slew[24][3] = {
+           {0,0,0}, {-50,-50,2.48}, {-50,-50,2.38}, {-50,-50,2.29}, {-55,-55,2.56}, {-80,-80,3.30},
+    {-50,-50,2.31}, {-50,-50,2.29}, {-55,-55,2.47}, {-50,-50,2.24}, {-55,-55,2.50}, {-60,-60,2.70},
+    {-50,-50,2.22}, {-55,-55,2.40}, {-60,-60,2.59}, {-60,-60,2.64}, {-70,-70,2.95}, {-60,-60,2.49},
+    {-60,-60,2.44}, {-60,-60,2.42}, {-60,-60,2.40}, {-65,-65,2.57}, {-90,-90,3.58}, {0,0,0}
+  };
 
   //===== Declare valables for calc. =============================================================
-  Double_t dev, dev54;
+  Double_t dev;
 
   Set_Branch_smri(anatrS);
  
   //===== Begin LOOP =============================================================================
   double time_prev = 0.;
   int AllEntry = caltr->GetEntries();
-  int tmpEntry = 8000000;
   int nEntry = 0;
   if(AllEntry>tmpEntry)
     nEntry = tmpEntry;
   else
     nEntry = AllEntry;
 
-  cout << "Number of events to treat: " << nEntry << endl;
+  printf("Number of events to treat: %d\n",nEntry);
 
   double time_startloop = get_time();
   
   for(int iEntry=0;iEntry<nEntry;++iEntry){
-  //for(int iEntry=0;iEntry<100000;++iEntry){
     
     if(iEntry%1000 == 0){
-      //clog << iEntry/1000 << "k events treated..." << endl;
-      //time(&t1);
-      //cout <<
+
       double time_end = get_time();
 
       double t_diff_a = time_end - time_start;
@@ -197,134 +204,33 @@ int main(int argc, char *argv[]){
       int t_min_a     = (t_diff_a - 3600*t_hour_a)/60;
       double t_sec_a  = t_diff_a -3600*t_hour_a - 60*t_min_a;
       
-      cout << "\r"
-	   << t_hour_a <<"h"<< t_min_a <<"m"<< t_sec_a <<"s elapsed:  "
-	   << (100.*iEntry)/nEntry << " % (" << iEntry << " events) done:  "
-	   << iEntry/(time_end - time_startloop) << " events/s:  "
-	   << (nEntry - iEntry)*(time_end - time_startloop)/(double)iEntry << " s to go:  " ;
-      if(iEntry!=1000) cout << "current speed: " << 1000./(time_end - time_prev) << " events/s     " << flush;
-      cout << endl << flush;
-      //else cout << endl;
+      printf("%dh %dm %.2fs elapsed: %.1f%% (%dk events) done: %.2f events/s: %.2fs to go: current speed: %.2f events/s \n",t_hour_a,t_min_a,t_sec_a,(100.*iEntry)/nEntry,(int)(iEntry/1000),iEntry/(time_end - time_startloop),(nEntry - iEntry)*(time_end - time_startloop)/(double)iEntry,1000./(time_end - time_prev));
+      
       time_prev = get_time();
     }
 
     caltr->GetEntry(iEntry);
 
     RunNum = RunNumber_all;
-    EventNum = EventNumber_all;
-    
+    EventNum = EventNumber_all;    
  
-    //@@@ Brho Length Function @@@
     //=== Initialize ===-------------------------------------------------------------------------
-    brhoSA     = Sqrt(-1);
-    lengSA     = Sqrt(-1);
-    brhoSA_tan = Sqrt(-1);
-    lengSA_tan = Sqrt(-1);
-    brhoSA_rad = Sqrt(-1);
-    lengSA_rad = Sqrt(-1);
-    brho54     = Sqrt(-1);
-    leng54     = Sqrt(-1);
-
-    BG_flag = 0;
-
-    goodEvt      = false;
-    goodEvt_beam = true;
-    goodEvt_smri = true;
-    goodEvt_mwdc = true;
-
-    //20191111
-    BDC2_X -= 0.5096;
-    BDC2_Y -= 0.4481;
-
-    Target_X = BDC1_X +Dist_BDC1Target / Dist_BDC1BDC2 * (BDC2_X - BDC1_X);
-    Target_Y = BDC1_Y +Dist_BDC1Target / Dist_BDC1BDC2 * (BDC2_Y - BDC1_Y);
-    //Target_A = (BDC2_X - BDC1_X) / Dist_BDC1BDC2;
-    //Target_B = (BDC2_Y - BDC1_Y) / Dist_BDC1BDC2;
-
-    if(TMath::Abs(Target_X)<100 && TMath::Abs(Target_Y)<100 &&
-       TMath::Abs(FDC1_X)<5000 && TMath::Abs(FDC1_Y) < 5000){
-      FDC1_A = (FDC1_X - Target_X) / (Dist_BDC1FDC1-Dist_BDC1Target);
-      FDC1_B = (FDC1_Y - Target_Y) / (Dist_BDC1FDC1-Dist_BDC1Target);
-    }
-
-
-    
-    Double_t x[6];
-
-    x[0] = FDC1_X;
-    x[1] = FDC1_A;
-    x[2] = FDC1_Y;
-    x[3] = FDC1_B;
-    x[4] = FDC2_X;
-    x[5] = FDC2_A;
-
-    
-    Double_t tan[6];
-
-    tan[0] = FDC1_X;
-    tan[1] = Tan(FDC1_A)*1000;
-    tan[2] = FDC1_Y;
-    tan[3] = Tan(FDC1_B)*1000;
-    tan[4] = FDC2_X;
-    tan[5] = Tan(FDC2_A)*1000;
-    
-    
-    Double_t rad[6];
-
-    rad[0] = FDC1_X;
-    rad[1] = FDC1_A*1000;
-    rad[2] = FDC1_Y;
-    rad[3] = FDC1_B*1000;
-    rad[4] = FDC2_X;
-    rad[5] = FDC2_A*1000;
-
-    brhoSA = MDF_Brho_A56Z20(x);
-    lengSA = MDF_Len_A56Z20(x);
-    //brhoSA = MDF_Brho_A54Z20(x);
-    //lengSA = MDF_Len_A54Z20(x);
-
-    brhoSA_tan = MDF_Brho_A56Z20(tan);
-    lengSA_tan = MDF_Len_A56Z20(tan);
-
-    brhoSA_rad = MDF_Brho_A56Z20(rad);
-    lengSA_rad = MDF_Len_A56Z20(rad);
-    //brhoSA_rad = MDF_Brho_A54Z20(rad);
-    //lengSA_rad = MDF_Len_A54Z20(rad);
-
-
-    brho54 = MDF_Brho_A54Z20(tan);
-    leng54 = MDF_Len_A54Z20(tan);
-    
-    
-    //@@@ HODO @@@
-    //=== Initialize ===---------------------------------------------------------------------------
-    t_minoshodo_notcor = Sqrt(-1);
-    t_minoshodo     = Sqrt(-1);
-    v_minoshodo     = Sqrt(-1);
-    beta_minoshodo  = Sqrt(-1);
-    gamma_minoshodo = Sqrt(-1);
-
     hodo_q     = 0.;
     hodo_t     = Sqrt(-1);
     hodo_id    = 0;
     hodo_multi = 0;
-
+    
     aoqSA        = Sqrt(-1);
-    aoqSA_notcor = Sqrt(-1);
-
     zetSA    = Sqrt(-1);
     zraw     = Sqrt(-1);
     dev      = Sqrt(-1);
-    dev54    = Sqrt(-1);
 
     Double_t allHodo_Q[24];
     Double_t allHodo_T[24];
-    for(Int_t i=0;i<24;i++){
+     for(Int_t i=0;i<24;i++){
       allHodo_Q[i] = Sqrt(-1);
       allHodo_T[i] = Sqrt(-1);
     }
-
-    //hodo09_tofcor = Sqrt(-1);
 
     tof13T   = Sqrt(-1);
     tof13H   = Sqrt(-1);
@@ -334,81 +240,68 @@ int main(int argc, char *argv[]){
     betaTH = Sqrt(-1);
     gammaTH = Sqrt(-1);
 
-    betaTH54  = Sqrt(-1);
-    gammaTH54 = Sqrt(-1);
-    zraw54    = Sqrt(-1);
-    aoqSA_nc54 = Sqrt(-1);
-    
-    //Initialize_smri();
-    //if(EventNum%1000==0) init_test = kTRUE;
+    brhoSA     = Sqrt(-1);
+    lengSA     = Sqrt(-1);
+
+    BG_flag = 0;
+    goodEvt      = false;
+    goodEvt_beam = true;
+    goodEvt_smri = true;
+    goodEvt_mwdc = true;
 
     //=== Calc. ===--------------------------------------------------------------------------------
+    //@@@ Brho func. @@@
+    
+    Double_t x[6];
+    x[0] = FDC1_X;
+    x[1] = FDC1_A*1000.;
+    x[2] = FDC1_Y;
+    x[3] = FDC1_B*1000.;
+    x[4] = FDC2_X;
+    x[5] = Tan(FDC2_A)*1000.;
+
+    brhoSA = MDF_Brho_A56Z20(x);
+    lengSA = MDF_Len_A56Z20(x);
+
+    //@@@ Hodo @@@
+    
     for(Int_t i=0;i<24;i++){
       allHodo_Q[i] = Hodoi_QCal[i]*hodo_qcor[i];
       allHodo_T[i] = Hodoi_TCal[i]+hodo_toff[i];
       if(allHodo_Q[i]>hodo_q){
 	hodo_q  = allHodo_Q[i];
 	hodo_t  = allHodo_T[i];
+	hodo_t += hodo_slew[i][0]/sqrt(Hodoi_QUCal[i]-300.)
+	        + hodo_slew[i][1]/sqrt(Hodoi_QDCal[i]-300.) + hodo_slew[i][2];
 	hodo_id = i+1;
       }
     }
     hodo_multi = Hodo_Multiplicity;
-    //@@@ HODO end @@@
-
+    
+    //@@@ TOF @@@
     tof13T   = Dist_SBTTarget/betaF7F13/clight;
     tof13H   = hodo_t - sbt1_Tslew;
     tofTH_nc = tof13H - tof13T + toff_hodo;
     tofTH    = tofTH_nc + hodo_tofcor[hodo_id-1];
 
-    betaTH  = lengSA_tan/tofTH/clight;
+    betaTH  = lengSA/tofTH/clight;
     gammaTH = 1./Sqrt(1.-betaTH*betaTH);
-
-    betaTH54  = leng54/tofTH/clight;
-    gammaTH54 = 1./Sqrt(1.-betaTH54*betaTH54);
-
     
-    //t_minoshodo_notcor = hodo_t - sbt1_Tslew - (Dist_SBTTarget/betaF7F13/clight) + toff_hodo;
-    t_minoshodo_notcor = hodo_t - sbt1_Tslew - (Dist_SBTTarget/betaF3F13/clight) + toff_hodo;
-    //t_minoshodo = t_minoshodo_notcor + hodo_tofcor[hodo_id-1];
-    t_minoshodo = hodo_t - sbt1_Tslew - (Dist_SBTTarget/betaF3F13/clight) + toff_hodo + hodo_tofcor[hodo_id-1];
-    v_minoshodo = lengSA_tan/t_minoshodo;
-    beta_minoshodo  = v_minoshodo/clight;
-    gamma_minoshodo = 1./Sqrt(1.-beta_minoshodo*beta_minoshodo);
-    //dev = Log(2*me*beta_minoshodo*beta_minoshodo/ionpair) - Log(1 - beta_minoshodo*beta_minoshodo) - beta_minoshodo*beta_minoshodo;
-
-    
-    dev = Log(2*me*betaTH*betaTH/ionpair) - Log(1 - betaTH*betaTH) - betaTH*betaTH; 
-    //zraw = v_minoshodo*Sqrt(hodo_q/dev);
-    zraw = betaTH*clight*Sqrt(hodo_q/dev);
-
-    dev54 = Log(2*me*betaTH54*betaTH54/ionpair) - Log(1 - betaTH54*betaTH54) - betaTH54*betaTH54; 
-    zraw54 = betaTH54*clight*Sqrt(hodo_q/dev54);
-    
+    dev = Log(ionpair*betaTH*betaTH) - Log(1 - betaTH*betaTH) - betaTH*betaTH; 
+    zraw = betaTH*Sqrt((hodo_q+hodo_qoff[hodo_id-1])/dev);
     zetSA = hodo_zraw2z_p0[hodo_id-1] + hodo_zraw2z_p1[hodo_id-1]*zraw;
-    //if(hodo_id==9)
-    //  zetSA = 0.0060259114 * zraw - 3.8686351311;
-    
-    //aoqSA_notcor = brhoSA_tan/beta_minoshodo/gamma_minoshodo*clight/mu;
-    aoqSA_notcor = brhoSA_tan/betaTH/gammaTH*clight/mu;
 
-    aoqSA_nc54 = brho54/betaTH54/gammaTH54*clight/mu;
     
-    aoqSA = hodo_aoqcor[hodo_id-1][0] + hodo_aoqcor[hodo_id-1][1]*aoqSA_notcor;
-        
-    //zraw = hodo_q - (hodo_t2q0[hodo_id+1] + hodo_t2q1[hodo_id+1]*t_minoshodo);
-    //zetSA = hodo_zraw2z0[hodo_id+1] + hodo_zraw2z1[hodo_id+1]*zraw + hodo_zraw2z2[hodo_id+1]*zraw*zraw;
+    aoqSA = brhoSA/betaTH/gammaTH*clight/mu;
 
     //===== BG cut =================================================================================
     //=== cut by CUTG ===---------------------------------------------------------------------------
-    //if(!csbt1->IsInside(SBT1_TR-SBT1_TL,log(SBT1_QL/SBT1_QR))) BG_flag = 1;
-    //if(cSA56Sc_temp->IsInside(aoqSA,zetSA)) SA56Sc_temp = 1;
-    
     //=== cut by Hodo Time ===----------------------------------------------------------------------
     for(Int_t i=0;i<24;i++){
       if(Hodoi_TURaw[i]==-1000||Hodoi_TDRaw[i]==-1000) goodEvt_smri = false;
     }
     if(!BG_flag_beam) goodEvt_beam = false;
-    if(!BG_flag_dc)   goodEvt_mwdc = false;
+    //if(!BG_flag_dc)   goodEvt_mwdc = false;
 
     if(goodEvt_smri&&goodEvt_beam) goodEvt = true;
     
@@ -419,19 +312,13 @@ int main(int argc, char *argv[]){
   anafile_smri->Close();
 
   time(&stop);
-  cout << endl;
+
   int t_hour = (int)difftime(stop,start)/3600;
   int t_min  = (int)(difftime(stop,start) - t_hour*3600)/60;
   double t_sec  = difftime(stop,start) - t_hour*3600 - t_min*60;
   printf("Elapsed time: %dh %dm %.1f seconds\n",t_hour,t_min,t_sec);
 
   double time_end = get_time();
-  cout << endl << "Program Run Time " << time_end - time_start << " s." << endl;
-  cout << nEntry/(time_end - time_start) << " events/s." << endl;
-
-
-
-  
-  //printf("%d k events have been treated.\n",nEntry/1000);
-  cout << "RUN " << FileNum << ":" << "Conversion finished! : smri" << FileNum << "ok" << endl;
+  printf("Average process speed: %f events/s\n",nEntry/(time_end - time_start));
+  printf("RUN%d: Conversion finished!: smriok%d\n",FileNum,FileNum);
 }//main()
