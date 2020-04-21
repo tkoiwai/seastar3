@@ -93,7 +93,7 @@ int main(int argc, char *argv[]){
   //===== DEFINE HIST ====================================================================
   //char* cnamebr[10]    = {(char*)"br54ca",(char*)"br56ca",(char*)"br56ca",(char*)"br56sc",(char*)"br58sc",(char*)"br59sc",(char*)"",(char*)"",(char*)"",(char*)""};
   //char* cnamesa[10]    = {(char*)"sa53ca",(char*)"sa55ca",(char*)"sa55k" ,(char*)"sa55ca",(char*)"sa57ca",(char*)"sa57ca",(char*)"",(char*)"",(char*)"",(char*)""};
-  char* cnames[10]    = {(char*)"br54ca-sa-all",(char*)"br54ca-sa53ca",(char*)"sa55k" ,(char*)"sa55ca",(char*)"sa57ca",(char*)"sa57ca",(char*)"",(char*)"",(char*)"",(char*)""};
+  char* cnames[10]    = {(char*)"br54ca_saAll",(char*)"br54ca_sa53ca",(char*)"sa55k" ,(char*)"sa55ca",(char*)"sa57ca",(char*)"sa57ca",(char*)"",(char*)"",(char*)"",(char*)""};
   char* cnamesgate[10] = {(char*)"all",(char*)"f5x",(char*)"targetR",(char*)"both",(char*)"",(char*)"",(char*)"",(char*)"",(char*)"",(char*)""};
   char* cnamesminos[2] = {(char*)"wominos",(char*)"wminos"};
   //TH1F *hdop[100];
@@ -116,7 +116,7 @@ int main(int argc, char *argv[]){
     for(int j=0;j<4;j++){
       for(int k=0;k<2;k++){
 	hpid[(i+0)*10+j*2+k] = new TH2F(Form("h_BR_%s_%s_%s",cnames[i],cnamesgate[j],cnamesminos[k]),Form("h_BR_%s_%s_%s",cnames[i],cnamesgate[j],cnamesminos[k]),500,2.55,2.85,500,16,25); 
-	hpid[(i+1)*10+j*2+k] = new TH2F(Form("h_SA_%s_%s_%s",cnames[i],cnamesgate[j],cnamesminos[k]),Form("h_SA_%s_%s_%s",cnames[i],cnamesgate[j],cnamesminos[k]),500,2.55,2.85,500,16,25); 
+	hpid[(i+1)*10+j*2+k] = new TH2F(Form("h_SA_%s_%s_%s",cnames[i+1],cnamesgate[j],cnamesminos[k]),Form("h_SA_%s_%s_%s",cnames[i+1],cnamesgate[j],cnamesminos[k]),500,2.55,2.85,500,16,25); 
       }
     }
   }
@@ -218,8 +218,10 @@ int main(int argc, char *argv[]){
 
 
   outfile->cd();
-  for(int i=0;i<18&&i!=8&&i!=9;i++)
+  for(int i=0;i<18;i++){
+    if(i==8||i==9) continue;
     hpid[i]->Write();
+  }
   //for(int i=0;i<30;i++)
   //hdopsimple[i]->Write();
   outfile->Write();
