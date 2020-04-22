@@ -116,8 +116,8 @@ int main(int argc, char *argv[]){
   
   
   //=== To check cal_minos PID gates ===
-  TH2F *hminosBR = new TH2F("hminosBR","hminosBR",500,2,3.2,500,14,27);
-  TH2F *hminosSA = new TH2F("hminosSA","hminosSA",500,2,3.2,500,14,27);
+  TH2F *hminosBR = new TH2F("hminosBR","hminosBR",1000,2,3.2,1000,14,27);
+  TH2F *hminosSA = new TH2F("hminosSA","hminosSA",1000,2,3.2,1000,14,27);
 
  
 
