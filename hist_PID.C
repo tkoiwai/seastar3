@@ -80,7 +80,9 @@ int main(int argc, char *argv[]){
   TFile *outfile = new TFile(ofname,"RECREATE");
 
   //=====Define variables===================================================
- //===== LOAD CUTS =====================================================================
+
+  //===== LOAD CUTS =====================================================================
+
   TFile *fcutSA_K  = TFile::Open("/home/koiwai/analysis/cutfiles/cutSA_K.root");
   TCutG *csa55k    = (TCutG*)fcutSA_K->Get("sa55k");
 
@@ -91,27 +93,13 @@ int main(int argc, char *argv[]){
   TCutG *csa53ca   = (TCutG*)fcutSA_Ca->Get("sa53ca");
   
   //===== DEFINE HIST ====================================================================
-  //char* cnamebr[10]    = {(char*)"br54ca",(char*)"br56ca",(char*)"br56ca",(char*)"br56sc",(char*)"br58sc",(char*)"br59sc",(char*)"",(char*)"",(char*)"",(char*)""};
-  //char* cnamesa[10]    = {(char*)"sa53ca",(char*)"sa55ca",(char*)"sa55k" ,(char*)"sa55ca",(char*)"sa57ca",(char*)"sa57ca",(char*)"",(char*)"",(char*)"",(char*)""};
+  
   char* cnames[10]    = {(char*)"br54ca_saAll",(char*)"br54ca_sa53ca",(char*)"sa55k" ,(char*)"sa55ca",(char*)"sa57ca",(char*)"sa57ca",(char*)"",(char*)"",(char*)"",(char*)""};
   char* cnamesgate[10] = {(char*)"all",(char*)"f5x",(char*)"targetR",(char*)"both",(char*)"",(char*)"",(char*)"",(char*)"",(char*)"",(char*)""};
   char* cnamesminos[2] = {(char*)"wominos",(char*)"wminos"};
-  //TH1F *hdop[100];
-  //TH1F *hdopsimple[100];
-
-  TH2F *hpid[20];
-
-  //hpid[0] = new TH2F("hpid_BR_br54ca_saall_all","hpid_BR_br54ca_saall_all",300,2.55,2.85,300,16,25);
-  //hpid[1] = new TH2F("hpid_SA_br54ca_sa53ca_all","hpid_SA_br54ca_sa53ca_all",300,2.55,2.85,300,16,25);
-  //hpid[2] = new TH2F("hpid_BR_br54ca_saall_f5x","hpid_BR_br54ca_saall_f5x",300,2.55,2.85,300,16,25);
-  //hpid[3] = new TH2F("hpid_SA_br54ca_sa53ca_f5x","hpid_SA_br54ca_sa53ca_f5x",300,2.55,2.85,300,16,25);
-  //hpid[4] = new TH2F("hpid_BR_br54ca_saall_targetR","hpid_BR_br54ca_saall_targetR",300,2.55,2.85,300,16,25);
-  //hpid[5] = new TH2F("hpid_SA_br54ca_sa53ca_targetR","hpid_SA_br54ca_sa53ca_targetR",300,2.55,2.85,300,16,25);
-  //hpid[6] = new TH2F("hpid_BR_br54ca_saall_both","hpid_BR_br54ca_saall_both",300,2.55,2.85,300,16,25);
-  //hpid[7] = new TH2F("hpid_SA_br54ca_sa53ca_both","hpid_SA_br54ca_sa53ca_both",300,2.55,2.85,300,16,25);
-  //hpid[8] = new TH2F("hpid_BR_br54ca_saall_f5x","hpid_BR_br54ca_saall_f5x",300,2.55,2.85,300,16,25);
-  //hpid[9] = new TH2F("hpid_SA_br54ca_sa53ca_f5x","hpid_SA_br54ca_sa53ca_f5x",300,2.55,2.85,300,16,25);
   
+  TH2F *hpid[20];
+ 
   for(int i=0;i<1;i++){
     for(int j=0;j<4;j++){
       for(int k=0;k<2;k++){
@@ -136,12 +124,12 @@ int main(int argc, char *argv[]){
     AllEntry = MaxEventNumber;
   else
     AllEntry = nEntry;
-
-   double time_prev = 0;
+  
+  double time_prev = 0;
   double time_startloop = get_time();
   
   for(Int_t iEntry=0;iEntry<AllEntry;iEntry++){
-
+    
     intrB->GetEntry(iEntry);
 
     const int showstat = 1000;
@@ -163,9 +151,6 @@ int main(int argc, char *argv[]){
       time_prev = get_time();
     }
  
-    //RunNumber = FileNumber;
-    // EventNumber = EventNumber_beam;
-
     //===== GATES =================================================================
 
     //===== PID gate ==============================================================
@@ -175,6 +160,7 @@ int main(int argc, char *argv[]){
     Double_t vertexZ_cor = vertexZ + MINOSoffsetZ;
     
     //===== FILL HIST =============================================================
+
     if(br54ca){ //0x
       hpid[0]->Fill(aoqBR,zetBR);
       if(-90<F5X&&F5X<20)
@@ -224,8 +210,6 @@ int main(int argc, char *argv[]){
     if(i==8||i==9) continue;
     hpid[i]->Write();
   }
-  //for(int i=0;i<30;i++)
-  //hdopsimple[i]->Write();
   outfile->Write();
   outfile->Close("R");
 
@@ -238,7 +222,7 @@ int main(int argc, char *argv[]){
 
   double time_end = get_time();
   printf("Average process speed: %f events/s\n",AllEntry/(time_end - time_start));
-  printf("RUN%d: Conversion finished!: caldaliok%d\n",FileNumber,FileNumber);
+  printf("RUN%d: Conversion finished!: histpidok%d\n",FileNumber,FileNumber);
 
   return 0;
 }//main()
