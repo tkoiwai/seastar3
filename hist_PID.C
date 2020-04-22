@@ -115,9 +115,11 @@ int main(int argc, char *argv[]){
   }
   
   
+  //=== To check cal_minos PID gates ===
+  TH2F *hminosBR = new TH2F("hminosBR","hminosBR",500,2,3.2,500,14,27);
+  TH2F *hminosSA = new TH2F("hminosSA","hminosSA",500,2,3.2,500,14,27);
 
-
-
+ 
 
 
   //===== LOOP =========================================================================
@@ -207,6 +209,11 @@ int main(int argc, char *argv[]){
 	  hpid[17]->Fill(aoqSA,zetSA);
       }
     }
+
+    if(NumberTracks>0){
+      hminosBR->Fill(aoqBR,zetBR);
+      hminosSA->Fill(aoqSA,zetSA);
+    }
     
   }//while loop
   std::clog << std::endl;
@@ -217,6 +224,8 @@ int main(int argc, char *argv[]){
     if(i==8||i==9) continue;
     hpid[i]->Write();
   }
+  hminosBR->Write();
+  hminosSA->Write();
   outfile->Write();
   outfile->Close("R");
 
