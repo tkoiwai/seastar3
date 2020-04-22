@@ -58,15 +58,20 @@ int main(int argc, char *argv[]){
   TTree   *intrDC   = (TTree*)infileDC->Get("anatrDC");
   PID_Get_Branch_mwdc(intrDC);
 
-  TString infnameV = Form("rootfiles/minos/vertex/vertex%04d.root",FileNumber);
-  TFile   *infileV = TFile::Open(infnameV);
-  TTree   *intrV   = (TTree*)infileV->Get("tr");
-  PID_Get_Branch_vertex(intrV);
+  //TString infnameV = Form("rootfiles/minos/vertex/vertex%04d.root",FileNumber);
+  //TFile   *infileV = TFile::Open(infnameV);
+  //TTree   *intrV   = (TTree*)infileV->Get("tr");
+  //PID_Get_Branch_vertex(intrV);
+
+  TString infnameM = Form("rootfiles/minos/cal/cal_minos%04d.root",FileNumber);
+  TFile   *infileM = TFile::Open(infnameM);
+  TTree   *intrM   = (TTree*)infileM->Get("caltrM");
+  PID_Get_Branch_minos(intrM);
   
   //=== AddFriend ===
   intrB->AddFriend(intrS);
   intrB->AddFriend(intrDC);
-  intrB->AddFriend(intrV);
+  intrB->AddFriend(intrM);
 
   //=====ROOT file setting==========================================================
 
@@ -157,7 +162,7 @@ int main(int argc, char *argv[]){
 
     //===== INIT ==================================================================
 
-    Double_t vertexZ_cor = vertexZ + MINOSoffsetZ;
+    //Double_t vertexZ_cor = vertexZ + MINOSoffsetZ;
     
     //===== FILL HIST =============================================================
 
@@ -170,7 +175,8 @@ int main(int argc, char *argv[]){
       if(-90<F5X&&F5X<20&&sqrt(Target_X*Target_X+Target_Y*Target_Y)<15)
 	hpid[6]->Fill(aoqBR,zetBR);
 
-      if(-10<vertexZ_cor&&vertexZ_cor<160){
+      //if(-10<vertexZ_cor&&vertexZ_cor<160){
+      if( NumberTracks > 0 ){
 	hpid[1]->Fill(aoqBR,zetBR);
 	if(-90<F5X&&F5X<20)
 	  hpid[3]->Fill(aoqBR,zetBR);
@@ -190,7 +196,8 @@ int main(int argc, char *argv[]){
       if( -90<F5X && F5X<20 && sqrt( Target_X*Target_X + Target_Y*Target_Y ) < 15)
 	hpid[16]->Fill(aoqSA,zetSA);
 
-      if(-10<vertexZ_cor&&vertexZ_cor<160){
+      //if(-10<vertexZ_cor&&vertexZ_cor<160){
+      if( NumberTracks > 0 ){
 	hpid[11]->Fill(aoqSA,zetSA);
 	if(-90<F5X&&F5X<20)
 	  hpid[13]->Fill(aoqSA,zetSA);
