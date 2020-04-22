@@ -31,7 +31,7 @@ int main(int argc, char *argv[]){
     std::cerr <<  " You should provide either a runnumber" << endl;
   }
   if (argc < 2 || argc > 5){
-    printf("Usage: ./cal_dali RUNNUMBER\nOR     ./cal_dali RUNNUMBER MAXEVENTS\nOR     ./cal_dali RUNNUMBER MAXEVENTS TEST\n");
+    printf("Usage: ./hist_PID RUNNUMBER\nOR     ./hist_PID RUNNUMBER MAXEVENTS\nOR     ./hist_PID RUNNUMBER MAXEVENTS TEST\n");
     exit(EXIT_FAILURE); 
   }
 
@@ -58,15 +58,15 @@ int main(int argc, char *argv[]){
   TTree   *intrDC   = (TTree*)infileDC->Get("anatrDC");
   PID_Get_Branch_mwdc(intrDC);
 
-  TString infnameD = Form("rootfiles/ana/dali/cal_dali%04d.root",FileNumber);
-  TFile   *infileD = TFile::Open(infnameD);
-  TTree   *intrD   = (TTree*)infileD->Get("tr");
-  PID_Get_Branch_dali(intrD);
+  TString infnameV = Form("rootfiles/minos/vertex/vertex%04d.root",FileNumber);
+  TFile   *infileV = TFile::Open(infnameV);
+  TTree   *intrV   = (TTree*)infileV->Get("tr");
+  PID_Get_Branch_vertex(intrV);
   
   //=== AddFriend ===
   intrB->AddFriend(intrS);
   intrB->AddFriend(intrDC);
-  intrB->AddFriend(intrD);
+  intrB->AddFriend(intrV);
 
   //=====ROOT file setting==========================================================
 
@@ -171,8 +171,10 @@ int main(int argc, char *argv[]){
     //===== PID gate ==============================================================
 
     //===== INIT ==================================================================
- 
-    //===== FILL HIST ==============================================================================
+
+    Double_t vertexZ_cor = vertexZ + MINOSoffsetZ;
+    
+    //===== FILL HIST =============================================================
     if(br54ca){ //0x
       hpid[0]->Fill(aoqBR,zetBR);
       if(-90<F5X&&F5X<20)
