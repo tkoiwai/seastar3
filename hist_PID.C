@@ -116,11 +116,14 @@ int main(int argc, char *argv[]){
   
   
   //=== To check cal_minos PID gates ===
+
   TH2F *hminosBR = new TH2F("hminosBR","hminosBR",1000,2,3.2,1000,14,27);
   TH2F *hminosSA = new TH2F("hminosSA","hminosSA",1000,2,3.2,1000,14,27);
 
- 
+  //=== whole PID plots ===
 
+  TH2F *hBR = new TH2F("hBR","hBR",1000,2.55,2.85,1000,16,25); 
+  TH2F *hSA = new TH2F("hSA","hSA",1000,2.,3.,1000,14,26); 
 
   //===== LOOP =========================================================================
 
@@ -214,18 +217,26 @@ int main(int argc, char *argv[]){
       hminosBR->Fill(aoqBR,zetBR);
       hminosSA->Fill(aoqSA,zetSA);
     }
+
+    hBR->Fill(aoqBR,zetBR);
+    hSA->Fill(aoqSA,zetSA);
     
   }//while loop
   std::clog << std::endl;
 
 
   outfile->cd();
+
   for(int i=0;i<18;i++){
     if(i==8||i==9) continue;
     hpid[i]->Write();
   }
   hminosBR->Write();
   hminosSA->Write();
+
+  hBR->Write();
+  hSA->Write();
+  
   outfile->Write();
   outfile->Close("R");
 
