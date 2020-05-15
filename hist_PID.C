@@ -28,7 +28,7 @@ int main(int argc, char *argv[]){
   Int_t FileNumber = TString(argv[1]).Atoi();
   
   if(FileNumber==0){
-    std::cerr <<  " You should provide either a runnumber" << endl;
+    std::cerr <<  " You should provide a valid runnumber" << endl;
   }
   if (argc < 2 || argc > 5){
     printf("Usage: ./hist_PID RUNNUMBER\nOR     ./hist_PID RUNNUMBER MAXEVENTS\nOR     ./hist_PID RUNNUMBER MAXEVENTS TEST\n");
@@ -63,9 +63,12 @@ int main(int argc, char *argv[]){
   //TTree   *intrV   = (TTree*)infileV->Get("tr");
   //PID_Get_Branch_vertex(intrV);
 
-  TString infnameM = Form("rootfiles/minos/cal/cal_minos%04d.root",FileNumber);
+  //TString infnameM = Form("rootfiles/minos/cal/cal_minos%04d.root",FileNumber);
+  //TString infnameM = Form("/home/koiwai/analysis/minos/testcal_minos%04d.root",FileNumber);
+  TString infnameM = Form("rootfiles/minos/cal_new/Tracks_run_%04d.root",FileNumber);
   TFile   *infileM = TFile::Open(infnameM);
-  TTree   *intrM   = (TTree*)infileM->Get("caltrM");
+  //TTree   *intrM   = (TTree*)infileM->Get("caltrM");
+  TTree   *intrM   = (TTree*)infileM->Get("tree");
   PID_Get_Branch_minos(intrM);
   
   //=== AddFriend ===
