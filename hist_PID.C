@@ -113,7 +113,9 @@ int main(int argc, char *argv[]){
       }
     }
   }
-  
+
+  //
+  TH2F *hminostrack = new TH2F("hminostrack","hminostrack",230,0,230,10,0,10);
   
   //=== To check cal_minos PID gates ===
 
@@ -220,6 +222,8 @@ int main(int argc, char *argv[]){
 
     hBR->Fill(aoqBR,zetBR);
     hSA->Fill(aoqSA,zetSA);
+
+    hminostrack->Fill(FileNumber,NumberTracks);
     
   }//while loop
   std::clog << std::endl;
@@ -236,6 +240,8 @@ int main(int argc, char *argv[]){
 
   hBR->Write();
   hSA->Write();
+
+  hminostrack->Write();
   
   outfile->Write();
   outfile->Close("R");
