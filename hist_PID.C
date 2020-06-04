@@ -81,7 +81,7 @@ int main(int argc, char *argv[]){
   TString ofname;
 
   if(argc < 4)
-    ofname = Form("/home/koiwai/analysis/rootfiles/pid_hist/hist_pid%04d.root",FileNumber);
+    ofname = Form("/home/koiwai/analysis/rootfiles/pid_hist/analyzer_hist_pid%04d.root",FileNumber);
   else if(argc == 4)
     //ofname = Form("/home/koiwai/analysis/macros/Analyzer_testhist_pid%04d.root",FileNumber);
     ofname = Form("/home/koiwai/analysis/macros/calminos_testhist_pid%04d.root",FileNumber);
