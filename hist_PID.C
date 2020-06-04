@@ -83,7 +83,8 @@ int main(int argc, char *argv[]){
   if(argc < 4)
     ofname = Form("/home/koiwai/analysis/rootfiles/pid_hist/hist_pid%04d.root",FileNumber);
   else if(argc == 4)
-    ofname = Form("/home/koiwai/analysis/macros/testhist_pid%04d.root",FileNumber);
+    //ofname = Form("/home/koiwai/analysis/macros/Analyzer_testhist_pid%04d.root",FileNumber);
+    ofname = Form("/home/koiwai/analysis/macros/calminos_testhist_pid%04d.root",FileNumber);
 
   TFile *outfile = new TFile(ofname,"RECREATE");
 
@@ -238,6 +239,7 @@ int main(int argc, char *argv[]){
     if(i==8||i==9) continue;
     hpid[i]->Write();
   }
+  
   hminosBR->Write();
   hminosSA->Write();
 
