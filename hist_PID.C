@@ -144,7 +144,7 @@ int main(int argc, char* argv[]) {
             500, 2.55, 2.85, 500, 16, 25);
         hpid[(i + 2) * 10 + j * 2 + k] = new TH2F(
             Form("h_SA_%s_%s_%s", cnames[i], cnamesgate[j], cnamesminos[k]),
-            Form("h_SA_%s_%s_%s", cnames[i + 1], cnamesgate[j], cnamesminos[k]),
+            Form("h_SA_%s_%s_%s", cnames[i], cnamesgate[j], cnamesminos[k]),
             500, 2.55, 2.85, 500, 16, 25);
       }
     }
