@@ -111,6 +111,10 @@ int main(int argc, char* argv[]) {
   TCutG* csa54ca = (TCutG*)fcutSA_Ca->Get("sa54ca");
   TCutG* csa53ca = (TCutG*)fcutSA_Ca->Get("sa53ca");
 
+  TFile* fcutSA_Ca_wMINOS =
+      TFile::Open("/home/koiwai/analysis/cutfiles/cutSA_Ca_wMINOS.root");
+  TCutG* csa53ca_br54ca_wMINOS = (TCutG*)fcutSA_Ca_wMINOS->Get("csa53ca_wminos");
+
   //===== DEFINE HIST
   //====================================================================
 
@@ -234,7 +238,7 @@ int main(int argc, char* argv[]) {
       }
     }
 
-    if(br54ca && csa53ca->IsInside(aoqSA, zetSA)) {  // 1x
+    if(br54ca && csa53ca_wminos->IsInside(aoqSA, zetSA)) {  // 1x
       hpid[10]->Fill(aoqSA, zetSA);
       if(-90 < F5X && F5X < 20) hpid[12]->Fill(aoqSA, zetSA);
       if(sqrt(Target_X * Target_X + Target_Y * Target_Y) < 15)
