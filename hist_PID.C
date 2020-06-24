@@ -1,29 +1,7 @@
 #include "../include/piddef.h"
-/*
-bool signal_recieved = false;
-void signalhandler(int sig) {
-  if(sig == SIGINT) {
-    signal_recieved = true;
-  }
-}
 
-double get_time() {
-  struct timeval t;
-  gettimeofday(&t, NULL);
-  double d = t.tv_sec + (double)t.tv_usec / 1000000;
-  return d;
-}
-*/
-//=====main Function==========================================================
+//&=====main Function==========================================================
 int main(int argc, char* argv[]) {
-  /*
-  double time_start = get_time();
-  signal(SIGINT, signalhandler);
-
-  time_t start, stop;
-  time(&start);
-  */
-
   initiate_timer_tk();
 
   gInterpreter->GenerateDictionary("vector<TVector3>", "TVector3.h");
@@ -47,20 +25,20 @@ int main(int argc, char* argv[]) {
     printf(" You will process %d events\n", MaxEventNumber);
   }
 
-  //===== Load input files =====
+  //+===== Load input files =====
   TString infnameB = Form("rootfiles/ana/beam/ana_beam%04d.root", FileNumber);
-  TFile* infileB = TFile::Open(infnameB);
-  TTree* intrB = (TTree*)infileB->Get("anatrB");
+  TFile*  infileB  = TFile::Open(infnameB);
+  TTree*  intrB    = (TTree*)infileB->Get("anatrB");
   PID_Get_Branch_beam(intrB);
 
   TString infnameS = Form("rootfiles/ana/smri/ana_smri%04d.root", FileNumber);
-  TFile* infileS = TFile::Open(infnameS);
-  TTree* intrS = (TTree*)infileS->Get("anatrS");
+  TFile*  infileS  = TFile::Open(infnameS);
+  TTree*  intrS    = (TTree*)infileS->Get("anatrS");
   PID_Get_Branch_smri(intrS);
 
   TString infnameDC = Form("rootfiles/ana/mwdc_new/anaDC%04d.root", FileNumber);
-  TFile* infileDC = TFile::Open(infnameDC);
-  TTree* intrDC = (TTree*)infileDC->Get("anatrDC");
+  TFile*  infileDC  = TFile::Open(infnameDC);
+  TTree*  intrDC    = (TTree*)infileDC->Get("anatrDC");
   PID_Get_Branch_mwdc(intrDC);
 
   // TString infnameV =
@@ -100,13 +78,12 @@ int main(int argc, char* argv[]) {
 
   TFile* outfile = new TFile(ofname, "RECREATE");
 
-  //=====Define variables===================================================
+  //+=====Define variables===================================================
 
-  //===== LOAD CUTS
-  //=====================================================================
+  //+===== LOAD CUTS ========================================================
 
   TFile* fcutSA_K = TFile::Open("/home/koiwai/analysis/cutfiles/cutSA_K.root");
-  TCutG* csa55k = (TCutG*)fcutSA_K->Get("sa55k");
+  TCutG* csa55k   = (TCutG*)fcutSA_K->Get("sa55k");
 
   TFile* fcutSA_Ca =
       TFile::Open("/home/koiwai/analysis/cutfiles/cutSA_Ca.root");
@@ -119,10 +96,9 @@ int main(int argc, char* argv[]) {
       TFile::Open("/home/koiwai/analysis/cutfiles/cutSA_Ca_wMINOS.root");
   TCutG* csa53ca_br54ca_wMINOS = (TCutG*)fcutSA_Ca_wMINOS->Get("csa53ca_wminos");
 
-  //===== DEFINE HIST
-  //====================================================================
+  //+===== DEFINE HIST ======================================================
 
-  char* cnames[10] = {(char*)"br54ca_saAll",
+  char* cnames[10]     = {(char*)"br54ca_saAll",
                       (char*)"br54ca_sa53ca",
                       (char*)"sa55k",
                       (char*)"sa55ca",
@@ -162,72 +138,40 @@ int main(int argc, char* argv[]) {
   TH2F* hminostrack =
       new TH2F("hminostrack", "hminostrack", 230, 0, 230, 10, 0, 10);
 
-  //=== To check cal_minos PID gates ===
+  //+=== To check cal_minos PID gates ===
 
   TH2F* hminosBR = new TH2F("hminosBR", "hminosBR", 1000, 2, 3.2, 1000, 14, 27);
   TH2F* hminosSA = new TH2F("hminosSA", "hminosSA", 1000, 2, 3.2, 1000, 14, 27);
 
-  //=== whole PID plots ===
+  //+=== whole PID plots ===
 
   TH2F* hBR = new TH2F("hBR", "hBR", 1000, 2.55, 2.85, 1000, 16, 25);
   TH2F* hSA = new TH2F("hSA", "hSA", 1000, 2., 3., 1000, 14, 26);
 
-  //===== LOOP
-  //=========================================================================
+  //&===== LOOP =================================================================
 
   Int_t nEntry = intrB->GetEntries();
-  int iEntry = 0;
-  int AllEntry;
+  int   iEntry = 0;
+  int   AllEntry;
   if(argc > 2 && MaxEventNumber < nEntry)
     AllEntry = MaxEventNumber;
   else
     AllEntry = nEntry;
-
-  /*
-  double time_prev = 0;
-  double time_startloop = get_time();
-*/
 
   prepare_timer_tk();
 
   for(Int_t iEntry = 0; iEntry < AllEntry; iEntry++) {
     intrB->GetEntry(iEntry);
 
-    /*
-    const int showstat = 1000;
-    if(iEntry % showstat == 0) {
-      double time_end = get_time();
-      double t_diff_a = time_end - time_start;
-      int t_hour_a = t_diff_a / 3600;
-      int t_min_a = (t_diff_a - 3600 * t_hour_a) / 60;
-      double t_sec_a = t_diff_a - 3600 * t_hour_a - 60 * t_min_a;
-
-      printf(
-          "%dh %dm %.2fs elapsed: %dk events done: %.2f events/s: about %.2fs "
-          "to go: current speed: %.2f events/s \n",
-          t_hour_a, t_min_a, t_sec_a, (int)(iEntry / 1000),
-          iEntry / (time_end - time_startloop),
-          (AllEntry - iEntry) * (time_end - time_startloop) / (double)iEntry,
-          showstat / (time_end - time_prev));
-      time_prev = get_time();
-    }
-*/
-
     start_timer_tk(iEntry, AllEntry, 1000);
 
-    //===== GATES
-    //=================================================================
+    //+===== GATES ================================================================
 
-    //===== PID gate
-    //==============================================================
+    //+===== PID gate ===========================================================
 
-    //===== INIT
-    //==================================================================
+    //+===== INIT ==================================================================
 
-    // Double_t vertexZ_cor = vertexZ + MINOSoffsetZ;
-
-    //===== FILL HIST
-    //=============================================================
+    //+===== FILL HIST ==========================================================
 
     if(br54ca) {  // 0x
       hpid[0]->Fill(aoqBR, zetBR);
@@ -324,21 +268,7 @@ int main(int argc, char* argv[]) {
   outfile->Write();
   outfile->Close("R");
 
-  /*
-  time(&stop);
-
-  int t_hour = (int)difftime(stop, start) / 3600;
-  int t_min = (int)(difftime(stop, start) - t_hour * 3600) / 60;
-  double t_sec = difftime(stop, start) - t_hour * 3600 - t_min * 60;
-  printf("Elapsed time: %dh %dm %.1f seconds\n", t_hour, t_min, t_sec);
-
-  double time_end = get_time();
-  printf("Average process speed: %f events/s\n",
-         AllEntry / (time_end - time_start));
-  printf("RUN%d: Conversion finished!: histpidok%d\n", FileNumber, FileNumber);
-*/
-
-  stop_timer_tk(AllEntry);
+  stop_timer_tk(FileNumber, AllEntry);
 
   return 0;
 }  // main()
