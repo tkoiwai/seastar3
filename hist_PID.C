@@ -1,5 +1,5 @@
 #include "../include/piddef.h"
-
+/*
 bool signal_recieved = false;
 void signalhandler(int sig) {
   if(sig == SIGINT) {
@@ -13,14 +13,18 @@ double get_time() {
   double d = t.tv_sec + (double)t.tv_usec / 1000000;
   return d;
 }
-
+*/
 //=====main Function==========================================================
 int main(int argc, char* argv[]) {
+  /*
   double time_start = get_time();
   signal(SIGINT, signalhandler);
 
   time_t start, stop;
   time(&start);
+  */
+
+  initiate_timer_tk();
 
   gInterpreter->GenerateDictionary("vector<TVector3>", "TVector3.h");
 
@@ -179,12 +183,17 @@ int main(int argc, char* argv[]) {
   else
     AllEntry = nEntry;
 
+  /*
   double time_prev = 0;
   double time_startloop = get_time();
+*/
+
+  prepare_timer_tk();
 
   for(Int_t iEntry = 0; iEntry < AllEntry; iEntry++) {
     intrB->GetEntry(iEntry);
 
+    /*
     const int showstat = 1000;
     if(iEntry % showstat == 0) {
       double time_end = get_time();
@@ -202,6 +211,9 @@ int main(int argc, char* argv[]) {
           showstat / (time_end - time_prev));
       time_prev = get_time();
     }
+*/
+
+    start_timer_tk(iEntry, AllEntry, 1000);
 
     //===== GATES
     //=================================================================
@@ -238,7 +250,7 @@ int main(int argc, char* argv[]) {
       }
     }
 
-    if(br54ca && csa53ca_wminos->IsInside(aoqSA, zetSA)) {  // 1x
+    if(br54ca && csa53ca_br54ca_wMINOS->IsInside(aoqSA, zetSA)) {  // 1x
       hpid[10]->Fill(aoqSA, zetSA);
       if(-90 < F5X && F5X < 20) hpid[12]->Fill(aoqSA, zetSA);
       if(sqrt(Target_X * Target_X + Target_Y * Target_Y) < 15)
@@ -312,6 +324,7 @@ int main(int argc, char* argv[]) {
   outfile->Write();
   outfile->Close("R");
 
+  /*
   time(&stop);
 
   int t_hour = (int)difftime(stop, start) / 3600;
@@ -323,6 +336,9 @@ int main(int argc, char* argv[]) {
   printf("Average process speed: %f events/s\n",
          AllEntry / (time_end - time_start));
   printf("RUN%d: Conversion finished!: histpidok%d\n", FileNumber, FileNumber);
+*/
+
+  stop_timer_tk(AllEntry);
 
   return 0;
 }  // main()
