@@ -41,19 +41,9 @@ int main(int argc, char* argv[]) {
   TTree*  intrDC    = (TTree*)infileDC->Get("anatrDC");
   PID_Get_Branch_mwdc(intrDC);
 
-  // TString infnameV =
-  // Form("rootfiles/minos/vertex/vertex%04d.root",FileNumber); TFile   *infileV
-  // = TFile::Open(infnameV); TTree   *intrV   = (TTree*)infileV->Get("tr");
-  // PID_Get_Branch_vertex(intrV);
-
-  // TString infnameM =
-  // Form("rootfiles/minos/cal/cal_minos%04d.root",FileNumber); TString infnameM
-  // = Form("/home/koiwai/analysis/minos/testcal_minos%04d.root",FileNumber);
-  TString infnameM =
-      Form("rootfiles/minos/cal_new/Tracks_run_%04d.root", FileNumber);
-  TFile* infileM = TFile::Open(infnameM);
-  // TTree   *intrM   = (TTree*)infileM->Get("caltrM");
-  TTree* intrM = (TTree*)infileM->Get("tree");
+  TString infnameM = Form("rootfiles/minos/cal_new/Tracks_run_%04d.root", FileNumber);
+  TFile*  infileM  = TFile::Open(infnameM);
+  TTree*  intrM    = (TTree*)infileM->Get("tree");
   PID_Get_Branch_minos(intrM);
 
   //=== AddFriend ===
@@ -98,19 +88,8 @@ int main(int argc, char* argv[]) {
 
   //+===== DEFINE HIST ======================================================
 
-  char* cnames[10]     = {(char*)"br54ca_saAll",
-                      (char*)"br54ca_sa53ca",
-                      (char*)"sa55k",
-                      (char*)"sa55ca",
-                      (char*)"sa57ca",
-                      (char*)"sa57ca",
-                      (char*)"",
-                      (char*)"",
-                      (char*)"",
-                      (char*)""};
-  char* cnamesgate[10] = {
-      (char*)"all", (char*)"f5x", (char*)"targetR", (char*)"both", (char*)"",
-      (char*)"", (char*)"", (char*)"", (char*)"", (char*)""};
+  char* cnames[10]     = {(char*)"br54ca_saAll", (char*)"br54ca_sa53ca", (char*)"sa55k", (char*)"sa55ca", (char*)"sa57ca", (char*)"sa57ca", (char*)"", (char*)"", (char*)"", (char*)""};
+  char* cnamesgate[10] = {(char*)"all", (char*)"f5x", (char*)"targetR", (char*)"both", (char*)"", (char*)"", (char*)"", (char*)"", (char*)"", (char*)""};
   char* cnamesminos[2] = {(char*)"wominos", (char*)"wminos"};
 
   TH2F* hpid[30];
