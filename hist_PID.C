@@ -179,13 +179,13 @@ int main(int argc, char* argv[]) {
       new TH2F("hminostrack", "hminostrack", 230, 0, 230, 10, 0, 10);
 
   //+=== To check MINOS efficiency ===
-  TH2F* hminoseff[2];
-  hminoseff[0] = new TH2F(Form("h_minoseff_wminos0_%s", cnamesreaction[0]), Form("for MINOS eff (woMINOS) (%s)", cnamesreaction[0]), 500, 2., 3., 16, 25);
-  hminoseff[1] = new TH2F(Form("h_minoseff_wminos1_%s", cnamesreaction[0]), Form("for MINOS eff (NumTrack=1) (%s)", cnamesreaction[0]), 500, 2., 3., 16, 25);
-  hminoseff[2] = new TH2F(Form("h_minoseff_wminosall_%s", cnamesreaction[0]), Form("for MINOS eff (NumTrack>=1) (%s)", cnamesreaction[0]), 500, 2., 3., 16, 25);
-  hminoseff[3] = new TH2F(Form("h_minoseff_wminos0_%s", cnamesreaction[1]), Form("for MINOS eff (woMINOS) (%s)", cnamesreaction[1]), 500, 2., 3., 16, 25);
-  hminoseff[4] = new TH2F(Form("h_minoseff_wminos1_%s", cnamesreaction[1]), Form("for MINOS eff (NumTrack=1or2) (%s)", cnamesreaction[1]), 500, 2., 3., 16, 25);
-  hminoseff[5] = new TH2F(Form("h_minoseff_wminosall_%s", cnamesreaction[1]), Form("for MINOS eff (NumTrack>=1) (%s)", cnamesreaction[1]), 500, 2., 3., 16, 25);
+  TH2F* hminoseff[6];
+  hminoseff[0] = new TH2F(Form("h_minoseff_wminos0_%s", cnamesreaction[0]), Form("for MINOS eff (woMINOS) (%s)", cnamesreaction[0]), 500, 2., 3., 500, 16, 25);
+  hminoseff[1] = new TH2F(Form("h_minoseff_wminos1_%s", cnamesreaction[0]), Form("for MINOS eff (NumTrack=1) (%s)", cnamesreaction[0]), 500, 2., 3., 500, 16, 25);
+  hminoseff[2] = new TH2F(Form("h_minoseff_wminosall_%s", cnamesreaction[0]), Form("for MINOS eff (NumTrack>=1) (%s)", cnamesreaction[0]), 500, 2., 3., 500, 16, 25);
+  hminoseff[3] = new TH2F(Form("h_minoseff_wminos0_%s", cnamesreaction[1]), Form("for MINOS eff (woMINOS) (%s)", cnamesreaction[1]), 500, 2., 3., 500, 16, 25);
+  hminoseff[4] = new TH2F(Form("h_minoseff_wminos1_%s", cnamesreaction[1]), Form("for MINOS eff (NumTrack=1or2) (%s)", cnamesreaction[1]), 500, 2., 3., 500, 16, 25);
+  hminoseff[5] = new TH2F(Form("h_minoseff_wminosall_%s", cnamesreaction[1]), Form("for MINOS eff (NumTrack>=1) (%s)", cnamesreaction[1]), 500, 2., 3., 500, 16, 25);
 
   //+=== whole PID plots ===
 
