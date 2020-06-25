@@ -6,24 +6,67 @@ int main(int argc, char* argv[]) {
 
   gInterpreter->GenerateDictionary("vector<TVector3>", "TVector3.h");
 
-  Int_t FileNumber = TString(argv[1]).Atoi();
+  bool TestMode       = false;
+  bool ENum_flag      = false;
+  int  FileNumber     = -1;
+  int  MaxEventNumber = 0;
 
-  if(FileNumber == 0) {
-    std::cerr << " You should provide a valid runnumber" << endl;
+  struct option longopts[] = {
+      {"eventnumber", required_argument, NULL, 'e'},
+      {"runnumber", required_argument, NULL, 'r'},
+      {"testmode", no_argument, NULL, 't'},
+      {0, 0, 0, 0},
+  };
+
+  int opt;
+  int longindex;
+
+  while((opt = getopt_long(argc, argv, "a:tr:e:", longopts, &longindex)) != -1) {
+    switch(opt) {
+      case 'r':
+        FileNumber = atoi(optarg);
+        break;
+      case 'e':
+        ENum_flag      = true;
+        MaxEventNumber = atoi(optarg);
+        break;
+      case 't':
+        TestMode = true;
+        break;
+
+      default:
+        break;
+    }
   }
-  if(argc < 2 || argc > 5) {
-    printf(
-        "Usage: ./hist_PID RUNNUMBER\nOR     ./hist_PID RUNNUMBER "
-        "MAXEVENTS\nOR     ./hist_PID RUNNUMBER MAXEVENTS TEST\n");
+
+  if(argc == 1) {
+    printf("\nUsage: ./hist_dali -r <run number> -e <max event number to treat> -t (to activate test mode)\n \n");
     exit(EXIT_FAILURE);
   }
 
-  int MaxEventNumber = 0;
-
-  if(argc > 2) {
-    MaxEventNumber = TString(argv[2]).Atoi();
-    printf(" You will process %d events\n", MaxEventNumber);
+  if(FileNumber == -1) {
+    std::cerr << " You should provide a runnumber" << endl;
+    exit(EXIT_FAILURE);
   }
+
+  //Int_t FileNumber = TString(argv[1]).Atoi();
+  //
+  //if(FileNumber == 0) {
+  //  std::cerr << " You should provide a valid runnumber" << endl;
+  //}
+  //if(argc < 2 || argc > 5) {
+  //  printf(
+  //      "Usage: ./hist_PID RUNNUMBER\nOR     ./hist_PID RUNNUMBER "
+  //      "MAXEVENTS\nOR     ./hist_PID RUNNUMBER MAXEVENTS TEST\n");
+  //  exit(EXIT_FAILURE);
+  //}
+  //
+  //int MaxEventNumber = 0;
+  //
+  //if(argc > 2) {
+  //  MaxEventNumber = TString(argv[2]).Atoi();
+  //  printf(" You will process %d events\n", MaxEventNumber);
+  //}
 
   //+===== Load input files =====
   TString infnameB = Form("rootfiles/ana/beam/ana_beam%04d.root", FileNumber);
@@ -56,15 +99,20 @@ int main(int argc, char* argv[]) {
 
   TString ofname;
 
-  if(argc < 4)
-    ofname = Form(
-        "/home/koiwai/analysis/rootfiles/pid_hist/analyzer_hist_pid%04d.root",
-        FileNumber);
-  else if(argc == 4)
-    // ofname =
-    // Form("/home/koiwai/analysis/macros/Analyzer_testhist_pid%04d.root",FileNumber);
-    ofname = Form("/home/koiwai/analysis/macros/calminos_testhist_pid%04d.root",
-                  FileNumber);
+  if(!TestMode)
+    ofname = Form("/home/koiwai/analysis/rootfiles/pid_hist/hist_pid%04d.root", FileNumber);
+  else
+    ofname = Form("/home/koiwai/analysis/macros/testhist_pid%04d.root", FileNumber);
+
+  //if(argc < 4)
+  //  ofname = Form(
+  //      "/home/koiwai/analysis/rootfiles/pid_hist/analyzer_hist_pid%04d.root",
+  //      FileNumber);
+  //else if(argc == 4)
+  //  // ofname =
+  //  // Form("/home/koiwai/analysis/macros/Analyzer_testhist_pid%04d.root",FileNumber);
+  //  ofname = Form("/home/koiwai/analysis/macros/calminos_testhist_pid%04d.root",
+  //                FileNumber);
 
   TFile* outfile = new TFile(ofname, "RECREATE");
 
