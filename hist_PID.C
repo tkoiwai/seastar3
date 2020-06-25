@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
   int opt;
   int longindex;
 
-  while((opt = getopt_long(argc, argv, "a:tr:e:", longopts, &longindex)) != -1) {
+  while((opt = getopt_long(argc, argv, "tr:e:", longopts, &longindex)) != -1) {
     switch(opt) {
       case 'r':
         FileNumber = atoi(optarg);
@@ -94,8 +94,7 @@ int main(int argc, char* argv[]) {
   intrB->AddFriend(intrDC);
   intrB->AddFriend(intrM);
 
-  //=====ROOT file
-  // setting==========================================================
+  //+=====output ROOT file setting===============================================
 
   TString ofname;
 
@@ -118,29 +117,73 @@ int main(int argc, char* argv[]) {
 
   //+=====Define variables===================================================
 
-  //+===== LOAD CUTS ========================================================
+  //+===== LOAD/Define CUTS ========================================================
 
   TFile* fcutSA_K = TFile::Open("/home/koiwai/analysis/cutfiles/cutSA_K.root");
   TCutG* csa55k   = (TCutG*)fcutSA_K->Get("sa55k");
 
-  TFile* fcutSA_Ca =
-      TFile::Open("/home/koiwai/analysis/cutfiles/cutSA_Ca.root");
-  TCutG* csa57ca = (TCutG*)fcutSA_Ca->Get("sa57ca");
-  TCutG* csa55ca = (TCutG*)fcutSA_Ca->Get("sa55ca");
-  TCutG* csa54ca = (TCutG*)fcutSA_Ca->Get("sa54ca");
-  TCutG* csa53ca = (TCutG*)fcutSA_Ca->Get("sa53ca");
+  TFile* fcutSA_Ca = TFile::Open("/home/koiwai/analysis/cutfiles/cutSA_Ca.root");
+  TCutG* csa57ca   = (TCutG*)fcutSA_Ca->Get("sa57ca");
+  TCutG* csa55ca   = (TCutG*)fcutSA_Ca->Get("sa55ca");
+  TCutG* csa54ca   = (TCutG*)fcutSA_Ca->Get("sa54ca");
+  TCutG* csa53ca   = (TCutG*)fcutSA_Ca->Get("sa53ca");
 
-  TFile* fcutSA_Ca_wMINOS =
-      TFile::Open("/home/koiwai/analysis/cutfiles/cutSA_Ca_wMINOS.root");
+  TFile* fcutSA_Ca_wMINOS      = TFile::Open("/home/koiwai/analysis/cutfiles/cutSA_Ca_wMINOS.root");
   TCutG* csa53ca_br54ca_wMINOS = (TCutG*)fcutSA_Ca_wMINOS->Get("csa53ca_wminos");
+
+  TFile* fcutSA_50Ar = TFile::Open("/home/koiwai/analysis/cutfiles/cutSA_50Ar.root");
+  TCutG* csa50ar     = (TCutG*)fcutSA_50Ar->Get("sa50ar");
+
+  TCut f5x     = "-90 < F5X && F5X < 20";
+  TCut targetR = "sqrt(Target_X * Target_X + Target_Y * Target_Y) < 15.";
 
   //+===== DEFINE HIST ======================================================
 
-  char* cnames[10]     = {(char*)"br54ca_saAll", (char*)"br54ca_sa53ca", (char*)"sa55k", (char*)"sa55ca", (char*)"sa57ca", (char*)"sa57ca", (char*)"", (char*)"", (char*)"", (char*)""};
-  char* cnamesgate[10] = {(char*)"all", (char*)"f5x", (char*)"targetR", (char*)"both", (char*)"", (char*)"", (char*)"", (char*)"", (char*)"", (char*)""};
+  //char* cnames[10]     = {(char*)"br54ca_saAll", (char*)"br54ca_sa53ca", (char*)"sa55k", (char*)"sa55ca", (char*)"sa57ca", (char*)"sa57ca", (char*)"", (char*)"", (char*)"", (char*)""};
+  char* cnames[15] = {
+      (char*)"br54ca_saAll",
+      (char*)"br51k_saAll",
+      (char*)"br56ca_saAll",
+      (char*)"br56sc_saAll",
+      (char*)"br58sc_saAll",
+      (char*)"br59sc_saAll",
+      (char*)"br59ti_saAll",
+      (char*)"br60ti_saAll",
+      (char*)"brAll_sa53ca",
+      (char*)"brAll_sa50ar",
+      (char*)"brAll_sa55ca",
+      (char*)"brAll_sa55k",
+      (char*)"brAll_sa57ca",
+      (char*)"",
+      (char*)""};
+  char* cnamesreaction[10] = {
+      (char*)"br54ca_sa53ca",
+      (char*)"br51k_sa50ar",
+      (char*)"br56ca_sa55k",
+      (char*)"br56ca_sa55ca",
+      (char*)"br56sc_sa55ca",
+      (char*)"br58sc_sa57ca",
+      (char*)"br59sc_sa57ca",
+      (char*)"br59ti_sa57ca",
+      (char*)"br60ti_sa57ca",
+      (char*)""};
+  char* cnamesgate[5]  = {(char*)"all", (char*)"f5x", (char*)"targetR", (char*)"both", (char*)""};
   char* cnamesminos[2] = {(char*)"wominos", (char*)"wminos"};
 
+  TH2F* hpidBR[30];
+  TH2F* hpidSA[30];
   TH2F* hpid[30];
+
+  for(int ch = 0; ch < 13; ch++) {
+    hpidBR[ch] = new TH2F(
+        Form("h_BR_%s", cnames[ch]),
+        Form("h_BR_%s", cnames[ch]),
+        500, 2.55, 3., 500, 16, 25);
+    hpidSA[ch] = new TH2F(
+        Form("h_SA_%s", cnames[ch]),
+        Form("h_SA_%s", cnames[ch]),
+        500, 2., 3., 500, 16, 25);
+  }
 
   for(int i = 0; i < 1; i++) {
     for(int j = 0; j < 4; j++) {
@@ -186,11 +229,6 @@ int main(int argc, char* argv[]) {
   else
     AllEntry = nEntry;
 
-  //if(argc > 2 && MaxEventNumber < nEntry)
-  //  AllEntry = MaxEventNumber;
-  //else
-  //  AllEntry = nEntry;
-
   prepare_timer_tk();
 
   for(Int_t iEntry = 0; iEntry < AllEntry; iEntry++) {
@@ -205,6 +243,28 @@ int main(int argc, char* argv[]) {
     //+===== INIT ==================================================================
 
     //+===== FILL HIST ==========================================================
+
+    bool PIDgates[13] = {
+        br54ca,
+        br51k,
+        br56ca,
+        br56sc,
+        br58sc,
+        br59sc,
+        br59ti,
+        br60ti,
+        csa53ca->IsInside(aoqSA, zetSA),
+        csa50ar->IsInside(aoqSA, zetSA),
+        csa55ca->IsInside(aoqSA, zetSA),
+        csa55k->IsInside(aoqSA, zetSA),
+        csa57ca->IsInside(aoqSA, zetSA)};
+
+    for(int i = 0; i < 13; i++) {
+      if(PIDgates[i]) {
+        hpidBR[i]->Fill(aoqBR, zetBR);
+        hpidSA[i]->Fill(aoqBR, zetSA);
+      }
+    }
 
     if(br54ca) {  // 0x
       hpid[0]->Fill(aoqBR, zetBR);
@@ -284,6 +344,11 @@ int main(int argc, char* argv[]) {
   std::clog << std::endl;
 
   outfile->cd();
+
+  for(int ii = 0; ii < 13; ii++) {
+    hpidBR[ii]->Write();
+    hpidSA[ii]->Write();
+  }
 
   for(int i = 0; i < 28; i++) {
     if(i == 8 || i == 9 || i == 18 || i == 19) continue;
