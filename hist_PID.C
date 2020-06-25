@@ -180,10 +180,16 @@ int main(int argc, char* argv[]) {
   Int_t nEntry = intrB->GetEntries();
   int   iEntry = 0;
   int   AllEntry;
-  if(argc > 2 && MaxEventNumber < nEntry)
+
+  if(ENum_flag && MaxEventNumber < nEntry)
     AllEntry = MaxEventNumber;
   else
     AllEntry = nEntry;
+
+  //if(argc > 2 && MaxEventNumber < nEntry)
+  //  AllEntry = MaxEventNumber;
+  //else
+  //  AllEntry = nEntry;
 
   prepare_timer_tk();
 
