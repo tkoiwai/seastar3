@@ -180,8 +180,12 @@ int main(int argc, char* argv[]) {
 
   //+=== To check MINOS efficiency ===
   TH2F* hminoseff[2];
-  hminoseff[0] = new TH2F(Form("h_minoseff_%s", cnamesreaction[0]), Form("for MINOS eff (%s)", cnamesreaction[0]), 500, 2., 3., 16, 25);
-  hminoseff[1] = new TH2F(Form("h_minoseff_%s", cnamesreaction[1]), Form("for MINOS eff (%s)", cnamesreaction[1]), 500, 2., 3., 16, 25);
+  hminoseff[0] = new TH2F(Form("h_minoseff_wminos0_%s", cnamesreaction[0]), Form("for MINOS eff (woMINOS) (%s)", cnamesreaction[0]), 500, 2., 3., 16, 25);
+  hminoseff[1] = new TH2F(Form("h_minoseff_wminos1_%s", cnamesreaction[0]), Form("for MINOS eff (NumTrack=1) (%s)", cnamesreaction[0]), 500, 2., 3., 16, 25);
+  hminoseff[2] = new TH2F(Form("h_minoseff_wminosall_%s", cnamesreaction[0]), Form("for MINOS eff (NumTrack>=1) (%s)", cnamesreaction[0]), 500, 2., 3., 16, 25);
+  hminoseff[3] = new TH2F(Form("h_minoseff_wminos0_%s", cnamesreaction[1]), Form("for MINOS eff (woMINOS) (%s)", cnamesreaction[1]), 500, 2., 3., 16, 25);
+  hminoseff[4] = new TH2F(Form("h_minoseff_wminos1_%s", cnamesreaction[1]), Form("for MINOS eff (NumTrack=1or2) (%s)", cnamesreaction[1]), 500, 2., 3., 16, 25);
+  hminoseff[5] = new TH2F(Form("h_minoseff_wminosall_%s", cnamesreaction[1]), Form("for MINOS eff (NumTrack>=1) (%s)", cnamesreaction[1]), 500, 2., 3., 16, 25);
 
   //+=== whole PID plots ===
 
@@ -307,9 +311,17 @@ int main(int argc, char* argv[]) {
 
     if(br54ca && csa53ca->IsInside(aoqSA, zetSA)) {
       hminoseff[0]->Fill(aoqSA, zetSA);
+      if(NumberTracks == 1)
+        hminoseff[1]->Fill(aoqSA, zetSA);
+      if(NumberTracks > 0)
+        hminoseff[2]->Fill(aoqSA, zetSA);
     }
     if(br51k && csa50ar->IsInside(aoqSA, zetSA)) {
-      hminoseff[1]->Fill(aoqSA, zetSA);
+      hminoseff[3]->Fill(aoqSA, zetSA);
+      if(NumberTracks == 1 || NumberTracks == 2)
+        hminoseff[4]->Fill(aoqSA, zetSA);
+      if(NumberTracks > 0)
+        hminoseff[5]->Fill(aoqSA, zetSA);
     }
 
   }  //- while loop
@@ -327,7 +339,7 @@ int main(int argc, char* argv[]) {
     hpid[i]->Write();
   }
 
-  for(int i = 0; i < 2; i++) {
+  for(int i = 0; i < 6; i++) {
     hminoseff[i]->Write();
   }
 
