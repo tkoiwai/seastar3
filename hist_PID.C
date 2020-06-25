@@ -180,7 +180,8 @@ int main(int argc, char* argv[]) {
 
   //+=== To check MINOS efficiency ===
   TH2F* hminoseff[2];
-  hminoseff[0] = new TH2F(Form("h_minoseff_%s",cnamesreaction[0]))
+  hminoseff[0] = new TH2F(Form("h_minoseff_%s", cnamesreaction[0]), Form("for MINOS eff (%s)", cnamesreaction[0]), 500, 2., 3., 16, 25);
+  hminoseff[1] = new TH2F(Form("h_minoseff_%s", cnamesreaction[1]), Form("for MINOS eff (%s)", cnamesreaction[1]), 500, 2., 3., 16, 25);
 
   //+=== whole PID plots ===
 
@@ -304,7 +305,14 @@ int main(int argc, char* argv[]) {
 
     hminostrack->Fill(FileNumber, NumberTracks);
 
-  }  // while loop
+    if(br54ca && csa53ca->IsInside(aoqSA, zetSA)) {
+      hminoseff[0]->Fill(aoqSA, zetSA);
+    }
+    if(br51k && csa50ar->IsInside(aoqSA, zetSA)) {
+      hminoseff[1]->Fill(aoqSA, zetSA);
+    }
+
+  }  //- while loop
   std::clog << std::endl;
 
   outfile->cd();
@@ -317,6 +325,10 @@ int main(int argc, char* argv[]) {
   for(int i = 0; i < 28; i++) {
     if(i == 8 || i == 9 || i == 18 || i == 19) continue;
     hpid[i]->Write();
+  }
+
+  for(int i = 0; i < 2; i++) {
+    hminoseff[i]->Write();
   }
 
   hBR->Write();
