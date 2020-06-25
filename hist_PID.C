@@ -49,25 +49,6 @@ int main(int argc, char* argv[]) {
     exit(EXIT_FAILURE);
   }
 
-  //Int_t FileNumber = TString(argv[1]).Atoi();
-  //
-  //if(FileNumber == 0) {
-  //  std::cerr << " You should provide a valid runnumber" << endl;
-  //}
-  //if(argc < 2 || argc > 5) {
-  //  printf(
-  //      "Usage: ./hist_PID RUNNUMBER\nOR     ./hist_PID RUNNUMBER "
-  //      "MAXEVENTS\nOR     ./hist_PID RUNNUMBER MAXEVENTS TEST\n");
-  //  exit(EXIT_FAILURE);
-  //}
-  //
-  //int MaxEventNumber = 0;
-  //
-  //if(argc > 2) {
-  //  MaxEventNumber = TString(argv[2]).Atoi();
-  //  printf(" You will process %d events\n", MaxEventNumber);
-  //}
-
   //+===== Load input files =====
   TString infnameB = Form("rootfiles/ana/beam/ana_beam%04d.root", FileNumber);
   TFile*  infileB  = TFile::Open(infnameB);
@@ -89,7 +70,6 @@ int main(int argc, char* argv[]) {
   TTree*  intrM    = (TTree*)infileM->Get("tree");
   PID_Get_Branch_minos(intrM);
 
-  //=== AddFriend ===
   intrB->AddFriend(intrS);
   intrB->AddFriend(intrDC);
   intrB->AddFriend(intrM);
@@ -102,16 +82,6 @@ int main(int argc, char* argv[]) {
     ofname = Form("/home/koiwai/analysis/rootfiles/pid_hist/hist_pid%04d.root", FileNumber);
   else
     ofname = Form("/home/koiwai/analysis/macros/testhist_pid%04d.root", FileNumber);
-
-  //if(argc < 4)
-  //  ofname = Form(
-  //      "/home/koiwai/analysis/rootfiles/pid_hist/analyzer_hist_pid%04d.root",
-  //      FileNumber);
-  //else if(argc == 4)
-  //  // ofname =
-  //  // Form("/home/koiwai/analysis/macros/Analyzer_testhist_pid%04d.root",FileNumber);
-  //  ofname = Form("/home/koiwai/analysis/macros/calminos_testhist_pid%04d.root",
-  //                FileNumber);
 
   TFile* outfile = new TFile(ofname, "RECREATE");
 
@@ -208,7 +178,9 @@ int main(int argc, char* argv[]) {
   TH2F* hminostrack =
       new TH2F("hminostrack", "hminostrack", 230, 0, 230, 10, 0, 10);
 
-  //+=== To check cal_minos PID gates ===
+  //+=== To check MINOS efficiency ===
+  TH2F* hminoseff[2];
+  hminoseff[0] = new TH2F(Form("h_minoseff_%s",cnamesreaction[0]))
 
   //+=== whole PID plots ===
 
@@ -259,7 +231,7 @@ int main(int argc, char* argv[]) {
     for(int i = 0; i < 13; i++) {
       if(PIDgates[i]) {
         hpidBR[i]->Fill(aoqBR, zetBR);
-        hpidSA[i]->Fill(aoqBR, zetSA);
+        hpidSA[i]->Fill(aoqSA, zetSA);
       }
     }
 
